@@ -160,4 +160,59 @@ describe("ManagementApiClient failures", () => {
     await expect(client.get("/config")).rejects.toMatchObject({ code: "aborted" });
     expect(fetchMock).toHaveBeenCalledTimes(1);
   });
+
+  it.each(["text", "blob"] as const)(
+    "maps a body read failure after abort to ApiError without retry or side effects (%s)",
+    async (reader) => {
+      const ac = new AbortController();
+      const response = new Response("ignored", { headers: { "x-cpa-version": "v" } });
+      Object.defineProperty(response, reader, {
+        value: async () => {
+          ac.abort();
+          throw new DOMException("secret-url-in-message", "AbortError");
+        },
+      });
+      const fetchMock = vi.fn(async () => response);
+      const { client, onUnauthorized, onCapabilities } = setup(
+        fetchMock as unknown as typeof fetch,
+      );
+      const call =
+        reader === "text"
+          ? client.getText("/logs", { signal: ac.signal })
+          : client.getBlob("/logs", { signal: ac.signal });
+      const error = await call.catch((e: unknown) => e);
+      expect(error).toBeInstanceOf(ApiError);
+      expect(error).toMatchObject({ code: "aborted" });
+      expect(String((error as ApiError).message)).not.toContain("secret-url");
+      expect(fetchMock).toHaveBeenCalledTimes(1);
+      expect(onUnauthorized).not.toHaveBeenCalled();
+      expect(onCapabilities).not.toHaveBeenCalled();
+    },
+  );
+
+  it("maps a stale-revision body read failure to aborted", async () => {
+    const { client, state, onCapabilities } = setup((async () => {
+      const response = new Response("x");
+      Object.defineProperty(response, "text", {
+        value: async () => {
+          state.revision = 2;
+          throw new TypeError("network error");
+        },
+      });
+      return response;
+    }) as unknown as typeof fetch);
+    await expect(client.getText("/logs")).rejects.toMatchObject({ code: "aborted" });
+    expect(onCapabilities).not.toHaveBeenCalled();
+  });
+
+  it("maps a non-abort body read failure to network", async () => {
+    const response = new Response("x");
+    Object.defineProperty(response, "text", {
+      value: async () => {
+        throw new TypeError("terminated");
+      },
+    });
+    const { client } = setup((async () => response) as unknown as typeof fetch);
+    await expect(client.getText("/logs")).rejects.toMatchObject({ code: "network" });
+  });
 });

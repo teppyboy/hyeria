@@ -123,6 +123,21 @@ export class ManagementApiClient {
       abort();
     }, config.timeoutMs ?? DEFAULT_TIMEOUT_MS);
 
+    // Original error text is dropped: it can embed the request URL.
+    const transportError = () => {
+      assertCurrent();
+      return timedOut
+        ? new ApiError({ status: null, code: "timeout", message: "The request timed out." })
+        : controller.signal.aborted
+          ? new ApiError({ status: null, code: "aborted", message: "The request was cancelled." })
+          : new ApiError({
+              status: null,
+              code: "network",
+              message:
+                "Could not reach the server. Check the address, that it is running, and that it allows this origin.",
+            });
+    };
+
     const secrets = [config.managementKey];
     try {
       let response: Response;
@@ -136,18 +151,7 @@ export class ManagementApiClient {
           cache: "no-store",
         });
       } catch {
-        // Original error text is dropped: it can embed the request URL.
-        assertCurrent();
-        throw timedOut
-          ? new ApiError({ status: null, code: "timeout", message: "The request timed out." })
-          : controller.signal.aborted
-            ? new ApiError({ status: null, code: "aborted", message: "The request was cancelled." })
-            : new ApiError({
-                status: null,
-                code: "network",
-                message:
-                  "Could not reach the server. Check the address, that it is running, and that it allows this origin.",
-              });
+        throw transportError();
       }
 
       if (!response.ok) {
@@ -157,7 +161,13 @@ export class ManagementApiClient {
         throw error;
       }
 
-      const result = await read(response);
+      let result: T;
+      try {
+        result = await read(response);
+      } catch (error) {
+        if (error instanceof ApiError) throw error;
+        throw transportError();
+      }
       assertCurrent();
       const capabilities = parseCapabilityHeaders(response.headers);
       if (hasCapabilities(capabilities)) config.onCapabilities?.(capabilities, config.revision);
