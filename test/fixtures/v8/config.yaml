@@ -1,0 +1,29 @@
+---
+config-version: 8
+management:
+  allow-remote: false
+requests:
+  proxy-url: direct
+routing:
+  strategy: round-robin
+  retry:
+    request-retry: 3
+access:
+  api-keys:
+    - client-key-example-1
+    - client-key-example-2
+oauth:
+  providers:
+    codex:
+      live-media-relay:
+        ice-servers:
+          - urls:
+              - turn:turn.example.invalid:3478
+            username: example-turn-user
+            credential: example-turn-secret
+plugins:
+  enabled: true
+  configs:
+    example-plugin:
+      enabled: true
+      priority: 10

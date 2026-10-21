@@ -26,6 +26,7 @@
 - Product name is **Hyeria** and the project license is **GNU AGPLv3**; the final logo is deferred.
 - Every feature slice must include loading, empty, error, unsupported-capability, responsive, keyboard, and screen-reader states where applicable.
 - Do not commit secrets, live credentials, unsanitized backend fixtures, or provider credentials.
+- M0 contract baseline: `docs/contracts/v8-endpoints.md` and `test/fixtures/v8/` are the endpoint/header source of truth; shapes marked UNKNOWN there must be confirmed against a real v8 instance before a task relies on them.
 
 ## Review Focus
 

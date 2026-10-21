@@ -1,0 +1,8 @@
+{
+  "status": "ok",
+  "url": "https://auth.example.invalid/device",
+  "state": "example-state-2",
+  "flow": "device",
+  "user_code": "EXAMPLE-CODE",
+  "expires_in": 600
+}

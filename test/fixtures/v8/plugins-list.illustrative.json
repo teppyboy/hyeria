@@ -1,0 +1,14 @@
+{
+  "plugins_enabled": true,
+  "plugins_dir": "/example/plugins",
+  "plugins": [
+    {
+      "id": "example-plugin",
+      "path": "/example/plugins/example-plugin.so",
+      "enabled": true,
+      "metadata": { "name": "Example plugin", "version": "1.2.3" },
+      "config_fields": [],
+      "menus": []
+    }
+  ]
+}

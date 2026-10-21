@@ -1,0 +1,7 @@
+{
+  "status": "ok",
+  "auth-file": "/example/auths/vertex-example-project.json",
+  "project_id": "example-project",
+  "email": "user@example.invalid",
+  "location": "us-central1"
+}

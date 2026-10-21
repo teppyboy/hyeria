@@ -1,0 +1,4 @@
+{
+  "channel": "codex",
+  "models": [{ "id": "example-model-1" }, { "id": "example-model-2" }]
+}

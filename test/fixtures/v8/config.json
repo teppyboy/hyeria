@@ -1,0 +1,34 @@
+{
+  "config-version": 8,
+  "management": { "allow-remote": false },
+  "requests": { "proxy-url": "direct" },
+  "routing": { "strategy": "round-robin", "retry": { "request-retry": 3 } },
+  "access": { "api-keys": ["client-key-example-1", "client-key-example-2"] },
+  "api-keys": {
+    "codex": [
+      {
+        "name": "codex-1",
+        "base-url": "https://example.invalid",
+        "keys": [{ "api-key": "example-upstream-key", "weight": 1 }]
+      }
+    ]
+  },
+  "oauth": {
+    "providers": {
+      "aistudio": { "ws-auth": false },
+      "codex": {
+        "live-media-relay": {
+          "ice-servers": [{ "urls": ["turn:turn.example.invalid:3478"] }]
+        }
+      }
+    }
+  },
+  "observability": {
+    "logs": { "logging-to-file": true },
+    "usage": { "usage-statistics-enabled": true }
+  },
+  "plugins": {
+    "enabled": true,
+    "configs": { "example-plugin": { "enabled": true, "priority": 10 } }
+  }
+}

@@ -1,0 +1,6 @@
+{
+  "lines": ["2026-05-05 12:00:00 info request accepted"],
+  "line-count": 1,
+  "latest-timestamp": 1777982400,
+  "next-cursor": "example-opaque-cursor"
+}

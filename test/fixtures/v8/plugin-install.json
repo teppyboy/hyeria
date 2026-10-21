@@ -1,0 +1,8 @@
+{
+  "status": "installed",
+  "source_id": "official",
+  "id": "example-plugin",
+  "version": "1.2.3",
+  "path": "/example/plugins/example-plugin.so",
+  "restart_required": false
+}
