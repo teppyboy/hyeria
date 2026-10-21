@@ -24,3 +24,7 @@ dist-ssr
 *.sw?
 dist-management
 coverage
+
+# Environment files
+.env
+.env.*
