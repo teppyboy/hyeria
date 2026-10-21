@@ -1,13 +1,14 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
+import { RouterProvider } from "react-router";
 import "../../styles/globals.css";
-import { App } from "../App";
-import type { RouterMode } from "./build-config";
+import { createAppRouter } from "../router";
+import { getRouterMode } from "./router-mode";
 
-export const routerMode: RouterMode = "history";
+export const routerMode = getRouterMode();
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
-    <App />
+    <RouterProvider router={createAppRouter(routerMode)} />
   </StrictMode>,
 );

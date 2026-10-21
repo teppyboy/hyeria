@@ -11,9 +11,11 @@ describe("project smoke", () => {
     vi.resetModules();
     const main = await import("../../src/app/entry/main");
     vi.resetModules();
+    vi.stubEnv("MODE", "management");
     const management = await import("../../src/app/entry/management");
     expect(main.routerMode).toBe("history");
     expect(management.routerMode).toBe("hash");
+    vi.unstubAllEnvs();
   });
 
   it("exposes only hash and history router modes", () => {
