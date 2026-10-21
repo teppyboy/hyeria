@@ -1,0 +1,24 @@
+Hyeria
+Copyright (C) 2026 Hyeria contributors
+
+Hyeria is free software licensed under the GNU Affero General Public License,
+version 3 only (AGPL-3.0-only). The full license text is in LICENSE.
+
+Hyeria is an independent management client for CLI Proxy API. It is not
+affiliated with, endorsed by, or a fork of CLI Proxy API or its official
+Management Center.
+
+Network use: if you run a modified version of Hyeria for users over a network,
+AGPLv3 section 13 requires you to offer those users the Corresponding Source of
+your modified version.
+
+Branding: the final Hyeria logo has not been added yet. Any placeholder mark is
+temporary and carries no trademark grant.
+
+Third-party notices
+-------------------
+Third-party software is used under its own license. Notices are listed below
+and must be completed from the dependency tree before each release.
+
+- React, React DOM — MIT License, Meta Platforms, Inc. and affiliates
+- Vite+ (vite-plus), Vite — MIT License, VoidZero Inc. and Vite contributors

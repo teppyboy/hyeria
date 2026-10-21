@@ -1,0 +1,14 @@
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+  --border: #eaeaea;
+  --font-sans: ui-sans-serif, system-ui, sans-serif;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #000000;
+    --foreground: #ededed;
+    --border: #333333;
+  }
+}
