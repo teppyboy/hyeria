@@ -77,6 +77,34 @@ describe("reduceOAuthState", () => {
     }
   });
 
+  it("fails any in-flight flow with the given reason", () => {
+    for (const state of [starting, awaitingUser, polling]) {
+      expect(reduceOAuthState(state, { type: "fail", reason: "request-failed" })).toEqual({
+        status: "error",
+        providerId: "anthropic",
+        reason: "request-failed",
+      });
+    }
+  });
+
+  it("resets any terminal state to idle", () => {
+    const terminal: OAuthState[] = [
+      { status: "success", providerId: "anthropic" },
+      { status: "error", providerId: "anthropic", reason: "request-failed" },
+      { status: "cancelled", providerId: "anthropic" },
+    ];
+
+    for (const state of terminal) {
+      expect(reduceOAuthState(state, { type: "reset" })).toEqual(idle);
+    }
+    expect(reduceOAuthState(idle, { type: "reset" })).toBe(idle);
+  });
+
+  it("ignores reset and fail for states they do not apply to", () => {
+    expect(reduceOAuthState(starting, { type: "reset" })).toBe(starting);
+    expect(reduceOAuthState(idle, { type: "fail", reason: "request-failed" })).toBe(idle);
+  });
+
   it("ignores events that are invalid for the current state", () => {
     expect(reduceOAuthState(idle, { type: "poll" })).toBe(idle);
     expect(reduceOAuthState(idle, { type: "cancel" })).toBe(idle);
@@ -85,7 +113,7 @@ describe("reduceOAuthState", () => {
     expect(reduceOAuthState(starting, { type: "start", providerId: "other" })).toBe(starting);
   });
 
-  it("does not leave terminal states", () => {
+  it("does not leave terminal states except through reset", () => {
     const terminal: OAuthState[] = [
       { status: "success", providerId: "anthropic" },
       { status: "error", providerId: "anthropic", reason: "expired" },
@@ -98,6 +126,7 @@ describe("reduceOAuthState", () => {
       { type: "status", result: "ok" },
       { type: "cancel" },
       { type: "expire" },
+      { type: "fail", reason: "request-failed" },
     ];
 
     for (const state of terminal) {

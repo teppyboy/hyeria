@@ -2,7 +2,7 @@ export type OAuthFlowKind = "wait" | "device";
 
 export type OAuthStatusResult = "wait" | "ok" | "error" | "unknown";
 
-export type OAuthErrorReason = "provider-error" | "unknown-status" | "expired";
+export type OAuthErrorReason = "provider-error" | "unknown-status" | "expired" | "request-failed";
 
 /**
  * Holds only the provider id and flow kind. Auth URLs, device codes and tokens
@@ -23,7 +23,9 @@ export type OAuthEvent =
   | { type: "poll" }
   | { type: "status"; result: OAuthStatusResult }
   | { type: "cancel" }
-  | { type: "expire" };
+  | { type: "expire" }
+  | { type: "fail"; reason: OAuthErrorReason }
+  | { type: "reset" };
 
 /** Events that do not apply to the current state are ignored and return the same state. */
 export function reduceOAuthState(state: OAuthState, event: OAuthEvent): OAuthState {
@@ -52,7 +54,7 @@ export function reduceOAuthState(state: OAuthState, event: OAuthEvent): OAuthSta
     case "success":
     case "error":
     case "cancelled":
-      return state;
+      return event.type === "reset" ? { status: "idle" } : state;
   }
 }
 
@@ -72,13 +74,16 @@ function statusResult(
   }
 }
 
-/** Cancel and expire apply to any non-terminal state. */
+/** Cancel, expire and fail apply to any non-terminal state. */
 function inFlightEvent(state: OAuthState, providerId: string, event: OAuthEvent): OAuthState {
   if (event.type === "cancel") {
     return { status: "cancelled", providerId };
   }
   if (event.type === "expire") {
     return { status: "error", providerId, reason: "expired" };
+  }
+  if (event.type === "fail") {
+    return { status: "error", providerId, reason: event.reason };
   }
   return state;
 }
