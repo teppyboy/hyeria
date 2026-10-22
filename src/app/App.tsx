@@ -14,10 +14,11 @@ function UnavailablePage() {
   );
 }
 export function App() {
+  const language = usePreferencesStore((state) => state.language);
   return (
     <div data-app="hyeria">
       <h1 className="sr-only">Hyeria</h1>
-      <p className="sr-only">CLI Proxy API management center</p>
+      <p className="sr-only">{translate(language, "app.tagline")}</p>
       <Routes>
         <Route path="/login" element={<LoginPage />} />
         <Route element={<ProtectedLayout />}>

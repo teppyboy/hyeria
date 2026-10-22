@@ -4,7 +4,6 @@ import { ApiError } from "@/lib/api/errors";
 import { EMPTY_CAPABILITIES, type ServerCapabilities } from "@/lib/api/headers";
 import { normalizeApiBase } from "@/lib/connection/normalize-api-base";
 import {
-  REMEMBER_SESSION_WARNING,
   createLocalRememberedSessionStorage,
   type RememberedSessionStorage,
 } from "@/lib/connection/remembered-session-storage";
@@ -22,8 +21,6 @@ export interface SessionState {
   connectionRevision: number;
   capabilities: ServerCapabilities;
   remember: boolean;
-  /** Mandatory UI warning text while `remember` is on. */
-  rememberedSessionWarning: string | null;
   endReason: SessionEndReason | null;
   connect(input: ConnectInput): Promise<void>;
   /** Loads a remembered session (if any) and connects with it. Returns false when none is usable. */
@@ -46,7 +43,6 @@ const LOGGED_OUT = {
   managementKey: null,
   capabilities: EMPTY_CAPABILITIES,
   remember: false,
-  rememberedSessionWarning: null,
 } as const;
 
 export function createSessionStore(deps: SessionStoreDeps = {}): StoreApi<SessionState> {
@@ -112,7 +108,6 @@ export function createSessionStore(deps: SessionStoreDeps = {}): StoreApi<Sessio
           apiBase,
           managementKey,
           remember,
-          rememberedSessionWarning: remember ? REMEMBER_SESSION_WARNING : null,
         });
       },
 
@@ -135,7 +130,7 @@ export function createSessionStore(deps: SessionStoreDeps = {}): StoreApi<Sessio
 
       clearPersistedConnection() {
         storage.clear();
-        set({ remember: false, rememberedSessionWarning: null });
+        set({ remember: false });
       },
 
       getClient() {

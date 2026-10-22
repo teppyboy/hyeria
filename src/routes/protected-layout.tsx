@@ -3,7 +3,12 @@ import { useSessionStore } from "@/stores/session";
 import { AppShell } from "@/components/shell/AppShell";
 
 function safeReturnPath(path: string): string {
-  return path.startsWith("/") && !path.startsWith("//") && !path.startsWith("/login") ? path : "/";
+  return path.startsWith("/") &&
+    !path.startsWith("//") &&
+    !path.startsWith("/\\") &&
+    !path.startsWith("/login")
+    ? path
+    : "/";
 }
 
 export function ProtectedLayout() {

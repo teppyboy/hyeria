@@ -3,10 +3,6 @@ import { z } from "zod";
 /** Hyeria-namespaced; the only place a management key can be written to browser storage. */
 export const REMEMBERED_SESSION_STORAGE_KEY = "hyeria:remembered-session:v1";
 
-/** UI must show this next to the "remember" option; browser storage is not encryption. */
-export const REMEMBER_SESSION_WARNING =
-  "Remembering stores the management key in this browser's localStorage as plaintext-equivalent data. It is not encrypted, and any script running on this origin can read it. Only enable it on a device you trust.";
-
 const rememberedSessionSchema = z.object({
   apiBase: z.string().min(1),
   managementKey: z.string().min(1),

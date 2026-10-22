@@ -16,7 +16,7 @@ export function NotificationProvider() {
   }, [notifications]);
   return (
     <div
-      aria-label="Notifications"
+      aria-label={translate(language, "feedback.notifications")}
       className="fixed right-4 top-4 z-50 grid gap-2"
       aria-live="polite"
     >

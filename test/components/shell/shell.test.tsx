@@ -42,6 +42,18 @@ describe("application shell", () => {
     expect(host.querySelector("a[href='#main-content']")).not.toBeNull();
   });
 
+  it("opens the legal notice from the header with the canonical source link", () => {
+    renderShell();
+    const about = document.querySelector<HTMLButtonElement>(
+      "header button[aria-label='About Hyeria']",
+    );
+    act(() => about?.click());
+    const dialog = document.body.querySelector('[role="dialog"]');
+    expect(dialog?.textContent).toContain("AGPLv3");
+    expect(dialog?.textContent).toContain("without any warranty");
+    expect(dialog?.querySelector("a[href='https://github.com/teppyboy/hyeria']")).not.toBeNull();
+  });
+
   it("toggles the sidebar from its keyboard-accessible button", () => {
     const host = renderShell();
     const button = host.querySelector<HTMLButtonElement>("button[aria-label='Toggle sidebar']");

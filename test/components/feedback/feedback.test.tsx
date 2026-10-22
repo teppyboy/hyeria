@@ -49,6 +49,17 @@ describe("feedback components", () => {
     expect(host.textContent).not.toContain("private detail");
   });
 
+  it("localizes the error boundary fallback text", () => {
+    preferencesStore.getState().setLanguage("ru");
+    const host = mount(
+      <ErrorBoundary>
+        <ThrowError />
+      </ErrorBoundary>,
+    );
+    expect(host.querySelector('[role="alert"]')?.textContent).toContain("Произошла ошибка.");
+    expect(host.textContent).toContain("Повторить");
+  });
+
   it("resolves confirmation based on the user's choice", async () => {
     const pending = useUiStore
       .getState()

@@ -112,6 +112,32 @@ describe("protected routing", () => {
     expect(host.textContent).not.toContain("This page is not available yet.");
   });
 
+  it("rejects backslash redirect paths and returns to the default route", async () => {
+    const { router } = mount("/\\evil.example/quota");
+    await settle();
+    expect(router.state.location.pathname).toBe("/login");
+    expect(router.state.location.state).toEqual({ from: "/" });
+  });
+
+  it("opens the legal notice with the canonical source link from the login page", async () => {
+    const { host } = mount("/login");
+    await settle();
+    const about = [...host.querySelectorAll("button")].find(
+      (b) => b.textContent === "About Hyeria",
+    );
+    act(() => about?.click());
+    const dialog = document.body.querySelector('[role="dialog"]');
+    expect(dialog?.textContent).toContain("AGPLv3");
+    expect(dialog?.querySelector("a[href='https://github.com/teppyboy/hyeria']")).not.toBeNull();
+  });
+
+  it("shows the localized remember warning on the login page", async () => {
+    preferencesStore.getState().setLanguage("ru");
+    const { host } = mount("/login");
+    await settle();
+    expect(host.textContent).toContain("Ключ управления будет сохранён в хранилище браузера.");
+  });
+
   it("keeps the router on the shared route table", () => {
     expect(appRoutes).toHaveLength(1);
     expect(appRoutes[0]?.path).toBe("*");

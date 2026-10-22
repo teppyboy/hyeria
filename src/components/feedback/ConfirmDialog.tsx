@@ -8,10 +8,14 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { useUiStore } from "@/stores/ui";
+import { usePreferencesStore } from "@/stores/preferences";
+import { translate } from "@/lib/i18n";
 
 export function ConfirmDialog() {
   const confirm = useUiStore((state) => state.confirm);
+  const language = usePreferencesStore((state) => state.language);
   const resolve = (accepted: boolean) => useUiStore.getState().resolveConfirm(accepted);
+  const t = (key: string) => translate(language, key);
   if (!confirm) return null;
   return (
     <Dialog
@@ -32,13 +36,13 @@ export function ConfirmDialog() {
         </DialogHeader>
         <DialogFooter>
           <Button id="confirm-cancel" variant="outline" onClick={() => resolve(false)}>
-            Cancel
+            {t("shell.cancel")}
           </Button>
           <Button
             variant={confirm.destructive ? "destructive" : "default"}
             onClick={() => resolve(true)}
           >
-            {confirm.confirmLabel ?? "Confirm"}
+            {confirm.confirmLabel ?? t("feedback.confirm")}
           </Button>
         </DialogFooter>
       </DialogContent>

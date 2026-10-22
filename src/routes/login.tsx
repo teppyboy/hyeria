@@ -14,16 +14,17 @@ function safeFrom(value: unknown): string {
     typeof value !== "string" ||
     !value.startsWith("/") ||
     value.startsWith("//") ||
+    value.startsWith("/\\") ||
     value === "/login" ||
     value.startsWith("/login?")
   )
     return "/";
   return value;
 }
-function errorText(error: unknown): string {
+function errorText(error: unknown, fallback: string): string {
   if (error instanceof ApiError || error instanceof InvalidConnectionInputError)
     return error.message;
-  return "Check the API address and management key, then try again.";
+  return fallback;
 }
 
 export function LoginPage() {
@@ -33,7 +34,6 @@ export function LoginPage() {
   const authenticated = useSessionStore((state) => state.isAuthenticated);
   const apiBase = useSessionStore((state) => state.apiBase);
   const endReason = useSessionStore((state) => state.endReason);
-  const warning = useSessionStore((state) => state.rememberedSessionWarning);
   const language = usePreferencesStore((state) => state.language);
   const legalOpen = useUiStore((state) => state.legalOpen);
   const setLegalOpen = (open: boolean) => useUiStore.getState().setLegalOpen(open);
@@ -72,7 +72,7 @@ export function LoginPage() {
       await mutation.mutateAsync({ apiBase: address, managementKey: key, remember });
       setKey("");
     } catch (caught) {
-      setError(errorText(caught));
+      setError(errorText(caught, t("login.invalid")));
     }
   }
   if (restoring && !authenticated)
@@ -129,7 +129,7 @@ export function LoginPage() {
             <span>
               {t("login.remember")}
               <span className="mt-1 block text-xs text-muted-foreground">
-                {warning ?? t("login.rememberWarning")}
+                {t("login.rememberWarning")}
               </span>
             </span>
           </label>

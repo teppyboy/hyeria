@@ -52,7 +52,6 @@ describe("session store", () => {
       apiBase: "http://cpa.example.com",
       managementKey: "mk",
       remember: false,
-      rememberedSessionWarning: null,
     });
     expect(state.capabilities).toEqual({
       version: "v8.0.0",
@@ -98,7 +97,7 @@ describe("session store", () => {
   it("remembers only on opt-in, with the warning, and disconnect clears everything", async () => {
     const { store, local } = setup(ok() as unknown as typeof fetch);
     await store.getState().connect({ apiBase: "http://h", managementKey: "mk", remember: true });
-    expect(store.getState().rememberedSessionWarning).toMatch(/not encrypted/);
+    expect(store.getState().remember).toBe(true);
     expect(JSON.parse(local.getItem(REMEMBERED_SESSION_STORAGE_KEY)!)).toEqual({
       apiBase: "http://h",
       managementKey: "mk",
@@ -125,7 +124,6 @@ describe("session store", () => {
     expect(store.getState()).toMatchObject({
       isAuthenticated: true,
       remember: false,
-      rememberedSessionWarning: null,
     });
   });
 
