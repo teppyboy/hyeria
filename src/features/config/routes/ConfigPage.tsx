@@ -44,6 +44,8 @@ export function ConfigPage() {
   const text = draft ?? yaml.data ?? "";
 
   function handleSave() {
+    // A new save attempt supersedes any earlier write failure shown in the alert.
+    save.reset();
     const result = parseAndValidateYaml(text);
     if (!result.ok) {
       setSaved(false);
@@ -98,7 +100,13 @@ export function ConfigPage() {
             <>
               <VisualConfigForm text={text} />
               <div id="config-raw-yaml">
-                <YamlEditor value={text} onChange={setDraft} />
+                <YamlEditor
+                  value={text}
+                  onChange={(value) => {
+                    setDraft(value);
+                    setSaved(false);
+                  }}
+                />
               </div>
               {alertMessage && <p role="alert">{alertMessage}</p>}
               {saved && <p role="status">{t("config.saved")}</p>}

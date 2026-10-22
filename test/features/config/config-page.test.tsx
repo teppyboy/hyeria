@@ -266,6 +266,35 @@ describe("config page", () => {
     ).toBe(true);
   });
 
+  it("clears the saved status when the editor changes", async () => {
+    const { host } = await mountPage(() => new Response(configYaml));
+    await typeDraft(host, "port: 8317\n");
+    await act(async () => saveButton(host)?.click());
+    await settle();
+    await act(async () => confirmButton(dialog())?.click());
+    await settle();
+    expect(host.querySelector('[role="status"]')?.textContent).toBe("Config saved.");
+    await typeDraft(host, "port: 9000\n");
+    expect(host.querySelector('[role="status"]')).toBeNull();
+  });
+
+  it("clears a previous write failure when a new save starts", async () => {
+    const { host } = await mountPage(
+      () => new Response(configYaml),
+      () => new Response("{}", { status: 500 }),
+    );
+    await typeDraft(host, "port: 8317\n");
+    await act(async () => saveButton(host)?.click());
+    await settle();
+    await act(async () => confirmButton(dialog())?.click());
+    await settle();
+    expect(host.querySelector('[role="alert"]')?.textContent).toBe("Config could not be saved.");
+    await act(async () => saveButton(host)?.click());
+    await settle();
+    expect(dialog()).not.toBeNull();
+    expect(host.querySelector('[role="alert"]')).toBeNull();
+  });
+
   it("shows an alert when the write fails", async () => {
     const { host } = await mountPage(
       () => new Response(configYaml),
