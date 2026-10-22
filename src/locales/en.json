@@ -135,5 +135,19 @@
   "config.diffChanged": "Changed",
   "config.diffConfirm": "Save changes",
   "config.visualUnavailable": "Visual editing is not available yet. This is a read-only summary of non-secret sections; edit the raw YAML instead.",
-  "config.visualRawLink": "Go to the raw YAML editor"
+  "config.visualRawLink": "Go to the raw YAML editor",
+  "providers.groups": "Provider groups",
+  "providers.description": "Configured provider groups and key counts. Key values and endpoints are never shown.",
+  "providers.loading": "Loading provider groups…",
+  "providers.loadError": "Provider groups could not be loaded.",
+  "providers.empty": "No provider groups are configured.",
+  "providers.deferred": "Editing provider groups is deferred. Use the raw configuration editor to change them.",
+  "providers.rawLink": "Open raw configuration",
+  "providers.group": "Group",
+  "providers.status": "Status",
+  "providers.entries": "Entries",
+  "providers.keys": "Keys",
+  "providers.blankKeys": "Blank keys",
+  "providers.known": "Known",
+  "providers.unknown": "Unknown"
 }

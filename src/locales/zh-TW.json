@@ -135,5 +135,19 @@
   "config.diffChanged": "變更",
   "config.diffConfirm": "儲存變更",
   "config.visualUnavailable": "視覺化編輯尚不可用。以下為非敏感設定區段的唯讀摘要；請直接編輯原始 YAML。",
-  "config.visualRawLink": "前往原始 YAML 編輯器"
+  "config.visualRawLink": "前往原始 YAML 編輯器",
+  "providers.groups": "供應商群組",
+  "providers.description": "已設定的供應商群組與金鑰數量。不會顯示金鑰值或端點。",
+  "providers.loading": "正在載入供應商群組…",
+  "providers.loadError": "無法載入供應商群組。",
+  "providers.empty": "尚未設定供應商群組。",
+  "providers.deferred": "供應商群組的編輯功能尚未開放。請使用原始設定編輯器進行修改。",
+  "providers.rawLink": "開啟原始設定",
+  "providers.group": "群組",
+  "providers.status": "狀態",
+  "providers.entries": "項目",
+  "providers.keys": "金鑰",
+  "providers.blankKeys": "空白金鑰",
+  "providers.known": "已知",
+  "providers.unknown": "未知"
 }

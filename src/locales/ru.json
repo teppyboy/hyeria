@@ -135,5 +135,19 @@
   "config.diffChanged": "Изменено",
   "config.diffConfirm": "Сохранить изменения",
   "config.visualUnavailable": "Визуальное редактирование пока недоступно. Ниже только для чтения сводка несекретных разделов; редактируйте необработанный YAML.",
-  "config.visualRawLink": "Перейти к редактору YAML"
+  "config.visualRawLink": "Перейти к редактору YAML",
+  "providers.groups": "Группы провайдеров",
+  "providers.description": "Настроенные группы провайдеров и количество ключей. Значения ключей и адреса не отображаются.",
+  "providers.loading": "Загрузка групп провайдеров…",
+  "providers.loadError": "Не удалось загрузить группы провайдеров.",
+  "providers.empty": "Группы провайдеров не настроены.",
+  "providers.deferred": "Редактирование групп провайдеров пока недоступно. Измените их в редакторе необработанной конфигурации.",
+  "providers.rawLink": "Открыть необработанную конфигурацию",
+  "providers.group": "Группа",
+  "providers.status": "Статус",
+  "providers.entries": "Записи",
+  "providers.keys": "Ключи",
+  "providers.blankKeys": "Пустые ключи",
+  "providers.known": "Известная",
+  "providers.unknown": "Неизвестная"
 }

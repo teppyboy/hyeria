@@ -6,6 +6,7 @@ import { LoginPage } from "@/routes/login";
 import { DashboardPage } from "@/features/dashboard/routes/DashboardPage";
 import { SystemPage } from "@/features/system/routes/SystemPage";
 import { ConfigPage } from "@/features/config/routes/ConfigPage";
+import { ProvidersPage } from "@/features/providers/routes/ProvidersPage";
 
 function UnavailablePage() {
   const language = usePreferencesStore((state) => state.language);
@@ -31,7 +32,6 @@ export function App() {
           <Route path="/api-keys" element={<Navigate to="/config" replace />} />
           {[
             "quick-start",
-            "ai-providers",
             "auth-files",
             "oauth",
             "quota",
@@ -42,6 +42,7 @@ export function App() {
           ].map((path) => (
             <Route key={path} path={`/${path}`} element={<UnavailablePage />} />
           ))}
+          <Route path="/ai-providers" element={<ProvidersPage />} />
           <Route path="/config" element={<ConfigPage />} />
           <Route path="/system" element={<SystemPage />} />
           <Route path="*" element={<UnavailablePage />} />

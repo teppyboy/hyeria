@@ -135,5 +135,19 @@
   "config.diffChanged": "更改",
   "config.diffConfirm": "保存更改",
   "config.visualUnavailable": "可视化编辑暂不可用。以下为非敏感配置段的只读摘要；请直接编辑原始 YAML。",
-  "config.visualRawLink": "前往原始 YAML 编辑器"
+  "config.visualRawLink": "前往原始 YAML 编辑器",
+  "providers.groups": "提供商分组",
+  "providers.description": "已配置的提供商分组和密钥数量。不会显示密钥值或端点。",
+  "providers.loading": "正在加载提供商分组…",
+  "providers.loadError": "无法加载提供商分组。",
+  "providers.empty": "尚未配置提供商分组。",
+  "providers.deferred": "提供商分组的编辑功能尚未开放。请使用原始配置编辑器进行修改。",
+  "providers.rawLink": "打开原始配置",
+  "providers.group": "分组",
+  "providers.status": "状态",
+  "providers.entries": "条目",
+  "providers.keys": "密钥",
+  "providers.blankKeys": "空白密钥",
+  "providers.known": "已知",
+  "providers.unknown": "未知"
 }
