@@ -1,7 +1,10 @@
 import type { ManagementApiClient } from "@/lib/api/client";
 import { ApiError } from "@/lib/api/errors";
 import {
+  authFileFieldsSchema,
+  authFileIdentifierSchema,
   authFileListSchema,
+  authFileModelsSchema,
   authFileNameSchema,
   deleteAllResultSchema,
   okStatusSchema,
@@ -10,7 +13,10 @@ import {
 export interface AuthFileView {
   id: string;
   authIndex: string;
+  /** Listed name as the backend reports it; may not be a `.json` file name. */
   name: string;
+  /** Strict `.json` name usable for download/delete/status; null for runtime-only or non-`.json` entries. */
+  fileName: string | null;
   provider: string;
   status: string;
   disabled: boolean;
@@ -33,6 +39,14 @@ function requireFileName(name: string): string {
   return name;
 }
 
+/** Models also accept runtime-only opaque IDs, but never path-like or traversal names. */
+function requireAuthFileIdentifier(name: string): string {
+  if (!authFileIdentifierSchema.safeParse(name).success) {
+    throw new TypeError("A credential file identifier must be a safe opaque name.");
+  }
+  return name;
+}
+
 /** Lists metadata only; credential contents and backend-specific fields never leave this function. */
 export async function listAuthFiles(client: ManagementApiClient): Promise<AuthFileView[]> {
   const parsed = authFileListSchema.safeParse(await client.get("/credentials"));
@@ -43,6 +57,8 @@ export async function listAuthFiles(client: ManagementApiClient): Promise<AuthFi
     id: file.id,
     authIndex: file.auth_index,
     name: file.name,
+    fileName:
+      !file.runtime_only && authFileNameSchema.safeParse(file.name).success ? file.name : null,
     provider: file.provider,
     status: file.status,
     disabled: file.disabled,
@@ -90,6 +106,50 @@ export async function deleteAllAuthFiles(client: ManagementApiClient): Promise<n
   );
   if (!parsed.success) throw invalidResponse("The server did not confirm the credential deletion.");
   return parsed.data.deleted;
+}
+
+/** Sets the disabled flag by name and preserves the undocumented response without inspecting it. */
+export async function setAuthFileDisabled(
+  client: ManagementApiClient,
+  name: string,
+  disabled: boolean,
+): Promise<unknown> {
+  requireFileName(name);
+  return client.patch("/credentials/status", { name, disabled });
+}
+
+/** Writes metadata fields by name; keys are validated so credential material cannot be written here. */
+export async function patchAuthFileFields(
+  client: ManagementApiClient,
+  name: string,
+  fields: Record<string, unknown>,
+): Promise<unknown> {
+  requireFileName(name);
+  const parsed = authFileFieldsSchema.safeParse(fields);
+  if (!parsed.success) {
+    throw new TypeError("Credential fields must be JSON metadata paths, not credential material.");
+  }
+  return client.patch("/credentials/fields", { name, ...parsed.data });
+}
+
+/** Asks the server to refresh file-backed OAuth credentials; one request per call, never retried. */
+export async function refreshAuthFiles(client: ManagementApiClient): Promise<unknown> {
+  return client.post("/credentials/refresh");
+}
+
+/** Lists the models one credential file exposes; entries are undocumented and passed through unread. */
+export async function listAuthFileModels(
+  client: ManagementApiClient,
+  name: string,
+): Promise<unknown[]> {
+  requireAuthFileIdentifier(name);
+  const parsed = authFileModelsSchema.safeParse(
+    await client.get("/credentials/models", { query: { name } }),
+  );
+  if (!parsed.success) {
+    throw invalidResponse("The server did not return a credential model list.");
+  }
+  return parsed.data.models;
 }
 
 /** Downloads the credential file; the save name is sanitized, the request name is validated. */

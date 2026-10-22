@@ -4,7 +4,11 @@ import {
   deleteAllAuthFiles,
   deleteAuthFile,
   downloadAuthFile,
+  listAuthFileModels,
   listAuthFiles,
+  patchAuthFileFields,
+  refreshAuthFiles,
+  setAuthFileDisabled,
   uploadAuthFileMultipart,
   uploadAuthFileRaw,
   safeDownloadFilename,
@@ -55,6 +59,7 @@ describe("auth-files list", () => {
         id: "user@example.invalid",
         authIndex: "a1b2c3d4e5f67890",
         name: "user@example.invalid",
+        fileName: null,
         provider: "claude",
         status: "ready",
         disabled: false,
@@ -74,6 +79,18 @@ describe("auth-files list", () => {
       runtimeOnly: true,
       source: "memory",
     });
+  });
+
+  it("exposes fileName only for file-backed strict .json names", async () => {
+    const rows = [
+      { ...listFixture.files[0], name: "user.json" },
+      { ...listFixture.files[0], id: "rt", name: "runtime.json", runtime_only: true },
+      { ...listFixture.files[0], id: "bare", name: "bare-name" },
+    ];
+    const { client } = recordingClient(json({ files: rows }));
+    const files = await listAuthFiles(client);
+    expect(files.map((file) => file.fileName)).toEqual(["user.json", null, null]);
+    expect(files.map((file) => file.name)).toEqual(["user.json", "runtime.json", "bare-name"]);
   });
 
   it("rejects a malformed list response", async () => {
@@ -134,6 +151,71 @@ describe("auth-files delete", () => {
   it("rejects an unsafe delete name before any request", async () => {
     const { client, fetchImpl } = recordingClient(() => new Response(""));
     await expect(deleteAuthFile(client, "/etc/passwd.json")).rejects.toThrow(TypeError);
+    expect(fetchImpl).not.toHaveBeenCalled();
+  });
+});
+
+describe("auth-files status, fields, refresh, and models", () => {
+  it("PATCHes status as raw JSON and preserves its undocumented response", async () => {
+    const response = { accepted: true, backend: { state: "changed" } };
+    const { client, fetchImpl } = recordingClient(json(response));
+    await expect(setAuthFileDisabled(client, "user.json", true)).resolves.toEqual(response);
+    expect(sentRequest(fetchImpl)).toMatchObject({
+      method: "PATCH",
+      path: "/v8/management/credentials/status",
+      body: JSON.stringify({ name: "user.json", disabled: true }),
+    });
+  });
+
+  it("PATCHes metadata fields without exposing or reshaping backend fields", async () => {
+    const fields = { "headers.x-example": "value", metadata: { enabled: true } };
+    const { client, fetchImpl } = recordingClient(json({ changed: true }));
+    await expect(patchAuthFileFields(client, "user.json", fields)).resolves.toEqual({
+      changed: true,
+    });
+    expect(sentRequest(fetchImpl)).toMatchObject({
+      method: "PATCH",
+      path: "/v8/management/credentials/fields",
+      body: JSON.stringify({ name: "user.json", ...fields }),
+    });
+  });
+
+  it("rejects unsafe field values before sending them", async () => {
+    const { client, fetchImpl } = recordingClient(json({ changed: true }));
+    await expect(
+      patchAuthFileFields(client, "user.json", { "headers.x": undefined }),
+    ).rejects.toThrow(TypeError);
+    await expect(
+      patchAuthFileFields(client, "user.json", { "../credential": "no" }),
+    ).rejects.toThrow(TypeError);
+    expect(fetchImpl).not.toHaveBeenCalled();
+  });
+
+  it("POSTs one explicit refresh request and preserves its loose response", async () => {
+    const response = { refreshed: 2, provider_state: "unknown-to-client" };
+    const { client, fetchImpl } = recordingClient(json(response));
+    await expect(refreshAuthFiles(client)).resolves.toEqual(response);
+    expect(sentRequest(fetchImpl)).toMatchObject({
+      method: "POST",
+      path: "/v8/management/credentials/refresh",
+    });
+    expect(sentRequest(fetchImpl).body).toBeUndefined();
+  });
+
+  it("gets models by an encoded safe file ID, preserving unknown model entries", async () => {
+    const models = [{ id: "example-model-1", backend_field: { value: "kept" } }];
+    const { client, fetchImpl } = recordingClient(json({ models }));
+    await expect(listAuthFileModels(client, "runtime@example")).resolves.toEqual(models);
+    expect(sentRequest(fetchImpl)).toMatchObject({
+      method: "GET",
+      path: "/v8/management/credentials/models",
+      search: "?name=runtime%40example",
+    });
+  });
+
+  it("rejects path-like model IDs before any request", async () => {
+    const { client, fetchImpl } = recordingClient(json({ models: [] }));
+    await expect(listAuthFileModels(client, "../credential.json")).rejects.toThrow(TypeError);
     expect(fetchImpl).not.toHaveBeenCalled();
   });
 });
