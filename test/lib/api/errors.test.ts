@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vite-plus/test";
-import { ApiError, apiErrorFromResponse, redactSensitive } from "@/lib/api/errors";
+import { ApiError, apiErrorFromResponse, redactDeep, redactSensitive } from "@/lib/api/errors";
 import missingKey from "../../fixtures/v8/error-missing-management-key.json";
 import readOnly from "../../fixtures/v8/error-read-only-field.json";
 import invalidConfig from "../../fixtures/v8/error-invalid-config.json";
@@ -73,5 +73,21 @@ describe("redactSensitive", () => {
       '{"api_key":"[redacted]"} ?code=[redacted]&x=1',
     );
     expect(redactSensitive("eyJhbGciOiJI.eyJzdWIiOiIx.sig")).toBe("[redacted]");
+  });
+});
+
+describe("redactDeep", () => {
+  it("replaces credential-named string values and redacts nested strings", () => {
+    expect(
+      redactDeep({
+        access_token: "plain-value",
+        nested: [{ note: "Bearer abc.def", count: 2 }],
+        ok: null,
+      }),
+    ).toEqual({
+      access_token: "[redacted]",
+      nested: [{ note: "Bearer [redacted]", count: 2 }],
+      ok: null,
+    });
   });
 });

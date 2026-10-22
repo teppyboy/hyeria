@@ -76,6 +76,24 @@ export function redactSensitive(value: string, secrets: readonly string[] = []):
     .replace(/([?&](?:code|state|key|token)=)[^&\s]+/gi, "$1[redacted]");
 }
 
+const SENSITIVE_KEY =
+  /^(?:api[_-]?key|access[_-]?token|refresh[_-]?token|token|secret|password|credential|authorization|management[_-]?key)$/i;
+
+/** Redacts every string in a parsed JSON value; string values under credential-named keys are replaced whole. */
+export function redactDeep(value: unknown): unknown {
+  if (typeof value === "string") return redactSensitive(value);
+  if (Array.isArray(value)) return value.map(redactDeep);
+  if (value !== null && typeof value === "object") {
+    return Object.fromEntries(
+      Object.entries(value).map(([key, child]) => [
+        key,
+        SENSITIVE_KEY.test(key) && typeof child === "string" ? "[redacted]" : redactDeep(child),
+      ]),
+    );
+  }
+  return value;
+}
+
 /** Builds a safe error from a non-2xx response; the raw body is never retained. */
 export async function apiErrorFromResponse(
   response: Response,
