@@ -25,6 +25,7 @@ export function ConfirmDialog() {
       }}
     >
       <DialogContent
+        closeLabel={t("common.close")}
         onOpenAutoFocus={(event) => {
           event.preventDefault();
           document.getElementById("confirm-cancel")?.focus();

@@ -28,7 +28,7 @@ export function MobileNav() {
           <Menu />
         </Button>
       </SheetTrigger>
-      <SheetContent side="left">
+      <SheetContent side="left" closeLabel={translate(language, "common.close")}>
         <SheetHeader>
           <SheetTitle>Hyeria</SheetTitle>
           <SheetDescription>{translate(language, "app.tagline")}</SheetDescription>

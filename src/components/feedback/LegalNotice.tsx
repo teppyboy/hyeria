@@ -22,7 +22,7 @@ export function LegalNotice({
   const t = (key: string) => translate(language, key);
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent>
+      <DialogContent closeLabel={t("common.close")}>
         <DialogHeader>
           <DialogTitle>{t("legal.title")}</DialogTitle>
           <DialogDescription>{t("legal.independent")}</DialogDescription>

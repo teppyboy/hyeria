@@ -6,6 +6,7 @@ import { Providers } from "../../../src/app/providers";
 import { sessionStore } from "../../../src/stores/session";
 import { preferencesStore } from "../../../src/stores/preferences";
 import { appRoutes } from "../../../src/app/router";
+import { useUiStore } from "../../../src/stores/ui";
 
 const MANAGEMENT_KEY = "super-secret-management-key";
 const API_BASE = "http://127.0.0.1:8317";
@@ -41,6 +42,7 @@ afterEach(() => {
   vi.unstubAllGlobals();
   sessionStore.getState().disconnect();
   preferencesStore.getState().setLanguage(null);
+  useUiStore.getState().reset();
 });
 
 describe("protected routing", () => {
@@ -129,6 +131,38 @@ describe("protected routing", () => {
     const dialog = document.body.querySelector('[role="dialog"]');
     expect(dialog?.textContent).toContain("AGPLv3");
     expect(dialog?.querySelector("a[href='https://github.com/teppyboy/hyeria']")).not.toBeNull();
+  });
+
+  it("localizes the legal dialog close label", async () => {
+    preferencesStore.getState().setLanguage("ru");
+    const { host } = mount("/login");
+    await settle();
+    const about = [...host.querySelectorAll("button")].find((b) => b.textContent === "О Hyeria");
+    act(() => about?.click());
+    const closeButton = document.body.querySelector("[role='dialog'] [data-slot='dialog-close']");
+    expect(closeButton?.textContent).toBe("Закрыть");
+  });
+
+  it("does not forward a raw backslash return path from login", async () => {
+    sessionStore.setState({ isAuthenticated: true });
+    const host = document.createElement("div");
+    document.body.append(host);
+    root = createRoot(host);
+    const router = createMemoryRouter(appRoutes, {
+      initialEntries: [{ pathname: "/login", state: { from: "/\\evil.example/quota" } }],
+    });
+    const visited: string[] = [];
+    router.subscribe((state) => visited.push(state.location.pathname));
+    act(() =>
+      root?.render(
+        <Providers>
+          <RouterProvider router={router} />
+        </Providers>,
+      ),
+    );
+    await settle();
+    expect(visited.some((pathname) => pathname.startsWith("/\\"))).toBe(false);
+    expect(router.state.location.pathname).toBe("/");
   });
 
   it("shows the localized remember warning on the login page", async () => {
