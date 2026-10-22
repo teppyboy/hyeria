@@ -10,6 +10,7 @@ import { ProvidersPage } from "@/features/providers/routes/ProvidersPage";
 import { AuthFilesPage } from "@/features/auth-files/routes/AuthFilesPage";
 import { OAuthPage } from "@/features/oauth/routes/OAuthPage";
 import { QuotaPage } from "@/features/quota/routes/QuotaPage";
+import { LogsPage } from "@/features/logs/routes/LogsPage";
 
 function UnavailablePage() {
   const language = usePreferencesStore((state) => state.language);
@@ -37,6 +38,7 @@ export function App() {
             <Route key={path} path={`/${path}`} element={<UnavailablePage />} />
           ))}
           <Route path="/quota" element={<QuotaPage />} />
+          <Route path="/logs" element={<LogsPage />} />
           <Route path="/ai-providers" element={<ProvidersPage />} />
           <Route path="/auth-files" element={<AuthFilesPage />} />
           <Route path="/oauth" element={<OAuthPage />} />
