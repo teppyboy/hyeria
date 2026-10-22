@@ -133,5 +133,7 @@
   "config.diffAdded": "Added",
   "config.diffRemoved": "Removed",
   "config.diffChanged": "Changed",
-  "config.diffConfirm": "Save changes"
+  "config.diffConfirm": "Save changes",
+  "config.visualUnavailable": "Visual editing is not available yet. This is a read-only summary of non-secret sections; edit the raw YAML instead.",
+  "config.visualRawLink": "Go to the raw YAML editor"
 }

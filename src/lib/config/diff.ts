@@ -13,7 +13,7 @@ export interface ConfigDiff {
 const REDACTED = "[redacted]";
 // Matches by key substring so variants such as `openai-api-key` and `client_secret` are caught.
 const SENSITIVE_KEY =
-  /secret|token|password|passwd|credential|authorization|api[-_]?key|user[-_]?name/i;
+  /secret|token|password|passwd|credential|authorization|api[-_]?key|private[-_]?key|user[-_]?name/i;
 const URL_USERINFO = /^([a-z][a-z\d+.-]*:\/\/)[^/?#@\s]+@/i;
 
 /**

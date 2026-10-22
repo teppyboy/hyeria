@@ -131,6 +131,13 @@ describe("config page", () => {
     expect(editorText(host)).toBe(configYaml);
   });
 
+  it("shows the read-only visual summary above the raw YAML editor", async () => {
+    const { host } = await mountPage(() => new Response(configYaml));
+    const summary = [...host.querySelectorAll("li")].map((item) => item.textContent);
+    expect(summary).toEqual(["management", "requests", "routing", "plugins"]);
+    expect(host.querySelector("#config-raw-yaml .cm-editor")).not.toBeNull();
+  });
+
   it("shows an alert when the YAML cannot be read", async () => {
     const { host } = await mountPage(() => new Response("{}", { status: 502 }));
     // A 5xx read is retried once after a delay, so the alert appears after the retry settles.

@@ -133,5 +133,7 @@
   "config.diffAdded": "Добавлено",
   "config.diffRemoved": "Удалено",
   "config.diffChanged": "Изменено",
-  "config.diffConfirm": "Сохранить изменения"
+  "config.diffConfirm": "Сохранить изменения",
+  "config.visualUnavailable": "Визуальное редактирование пока недоступно. Ниже только для чтения сводка несекретных разделов; редактируйте необработанный YAML.",
+  "config.visualRawLink": "Перейти к редактору YAML"
 }

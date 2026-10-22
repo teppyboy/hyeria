@@ -133,5 +133,7 @@
   "config.diffAdded": "新增",
   "config.diffRemoved": "删除",
   "config.diffChanged": "更改",
-  "config.diffConfirm": "保存更改"
+  "config.diffConfirm": "保存更改",
+  "config.visualUnavailable": "可视化编辑暂不可用。以下为非敏感配置段的只读摘要；请直接编辑原始 YAML。",
+  "config.visualRawLink": "前往原始 YAML 编辑器"
 }

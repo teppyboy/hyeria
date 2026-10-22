@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ConfigDiffDialog } from "@/features/config/components/ConfigDiffDialog";
+import { VisualConfigForm } from "@/features/config/components/VisualConfigForm";
 import { YamlEditor } from "@/features/config/components/YamlEditor";
 import { useConfigYamlQuery, useSaveConfigYamlMutation } from "@/features/config/queries";
 import { ApiError } from "@/lib/api/errors";
@@ -95,7 +96,10 @@ export function ConfigPage() {
           {yaml.isError && <p role="alert">{t("config.loadError")}</p>}
           {yaml.isSuccess && (
             <>
-              <YamlEditor value={text} onChange={setDraft} />
+              <VisualConfigForm text={text} />
+              <div id="config-raw-yaml">
+                <YamlEditor value={text} onChange={setDraft} />
+              </div>
               {alertMessage && <p role="alert">{alertMessage}</p>}
               {saved && <p role="status">{t("config.saved")}</p>}
               <div className="flex justify-end">

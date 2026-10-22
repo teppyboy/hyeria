@@ -39,7 +39,7 @@ export function ConfigDiffDialog({ diff, pending, onConfirm, onCancel }: ConfigD
         ) : (
           <ul className="max-h-80 space-y-2 overflow-auto text-sm">
             {diff.changes.map((change) => (
-              <li key={change.path.join(".")}>
+              <li key={JSON.stringify(change.path)}>
                 <ChangeLine change={change} t={t} />
               </li>
             ))}

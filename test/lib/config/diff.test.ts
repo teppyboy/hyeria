@@ -92,6 +92,8 @@ describe("buildConfigDiff", () => {
     ["authorization", "Bearer abc"],
     ["client_secret", "shh-789"],
     ["openai-api-key", "key-000"],
+    ["private-key", "pk-111"],
+    ["private_key", "pk-222"],
   ])("masks the %s key", (key, secret) => {
     const diff = buildConfigDiff("x: 1\n", `x: 1\nauth:\n  ${key}: ${secret}\n`);
 
