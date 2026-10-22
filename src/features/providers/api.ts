@@ -1,10 +1,16 @@
 import type { ManagementApiClient } from "@/lib/api/client";
 import { ApiError } from "@/lib/api/errors";
-import { putConfigPath, readConfig, type MutationResult } from "@/features/config/api";
+import {
+  putConfigPath,
+  readConfig,
+  type ConfigDocument,
+  type MutationResult,
+} from "@/features/config/api";
 import {
   KNOWN_PROVIDER_GROUPS,
   providerGroupNameSchema,
   providerGroupSchema,
+  providerGroupValueSchema,
   type ProviderEntry,
 } from "./schemas";
 
@@ -34,36 +40,60 @@ function toEntryView(entry: ProviderEntry): ProviderEntryView {
     name: entry.name ?? null,
     enabled: entry.enabled ?? null,
     keyCount: keys.length,
-    blankKeyCount: keys.filter((key) => key["api-key"].trim() === "").length,
+    blankKeyCount: keys.filter((key) => (key["api-key"] ?? "").trim() === "").length,
   };
 }
 
-/** Reads `api-keys/<provider>` groups from GET /config; an absent `api-keys` section means no groups. */
+/** The `api-keys` mapping; an absent or null section means no groups. */
+function readGroupsSection(document: ConfigDocument): Record<string, unknown> {
+  const groups = document["api-keys"];
+  if (groups === undefined || groups === null) return {};
+  if (typeof groups !== "object" || Array.isArray(groups)) {
+    throw invalidResponse("The server returned provider groups in an unexpected shape.");
+  }
+  return groups as Record<string, unknown>;
+}
+
+/** Reads `api-keys/<provider>` groups from GET /config for the management list. */
 export async function listProviderGroups(
   client: ManagementApiClient,
 ): Promise<ProviderGroupView[]> {
-  const document = await readConfig(client);
-  const groups = document["api-keys"];
-  if (groups === undefined) return [];
-  if (typeof groups !== "object" || groups === null || Array.isArray(groups)) {
-    throw invalidResponse("The server returned provider groups in an unexpected shape.");
-  }
-
+  const groups = readGroupsSection(await readConfig(client));
   return Object.entries(groups).map(([provider, value]) => {
     if (!providerGroupNameSchema.safeParse(provider).success) {
       throw invalidResponse("The server returned a provider group with an invalid name.");
     }
-    const parsed = providerGroupSchema.safeParse(value);
+    const parsed = providerGroupValueSchema.safeParse(value);
     if (!parsed.success) {
       throw invalidResponse(`The server returned an invalid provider group: ${provider}.`);
     }
+    const entries = parsed.data ?? [];
     return {
       provider,
       known: (KNOWN_PROVIDER_GROUPS as readonly string[]).includes(provider),
-      entryCount: parsed.data.length,
-      entries: parsed.data.map(toEntryView),
+      entryCount: entries.length,
+      entries: entries.map(toEntryView),
     };
   });
+}
+
+/**
+ * Reads one group as raw entries, keeping every backend field and null value, so the caller can
+ * write the list back with `replaceProviderGroup` without dropping data. An absent group reads as [].
+ */
+export async function readProviderGroupEntries(
+  client: ManagementApiClient,
+  provider: string,
+): Promise<ProviderEntry[]> {
+  if (!providerGroupNameSchema.safeParse(provider).success) {
+    throw new TypeError("A provider group name must be a single non-blank path segment.");
+  }
+  const value = readGroupsSection(await readConfig(client))[provider];
+  const parsed = providerGroupValueSchema.safeParse(value);
+  if (!parsed.success) {
+    throw invalidResponse(`The server returned an invalid provider group: ${provider}.`);
+  }
+  return parsed.data ?? [];
 }
 
 /**

@@ -18,16 +18,20 @@ export const providerGroupNameSchema = z
     { message: "Provider group name must be a single non-blank path segment." },
   );
 
-/** Only `api-key` is read; other backend fields pass through so a save does not drop them. */
-export const providerKeySchema = z.looseObject({ "api-key": z.string() });
+/** Only `api-key` is read; other backend fields pass through so a save does not drop them. A null key is kept as blank. */
+export const providerKeySchema = z.looseObject({ "api-key": z.string().nullable() });
 
-/** Only `name`, `enabled` and `keys` are read; `base-url`, headers and other backend fields are preserved as-is. */
+/** Only `name`, `enabled` and `keys` are read; `base-url`, headers and other backend fields are preserved as-is. Null is allowed where the API returns it. */
 export const providerEntrySchema = z.looseObject({
-  name: z.string().optional(),
-  enabled: z.boolean().optional(),
-  keys: z.array(providerKeySchema).optional(),
+  name: z.string().nullish(),
+  enabled: z.boolean().nullish(),
+  keys: z.array(providerKeySchema).nullish(),
 });
 
+/** Writes always send a list; PUT replaces the whole group. */
 export const providerGroupSchema = z.array(providerEntrySchema);
+
+/** A group read from the server may be null, which means no entries. */
+export const providerGroupValueSchema = providerGroupSchema.nullish();
 
 export type ProviderEntry = z.infer<typeof providerEntrySchema>;
