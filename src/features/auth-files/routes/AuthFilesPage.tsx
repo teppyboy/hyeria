@@ -59,7 +59,7 @@ export function AuthFilesPage() {
     if (file.fileName === null) return;
     const accepted = await useUiStore.getState().requestConfirm({
       title: t("authFiles.deleteTitle"),
-      description: t("authFiles.deleteDescription"),
+      description: `${t("authFiles.deleteDescription")} ${file.name}`,
       confirmLabel: t("authFiles.delete"),
       destructive: true,
     });

@@ -67,6 +67,7 @@ export function AuthFileTable({
                     <Button
                       variant="outline"
                       size="sm"
+                      aria-label={`${file.disabled ? t("authFiles.enable") : t("authFiles.disable")}: ${file.name}`}
                       disabled={!editable}
                       onClick={() => onToggleDisabled(file)}
                     >
@@ -75,6 +76,7 @@ export function AuthFileTable({
                     <Button
                       variant="outline"
                       size="sm"
+                      aria-label={`${t("authFiles.download")}: ${file.name}`}
                       disabled={!editable}
                       onClick={() => onDownload(file)}
                     >
@@ -83,6 +85,7 @@ export function AuthFileTable({
                     <Button
                       variant="destructive"
                       size="sm"
+                      aria-label={`${t("authFiles.delete")}: ${file.name}`}
                       disabled={!editable}
                       onClick={() => onDelete(file)}
                     >

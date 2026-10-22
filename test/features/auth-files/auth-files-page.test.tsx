@@ -132,6 +132,11 @@ describe("auth files page", () => {
     act(() => buttonIn(rowFor(host, "user.json"), "Delete").click());
     await vi.waitFor(() => expect(useUiStore.getState().confirm).not.toBeNull());
     expect(useUiStore.getState().confirm?.destructive).toBe(true);
+    expect(useUiStore.getState().confirm?.description).toContain("user.json");
+    const deleteButton = rowFor(host, "user.json").querySelector<HTMLButtonElement>(
+      'button[aria-label="Delete: user.json"]',
+    );
+    expect(deleteButton).not.toBeNull();
     await act(async () => useUiStore.getState().resolveConfirm(false));
     expect(fetchMock.mock.calls.some(([, init]) => init?.method === "DELETE")).toBe(false);
   });
