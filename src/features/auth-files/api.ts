@@ -13,7 +13,7 @@ import {
 export interface AuthFileView {
   id: string;
   authIndex: string;
-  /** Listed name as the backend reports it; may not be a `.json` file name. */
+  /** Listed name as the backend reports it; its format is unverified and may not be a `.json` file name. */
   name: string;
   /** Strict `.json` name usable for download/delete/status; null for runtime-only or non-`.json` entries. */
   fileName: string | null;
@@ -118,7 +118,7 @@ export async function setAuthFileDisabled(
   return client.patch("/credentials/status", { name, disabled });
 }
 
-/** Writes metadata fields by name; keys are validated so credential material cannot be written here. */
+/** Writes metadata fields by name; keys get syntactic validation only, the server stays authoritative for writable fields. */
 export async function patchAuthFileFields(
   client: ManagementApiClient,
   name: string,
