@@ -97,6 +97,12 @@ describe("config API wrappers", () => {
     });
   });
 
+  it.each([[""], [" \n\t"]])("rejects empty YAML %j before sending", async (yaml) => {
+    const { client, fetchImpl } = recordingClient(jsonResponse(writeOk));
+    await expect(writeConfigYaml(client, yaml)).rejects.toThrow(TypeError);
+    expect(fetchImpl).not.toHaveBeenCalled();
+  });
+
   it("PUTs a raw JSON value to an encoded node path", async () => {
     const { client, fetchImpl } = recordingClient(jsonResponse(writeOk));
     await putConfigPath(client, ["providers", "a b"], { enabled: true });
@@ -180,5 +186,39 @@ describe("config API wrappers", () => {
     await expect(deleteConfigPath(client, ["debug"])).rejects.toMatchObject({
       code: "invalid_response",
     });
+  });
+
+  it("accepts a status-only success body, with config-version optional", async () => {
+    const { client } = recordingClient(jsonResponse({ status: "ok" }));
+    await expect(deleteConfigPath(client, ["debug"])).resolves.toEqual({
+      status: "ok",
+      configVersion: 8,
+    });
+  });
+
+  it("rejects a success body with a different config-version", async () => {
+    const { client } = recordingClient(jsonResponse({ status: "ok", "config-version": 7 }));
+    await expect(deleteConfigPath(client, ["debug"])).rejects.toMatchObject({
+      code: "invalid_response",
+    });
+  });
+
+  it.each([
+    ["undefined", { management: { "allow-remote": undefined } }],
+    ["function", { providers: [() => 1] }],
+    ["symbol", { providers: { codex: { key: Symbol("k") } } }],
+  ])("rejects a nested %s in a full config write before sending", async (_kind, document) => {
+    const { client, fetchImpl } = recordingClient(jsonResponse(writeOk));
+    await expect(writeConfig(client, document as never)).rejects.toThrow(TypeError);
+    expect(fetchImpl).not.toHaveBeenCalled();
+  });
+
+  it("rejects a nested undefined in a node value before sending", async () => {
+    const { client, fetchImpl } = recordingClient(jsonResponse(writeOk));
+    await expect(putConfigPath(client, ["providers"], [1, undefined])).rejects.toThrow(TypeError);
+    await expect(patchConfigPath(client, ["providers"], { a: { b: undefined } })).rejects.toThrow(
+      TypeError,
+    );
+    expect(fetchImpl).not.toHaveBeenCalled();
   });
 });
