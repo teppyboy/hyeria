@@ -73,6 +73,7 @@
   "dashboard.plugins": "外掛程式",
   "dashboard.pluginsSupported": "支援",
   "dashboard.pluginsUnsupported": "此伺服器不支援",
+  "dashboard.pluginsUnavailable": "插件接口不可用（可能已停用或不存在）",
   "dashboard.pluginsEnabled": "已啟用",
   "dashboard.pluginsDisabled": "已停用",
   "dashboard.noHeaders": "伺服器未回報版本標頭。",

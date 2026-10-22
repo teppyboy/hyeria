@@ -73,6 +73,7 @@
   "dashboard.plugins": "插件",
   "dashboard.pluginsSupported": "支持",
   "dashboard.pluginsUnsupported": "此服务器不支持",
+  "dashboard.pluginsUnavailable": "插件接口不可用（可能已禁用或不存在）",
   "dashboard.pluginsEnabled": "已启用",
   "dashboard.pluginsDisabled": "已禁用",
   "dashboard.noHeaders": "服务器未返回版本信息头。",

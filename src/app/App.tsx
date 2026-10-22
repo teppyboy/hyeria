@@ -3,6 +3,8 @@ import { usePreferencesStore } from "@/stores/preferences";
 import { translate } from "@/lib/i18n";
 import { ProtectedLayout } from "@/routes/protected-layout";
 import { LoginPage } from "@/routes/login";
+import { DashboardPage } from "@/features/dashboard/routes/DashboardPage";
+import { SystemPage } from "@/features/system/routes/SystemPage";
 
 function UnavailablePage() {
   const language = usePreferencesStore((state) => state.language);
@@ -22,7 +24,7 @@ export function App() {
       <Routes>
         <Route path="/login" element={<LoginPage />} />
         <Route element={<ProtectedLayout />}>
-          <Route path="/" element={<UnavailablePage />} />
+          <Route path="/" element={<DashboardPage />} />
           <Route path="/dashboard" element={<Navigate to="/" replace />} />
           <Route path="/settings" element={<Navigate to="/config" replace />} />
           <Route path="/api-keys" element={<Navigate to="/config" replace />} />
@@ -37,10 +39,10 @@ export function App() {
             "config",
             "plugins",
             "plugin-store",
-            "system",
           ].map((path) => (
             <Route key={path} path={`/${path}`} element={<UnavailablePage />} />
           ))}
+          <Route path="/system" element={<SystemPage />} />
           <Route path="*" element={<UnavailablePage />} />
         </Route>
       </Routes>

@@ -11,7 +11,7 @@ export function SystemPage() {
   const language = usePreferencesStore((state) => state.language);
   const current = useSessionStore((state) => state.capabilities.version);
   const t = (key: string) => translate(language, key);
-  const { latestVersion, modelDefinitions, forgetRememberedSession } = useSystemQueries();
+  const { latestVersion, channels, modelDefinitions, forgetRememberedSession } = useSystemQueries();
   const comparison = latestVersion.isSuccess
     ? compareVersions(current, latestVersion.data)
     : "unknown";
@@ -48,21 +48,25 @@ export function SystemPage() {
           <CardDescription>{t("system.modelChannelsDescription")}</CardDescription>
         </CardHeader>
         <CardContent className="text-sm">
-          {modelDefinitions.length === 0 ? (
+          {channels.length === 0 ? (
             <p className="text-muted-foreground">{t("system.noChannels")}</p>
           ) : (
             <ul className="space-y-1">
-              {modelDefinitions.map((query, index) => (
-                <li key={index} className="flex justify-between">
-                  {query.isPending && <Skeleton className="h-4 w-full" />}
-                  {query.isError && <span>{t("system.channelError")}</span>}
-                  {query.isSuccess && (
-                    <span>
-                      {t("system.channelCount")}: {query.data}
-                    </span>
-                  )}
-                </li>
-              ))}
+              {channels.map((channel, index) => {
+                const query = modelDefinitions[index];
+                return (
+                  <li key={channel} className="flex justify-between gap-2">
+                    <span className="font-mono">{channel}</span>
+                    {query?.isPending && <Skeleton className="h-4 w-24" />}
+                    {query?.isError && <span>{t("system.channelError")}</span>}
+                    {query?.isSuccess && (
+                      <span>
+                        {t("system.channelCount")}: {query.data}
+                      </span>
+                    )}
+                  </li>
+                );
+              })}
             </ul>
           )}
         </CardContent>

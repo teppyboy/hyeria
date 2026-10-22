@@ -56,7 +56,9 @@ export function DashboardPage() {
               ? t("dashboard.pluginsSupported")
               : snapshot.pluginSupport === "unsupported"
                 ? t("dashboard.pluginsUnsupported")
-                : t("dashboard.unknown")}
+                : plugins.isError
+                  ? t("dashboard.pluginsUnavailable")
+                  : t("dashboard.unknown")}
             {pluginsEnabled === true && ` · ${t("dashboard.pluginsEnabled")}`}
             {pluginsEnabled === false && ` · ${t("dashboard.pluginsDisabled")}`}
           </p>

@@ -79,14 +79,59 @@ describe("dashboard", () => {
     expect(host.innerHTML).not.toContain("example-plugin");
   });
 
-  it("reports an unsupported plugin capability when the probe answers 404", async () => {
+  it("treats a plugin 404 as unknown endpoint availability, not as proof of absence", async () => {
     const host = await mountConnected(
       routes({
         "/config": () => new Response(JSON.stringify(config)),
         "/plugins": () => new Response("{}", { status: 404 }),
       }),
     );
+    expect(host.textContent).toContain(
+      "Plugins: Plugin endpoint unavailable (may be disabled or not present)",
+    );
+    expect(host.textContent).not.toContain("Not supported by this server");
+  });
+
+  it("reports an unsupported plugin capability only when the header is explicitly false", async () => {
+    const host = await mountConnected(
+      routes({
+        "/config": () =>
+          new Response(JSON.stringify(config), {
+            headers: { "x-cpa-version": "v8.0.0", "x-cpa-support-plugin": "false" },
+          }),
+      }),
+    );
     expect(host.textContent).toContain("Plugins: Not supported by this server");
+  });
+
+  it("shows the empty channel state when there are no credential providers", async () => {
+    const host = await mountConnected(
+      routes({ "/credentials": () => new Response(JSON.stringify({ files: [] })) }),
+    );
+    expect(host.textContent).toContain("Total: 0");
+    expect(host.textContent).toContain("No candidate channels yet.");
+  });
+
+  it("marks a channel the server rejects with 400 as not recognized, not as an error", async () => {
+    const host = await mountConnected(
+      routes({
+        "/routing/model-definitions/claude": () =>
+          new Response(JSON.stringify({ error: "unknown channel" }), { status: 400 }),
+      }),
+    );
+    await vi.waitFor(
+      () => expect(host.textContent).toContain("Channel not recognized by the server"),
+      { timeout: 4000 },
+    );
+    expect(host.textContent).not.toContain("Some server information could not be loaded.");
+  });
+
+  it("shows the loading state while the credential summary is pending", async () => {
+    const host = await mountConnected(
+      routes({ "/credentials": () => new Promise<Response>(() => undefined) as never }),
+    );
+    expect(host.querySelector("[data-slot='skeleton']")).not.toBeNull();
+    expect(host.textContent).not.toContain("Total:");
   });
 
   it("keeps the rest of the dashboard when one endpoint fails", async () => {

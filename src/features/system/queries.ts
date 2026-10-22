@@ -21,13 +21,12 @@ export function useLatestVersionQuery() {
 export function useSystemQueries() {
   const latestVersion = useLatestVersionQuery();
   const credentials = useCredentialsSummaryQuery();
-  const modelDefinitions = useModelChannelQueries(
-    candidateModelChannels(credentials.data?.providers ?? []),
-  );
+  const channels = candidateModelChannels(credentials.data?.providers ?? []);
+  const modelDefinitions = useModelChannelQueries(channels);
   // Local cleanup only: removes the remembered key from this browser, never calls the server.
   const forgetRememberedSession = useMutation({
     mutationKey: [...systemKeys.all, "forget-remembered-session"],
     mutationFn: async () => sessionStore.getState().clearPersistedConnection(),
   });
-  return { latestVersion, modelDefinitions, forgetRememberedSession };
+  return { latestVersion, channels, modelDefinitions, forgetRememberedSession };
 }

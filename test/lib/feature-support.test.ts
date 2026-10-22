@@ -30,7 +30,8 @@ describe("plugin support", () => {
     expect(pluginSupportFrom(true, "unsupported")).toBe("supported");
     expect(pluginSupportFrom(false, "ok")).toBe("unsupported");
     expect(pluginSupportFrom(null, "ok")).toBe("supported");
-    expect(pluginSupportFrom(null, "unsupported")).toBe("unsupported");
+    expect(pluginSupportFrom(null, "unsupported")).toBe("unknown");
+    expect(pluginSupportFrom(false, "unknown")).toBe("unsupported");
     expect(pluginSupportFrom(null, "error")).toBe("unknown");
     expect(pluginSupportFrom(null, "unknown")).toBe("unknown");
   });

@@ -73,6 +73,7 @@
   "dashboard.plugins": "Плагины",
   "dashboard.pluginsSupported": "Поддерживается",
   "dashboard.pluginsUnsupported": "Не поддерживается этим сервером",
+  "dashboard.pluginsUnavailable": "Эндпоинт плагинов недоступен (может быть отключён или отсутствовать)",
   "dashboard.pluginsEnabled": "включены",
   "dashboard.pluginsDisabled": "отключены",
   "dashboard.noHeaders": "Сервер не передал заголовки версии.",

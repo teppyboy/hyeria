@@ -73,6 +73,7 @@
   "dashboard.plugins": "Plugins",
   "dashboard.pluginsSupported": "Supported",
   "dashboard.pluginsUnsupported": "Not supported by this server",
+  "dashboard.pluginsUnavailable": "Plugin endpoint unavailable (may be disabled or not present)",
   "dashboard.pluginsEnabled": "enabled",
   "dashboard.pluginsDisabled": "disabled",
   "dashboard.noHeaders": "The server did not report version headers.",

@@ -48,11 +48,10 @@ export function modelChannelFromError(error: unknown): ModelChannelState {
   return error instanceof ApiError && error.status === 400 ? "unknown-channel" : "error";
 }
 
+/** Only an explicit header `false` proves the plugin system is off; a 404 probe stays unknown. */
 export function pluginSupportFrom(header: boolean | null, probe: EndpointState): PluginSupport {
   if (header !== null) return header ? "supported" : "unsupported";
-  if (probe === "ok") return "supported";
-  if (probe === "unsupported") return "unsupported";
-  return "unknown";
+  return probe === "ok" ? "supported" : "unknown";
 }
 
 export function buildCapabilitySnapshot(input: {
