@@ -22,6 +22,7 @@ export type OAuthEvent =
   | { type: "auth-url"; flow: OAuthFlowKind }
   | { type: "poll" }
   | { type: "status"; result: OAuthStatusResult }
+  | { type: "callback" }
   | { type: "cancel" }
   | { type: "expire" }
   | { type: "fail"; reason: OAuthErrorReason }
@@ -76,6 +77,9 @@ function statusResult(
 
 /** Cancel, expire and fail apply to any non-terminal state. */
 function inFlightEvent(state: OAuthState, providerId: string, event: OAuthEvent): OAuthState {
+  if (event.type === "callback") {
+    return { status: "success", providerId };
+  }
   if (event.type === "cancel") {
     return { status: "cancelled", providerId };
   }

@@ -5,8 +5,10 @@ import {
   cancelOAuthSession,
   importVertexCredential,
   pollOAuthStatus,
+  postOAuthCallback,
   startOAuth,
   type OAuthAuthUrl,
+  type OAuthCallbackBody,
   type VertexImportResult,
 } from "./api";
 
@@ -34,6 +36,14 @@ export function useCancelOAuthMutation() {
   return useMutation({
     mutationKey: [...oauthKeys.all, "cancel"],
     mutationFn: (state: string) => cancelOAuthSession(getClient(), state),
+  });
+}
+
+export function usePostOAuthCallbackMutation() {
+  const getClient = useManagementClient();
+  return useMutation({
+    mutationKey: [...oauthKeys.all, "callback"],
+    mutationFn: (body: OAuthCallbackBody) => postOAuthCallback(getClient(), body),
   });
 }
 

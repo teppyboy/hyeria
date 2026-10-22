@@ -14,6 +14,7 @@ import {
   useCancelOAuthMutation,
   useImportVertexCredentialMutation,
   usePollOAuthMutation,
+  usePostOAuthCallbackMutation,
   useStartOAuthMutation,
 } from "../queries";
 import { reduceOAuthState, type OAuthState } from "../state-machine";
@@ -31,13 +32,17 @@ export function OAuthPage() {
   const authRef = useRef<OAuthAuthUrl | null>(null);
   const startedAtRef = useRef<number | null>(null);
   const abortRef = useRef<AbortController | null>(null);
+  const flowIdRef = useRef(0);
   const start = useStartOAuthMutation();
   const { mutateAsync: pollAsync } = usePollOAuthMutation();
-  const cancel = useCancelOAuthMutation();
+  const { mutateAsync: cancelAsync, ...cancel } = useCancelOAuthMutation();
+  const callback = usePostOAuthCallbackMutation();
   const vertexImport = useImportVertexCredentialMutation();
   const [vertexFile, setVertexFile] = useState<File | null>(null);
   const [vertexLocation, setVertexLocation] = useState("");
   const [deviceCode, setDeviceCode] = useState<string | null>(null);
+  const [redirectUrl, setRedirectUrl] = useState("");
+  const [callbackInputError, setCallbackInputError] = useState(false);
 
   useEffect(() => {
     if (state.status !== "polling" || authRef.current === null) return;
@@ -84,21 +89,46 @@ export function OAuthPage() {
     }
   }, [queryClient, state.status]);
 
+  useEffect(() => {
+    return () => {
+      flowIdRef.current += 1;
+      abortRef.current?.abort();
+      const auth = authRef.current;
+      if (auth !== null) void cancelAsync(auth.state).catch(() => undefined);
+    };
+  }, [cancelAsync]);
+
+  function cancelServerState(stateValue: string) {
+    void cancelAsync(stateValue).catch(() => undefined);
+  }
+
   function resetTerminal() {
     if (state.status === "success" || state.status === "error" || state.status === "cancelled") {
+      flowIdRef.current += 1;
       dispatch({ type: "reset" });
       authRef.current = null;
       startedAtRef.current = null;
       setDeviceCode(null);
+      setRedirectUrl("");
+      setCallbackInputError(false);
     }
   }
 
   async function begin() {
     resetTerminal();
+    const flowId = flowIdRef.current;
     setDeviceCode(null);
+    setRedirectUrl("");
+    setCallbackInputError(false);
+    callback.reset();
+    cancel.reset();
     dispatch({ type: "start", providerId: provider });
     try {
       const auth = await start.mutateAsync(provider);
+      if (flowId !== flowIdRef.current) {
+        cancelServerState(auth.state);
+        return;
+      }
       const url = parseHttpsUrl(auth.url);
       if (url === null) {
         dispatch({ type: "fail", reason: "request-failed" });
@@ -111,16 +141,44 @@ export function OAuthPage() {
       window.open(url, "_blank", "noopener,noreferrer");
       dispatch({ type: "poll" });
     } catch {
-      dispatch({ type: "fail", reason: "request-failed" });
+      if (flowId === flowIdRef.current) dispatch({ type: "fail", reason: "request-failed" });
     }
   }
 
   function handleCancel() {
+    flowIdRef.current += 1;
     const auth = authRef.current;
     abortRef.current?.abort();
     dispatch({ type: "cancel" });
-    if (auth !== null) {
-      cancel.mutate(auth.state);
+    if (auth !== null) cancelServerState(auth.state);
+  }
+
+  async function completeCallback() {
+    const auth = authRef.current;
+    const value = redirectUrl.trim();
+    if (auth === null || value === "") return;
+    let parsed: URL;
+    try {
+      parsed = new URL(value);
+    } catch {
+      setCallbackInputError(true);
+      return;
+    }
+    if (parsed.protocol !== "https:" && parsed.protocol !== "http:") {
+      setCallbackInputError(true);
+      return;
+    }
+    setCallbackInputError(false);
+    try {
+      await callback.mutateAsync({
+        provider,
+        state: auth.state,
+        redirect_url: parsed.href,
+      });
+      setRedirectUrl("");
+      dispatch({ type: "callback" });
+    } catch {
+      // The mutation error is rendered below; callback values remain memory-only.
     }
   }
 
@@ -183,6 +241,34 @@ export function OAuthPage() {
             <p aria-live="polite">
               {t("oauth.deviceCode")}: <strong>{deviceCode}</strong>
             </p>
+          )}
+          {(state.status === "awaiting-user" || state.status === "polling") && (
+            <div className="grid gap-1.5">
+              <Label htmlFor="oauth-redirect-url">{t("oauth.redirectUrl")}</Label>
+              <div className="flex flex-wrap gap-2">
+                <Input
+                  id="oauth-redirect-url"
+                  value={redirectUrl}
+                  onChange={(event) => {
+                    setRedirectUrl(event.target.value);
+                    setCallbackInputError(false);
+                  }}
+                  placeholder="https://..."
+                  autoComplete="off"
+                  spellCheck={false}
+                  disabled={callback.isPending}
+                />
+                <Button
+                  variant="outline"
+                  onClick={() => void completeCallback()}
+                  disabled={callback.isPending || redirectUrl.trim() === ""}
+                >
+                  {t("oauth.completeCallback")}
+                </Button>
+              </div>
+              {callbackInputError && <p role="alert">{t("oauth.invalidRedirectUrl")}</p>}
+              {callback.isError && <p role="alert">{t("oauth.callbackError")}</p>}
+            </div>
           )}
           {state.status === "success" && <p role="status">{t("oauth.success")}</p>}
           {state.status === "cancelled" && <p role="status">{t("oauth.cancelled")}</p>}
