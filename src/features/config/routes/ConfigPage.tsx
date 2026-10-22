@@ -2,11 +2,32 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
+import { ConfigDiffDialog } from "@/features/config/components/ConfigDiffDialog";
 import { YamlEditor } from "@/features/config/components/YamlEditor";
 import { useConfigYamlQuery, useSaveConfigYamlMutation } from "@/features/config/queries";
+import { ApiError } from "@/lib/api/errors";
+import { buildConfigDiff, type ConfigDiff } from "@/lib/config/diff";
 import { translate } from "@/lib/i18n";
-import { parseAndValidateYaml } from "@/lib/config/yaml";
+import { ConfigYamlError, parseAndValidateYaml, type YamlErrorCode } from "@/lib/config/yaml";
 import { usePreferencesStore } from "@/stores/preferences";
+
+const YAML_ERROR_KEYS: Record<YamlErrorCode, string> = {
+  multiple_documents: "config.error.multiple_documents",
+  duplicate_key: "config.error.duplicate_key",
+  malformed: "config.error.malformed",
+  empty: "config.error.empty",
+  not_mapping: "config.error.not_mapping",
+};
+
+/** Keys only from the API status and identifier; the server message is never shown. */
+function saveErrorKey(error: unknown): string {
+  if (error instanceof ApiError) {
+    if (error.apiCode === "read_only_field") return "config.saveReadOnly";
+    if (error.status === 422) return "config.saveInvalid";
+    if (error.status === 400) return "config.saveBadRequest";
+  }
+  return "config.saveError";
+}
 
 export function ConfigPage() {
   const language = usePreferencesStore((state) => state.language);
@@ -15,6 +36,7 @@ export function ConfigPage() {
   const save = useSaveConfigYamlMutation();
   const [draft, setDraft] = useState<string | undefined>(undefined);
   const [validationError, setValidationError] = useState<string | undefined>(undefined);
+  const [pending, setPending] = useState<{ text: string; diff: ConfigDiff } | undefined>(undefined);
   const [saved, setSaved] = useState(false);
 
   // The draft starts as the loaded text and is only replaced by user edits.
@@ -24,15 +46,35 @@ export function ConfigPage() {
     const result = parseAndValidateYaml(text);
     if (!result.ok) {
       setSaved(false);
-      setValidationError(result.message);
+      setValidationError(t(YAML_ERROR_KEYS[result.code]));
       return;
     }
-    setValidationError(undefined);
-    setSaved(false);
-    save.mutate(text, { onSuccess: () => setSaved(true) });
+    try {
+      // The diff is against the server's text, so the confirmation shows what the write changes.
+      const diff = buildConfigDiff(yaml.data ?? "", text);
+      setValidationError(undefined);
+      setSaved(false);
+      setPending({ text, diff });
+    } catch (error) {
+      setSaved(false);
+      setValidationError(
+        error instanceof ConfigYamlError ? t(YAML_ERROR_KEYS[error.code]) : t("config.saveError"),
+      );
+    }
   }
 
-  const saveError = save.isError ? t("config.saveError") : undefined;
+  function confirmSave() {
+    if (!pending) return;
+    save.mutate(pending.text, {
+      onSuccess: () => {
+        setPending(undefined);
+        setSaved(true);
+      },
+      onError: () => setPending(undefined),
+    });
+  }
+
+  const saveError = save.isError ? t(saveErrorKey(save.error)) : undefined;
   const alertMessage = validationError ?? saveError;
 
   return (
@@ -65,6 +107,14 @@ export function ConfigPage() {
           )}
         </CardContent>
       </Card>
+      {pending && (
+        <ConfigDiffDialog
+          diff={pending.diff}
+          pending={save.isPending}
+          onConfirm={confirmSave}
+          onCancel={() => setPending(undefined)}
+        />
+      )}
     </section>
   );
 }

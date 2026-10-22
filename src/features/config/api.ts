@@ -34,6 +34,9 @@ function assertJsonValue(value: unknown, path: readonly string[] = []): void {
   if (type === "undefined" || type === "function" || type === "symbol") {
     throw new TypeError(`A config value at ${JSON.stringify(path)} cannot be ${type}.`);
   }
+  if (type === "number" && !Number.isFinite(value as number)) {
+    throw new TypeError(`A config number at ${JSON.stringify(path)} must be finite.`);
+  }
   if (Array.isArray(value)) {
     for (let index = 0; index < value.length; index++) {
       assertJsonValue(value[index], [...path, String(index)]);

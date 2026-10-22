@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vite-plus/test";
 import { buildConfigDiff } from "../../../src/lib/config/diff";
+import { ConfigYamlError } from "../../../src/lib/config/yaml";
 
 describe("buildConfigDiff", () => {
   it("reports no changes for identical documents", () => {
@@ -53,11 +54,22 @@ describe("buildConfigDiff", () => {
     ]);
   });
 
-  it("throws the fixed YAML rejection message without echoing the source", () => {
-    const malformed = new Error("YAML is malformed.");
+  it("throws a YAML error carrying only the code, without echoing the source", () => {
+    for (const call of [
+      () => buildConfigDiff("secret: sk-live-123\nbad: [\n", "port: 1\n"),
+      () => buildConfigDiff("port: 1\n", "secret: sk-live-123\nbad: [\n"),
+    ]) {
+      expect(call).toThrow(ConfigYamlError);
+      expect(call).toThrow(/^malformed$/);
+    }
+  });
 
-    expect(() => buildConfigDiff("secret: sk-live-123\nbad: [\n", "port: 1\n")).toThrow(malformed);
-    expect(() => buildConfigDiff("port: 1\n", "secret: sk-live-123\nbad: [\n")).toThrow(malformed);
+  it("redacts token-shaped values under neutral keys", () => {
+    const diff = buildConfigDiff("note: plain\n", "note: sk-live-123456789\n");
+
+    expect(diff.changes).toEqual([
+      { path: ["note"], kind: "changed", before: '"plain"', after: '"[redacted]"' },
+    ]);
   });
 
   it("masks sensitive key values in added, removed, and changed changes", () => {

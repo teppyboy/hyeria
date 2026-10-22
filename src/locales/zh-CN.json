@@ -118,5 +118,20 @@
   "config.saveError": "无法保存配置。",
   "config.saved": "配置已保存。",
   "config.save": "保存",
-  "config.editorLabel": "配置 YAML"
+  "config.editorLabel": "配置 YAML",
+  "config.error.multiple_documents": "YAML 必须只包含一个文档。",
+  "config.error.duplicate_key": "YAML 包含重复的映射键。",
+  "config.error.malformed": "YAML 格式不正确。",
+  "config.error.empty": "YAML 文档为空。",
+  "config.error.not_mapping": "YAML 文档必须是映射。",
+  "config.saveBadRequest": "服务器拒绝了保存请求。",
+  "config.saveInvalid": "服务器判定此配置无效并拒绝。",
+  "config.saveReadOnly": "配置包含服务器上只读的字段。",
+  "config.diffTitle": "检查配置更改",
+  "config.diffDescription": "写入 config.yaml 之前请确认这些更改。",
+  "config.diffEmpty": "未检测到更改。",
+  "config.diffAdded": "新增",
+  "config.diffRemoved": "删除",
+  "config.diffChanged": "更改",
+  "config.diffConfirm": "保存更改"
 }

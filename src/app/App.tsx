@@ -5,6 +5,7 @@ import { ProtectedLayout } from "@/routes/protected-layout";
 import { LoginPage } from "@/routes/login";
 import { DashboardPage } from "@/features/dashboard/routes/DashboardPage";
 import { SystemPage } from "@/features/system/routes/SystemPage";
+import { ConfigPage } from "@/features/config/routes/ConfigPage";
 
 function UnavailablePage() {
   const language = usePreferencesStore((state) => state.language);
@@ -36,12 +37,12 @@ export function App() {
             "quota",
             "logs",
             "analytics",
-            "config",
             "plugins",
             "plugin-store",
           ].map((path) => (
             <Route key={path} path={`/${path}`} element={<UnavailablePage />} />
           ))}
+          <Route path="/config" element={<ConfigPage />} />
           <Route path="/system" element={<SystemPage />} />
           <Route path="*" element={<UnavailablePage />} />
         </Route>

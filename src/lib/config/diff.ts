@@ -1,4 +1,5 @@
-import { parseAndValidateYaml, type YamlMapping, type YamlValue } from "./yaml";
+import { redactSensitive } from "../api/errors";
+import { ConfigYamlError, parseAndValidateYaml, type YamlMapping, type YamlValue } from "./yaml";
 
 export type ConfigChange =
   | { path: string[]; kind: "added"; after: string }
@@ -21,9 +22,9 @@ const URL_USERINFO = /^([a-z][a-z\d+.-]*:\/\/)[^/?#@\s]+@/i;
  */
 export function buildConfigDiff(before: string, after: string): ConfigDiff {
   const parsedBefore = parseAndValidateYaml(before);
-  if (!parsedBefore.ok) throw new Error(parsedBefore.message);
+  if (!parsedBefore.ok) throw new ConfigYamlError(parsedBefore.code);
   const parsedAfter = parseAndValidateYaml(after);
-  if (!parsedAfter.ok) throw new Error(parsedAfter.message);
+  if (!parsedAfter.ok) throw new ConfigYamlError(parsedAfter.code);
 
   const changes: ConfigChange[] = [];
   collectChanges(parsedBefore.value, parsedAfter.value, [], changes);
@@ -64,7 +65,8 @@ function collectChanges(
 /** A value under any sensitive ancestor is hidden whole, so its leaves cannot leak. */
 function render(path: string[], value: YamlValue): string {
   if (path.some((segment) => SENSITIVE_KEY.test(segment))) return JSON.stringify(REDACTED);
-  return stringifyValue(redact(value), false);
+  // Token-shaped strings under neutral keys are caught by value patterns, as in API error text.
+  return redactSensitive(stringifyValue(redact(value), false));
 }
 
 function redact(value: YamlValue): YamlValue {

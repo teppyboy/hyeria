@@ -118,5 +118,20 @@
   "config.saveError": "無法儲存設定。",
   "config.saved": "設定已儲存。",
   "config.save": "儲存",
-  "config.editorLabel": "設定 YAML"
+  "config.editorLabel": "設定 YAML",
+  "config.error.multiple_documents": "YAML 必須只包含一個文件。",
+  "config.error.duplicate_key": "YAML 包含重複的對應鍵。",
+  "config.error.malformed": "YAML 格式不正確。",
+  "config.error.empty": "YAML 文件為空。",
+  "config.error.not_mapping": "YAML 文件必須是對應。",
+  "config.saveBadRequest": "伺服器拒絕了儲存請求。",
+  "config.saveInvalid": "伺服器判定此設定無效並拒絕。",
+  "config.saveReadOnly": "設定包含伺服器上唯讀的欄位。",
+  "config.diffTitle": "檢查設定變更",
+  "config.diffDescription": "寫入 config.yaml 前請確認這些變更。",
+  "config.diffEmpty": "未偵測到變更。",
+  "config.diffAdded": "新增",
+  "config.diffRemoved": "刪除",
+  "config.diffChanged": "變更",
+  "config.diffConfirm": "儲存變更"
 }

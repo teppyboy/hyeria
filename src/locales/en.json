@@ -118,5 +118,20 @@
   "config.saveError": "Config could not be saved.",
   "config.saved": "Config saved.",
   "config.save": "Save",
-  "config.editorLabel": "Config YAML"
+  "config.editorLabel": "Config YAML",
+  "config.error.multiple_documents": "YAML must contain exactly one document.",
+  "config.error.duplicate_key": "YAML contains a duplicate mapping key.",
+  "config.error.malformed": "YAML is malformed.",
+  "config.error.empty": "YAML document is empty.",
+  "config.error.not_mapping": "YAML document must be a mapping.",
+  "config.saveBadRequest": "The server rejected the save request.",
+  "config.saveInvalid": "The server rejected this configuration as invalid.",
+  "config.saveReadOnly": "The config contains a field that is read-only on the server.",
+  "config.diffTitle": "Review config changes",
+  "config.diffDescription": "Check these changes before they are written to config.yaml.",
+  "config.diffEmpty": "No changes detected.",
+  "config.diffAdded": "Added",
+  "config.diffRemoved": "Removed",
+  "config.diffChanged": "Changed",
+  "config.diffConfirm": "Save changes"
 }

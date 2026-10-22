@@ -23,7 +23,7 @@ describe("parseAndValidateYaml", () => {
     ["malformed flow sequence", "secret-key: sk-live-123\nbad: [\n"],
     ["unresolved alias", "secret-key: *sk-live-123\n"],
   ])("rejects %s with a fixed message and no source excerpt", (_label, text) => {
-    expect(parseAndValidateYaml(text)).toEqual({ ok: false, message: "YAML is malformed." });
+    expect(parseAndValidateYaml(text)).toEqual({ ok: false, code: "malformed" });
   });
 
   it("keeps a __proto__ mapping key as own data", () => {
@@ -38,13 +38,13 @@ describe("parseAndValidateYaml", () => {
   it("rejects duplicate mapping keys", () => {
     const result = parseAndValidateYaml("secret-key: sk-live-123\nsecret-key: sk-live-456\n");
 
-    expect(result).toEqual({ ok: false, message: "YAML contains a duplicate mapping key." });
+    expect(result).toEqual({ ok: false, code: "duplicate_key" });
   });
 
   it("rejects multiple documents", () => {
     const result = parseAndValidateYaml("a: 1\n---\nb: 2\n");
 
-    expect(result).toEqual({ ok: false, message: "YAML must contain exactly one document." });
+    expect(result).toEqual({ ok: false, code: "multiple_documents" });
   });
 
   it.each([
@@ -55,7 +55,7 @@ describe("parseAndValidateYaml", () => {
   ])("rejects %s as empty", (_label, text) => {
     expect(parseAndValidateYaml(text)).toEqual({
       ok: false,
-      message: "YAML document is empty.",
+      code: "empty",
     });
   });
 
@@ -65,7 +65,7 @@ describe("parseAndValidateYaml", () => {
   ])("rejects %s as a non-mapping document", (_label, text) => {
     expect(parseAndValidateYaml(text)).toEqual({
       ok: false,
-      message: "YAML document must be a mapping.",
+      code: "not_mapping",
     });
   });
 });

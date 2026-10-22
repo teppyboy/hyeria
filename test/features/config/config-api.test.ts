@@ -213,6 +213,17 @@ describe("config API wrappers", () => {
     expect(fetchImpl).not.toHaveBeenCalled();
   });
 
+  it.each([[Number.NaN], [Number.POSITIVE_INFINITY], [Number.NEGATIVE_INFINITY]])(
+    "rejects a non-finite number %s in every object write before sending",
+    async (value) => {
+      const { client, fetchImpl } = recordingClient(jsonResponse(writeOk));
+      await expect(writeConfig(client, { limit: value })).rejects.toThrow(TypeError);
+      await expect(putConfigPath(client, ["limit"], value)).rejects.toThrow(TypeError);
+      await expect(patchConfigPath(client, ["limit"], { max: value })).rejects.toThrow(TypeError);
+      expect(fetchImpl).not.toHaveBeenCalled();
+    },
+  );
+
   it("rejects a nested undefined in a node value before sending", async () => {
     const { client, fetchImpl } = recordingClient(jsonResponse(writeOk));
     await expect(putConfigPath(client, ["providers"], [1, undefined])).rejects.toThrow(TypeError);

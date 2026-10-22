@@ -4,35 +4,51 @@ import { parseAllDocuments } from "yaml";
 export type YamlValue = string | number | boolean | null | YamlValue[] | YamlMapping;
 export type YamlMapping = { [key: string]: YamlValue };
 
+/** Stable codes, not messages: the UI maps them to localized text, and source text never leaks. */
+export type YamlErrorCode =
+  | "multiple_documents"
+  | "duplicate_key"
+  | "malformed"
+  | "empty"
+  | "not_mapping";
+
 export type ParseResult =
   | { ok: true; value: YamlMapping; text: string }
-  | { ok: false; message: string };
+  | { ok: false; code: YamlErrorCode };
 
-/** Messages are fixed strings: parser errors can echo source text, and the source may hold secrets. */
+/** Carries only the YAML error code, so the message never echoes source text. */
+export class ConfigYamlError extends Error {
+  readonly code: YamlErrorCode;
+
+  constructor(code: YamlErrorCode) {
+    super(code);
+    this.name = "ConfigYamlError";
+    this.code = code;
+  }
+}
+
 export function parseAndValidateYaml(text: string): ParseResult {
   const documents = parseAllDocuments(text);
-  if (documents.length > 1) return failure("YAML must contain exactly one document.");
+  if (documents.length > 1) return failure("multiple_documents");
 
   const errors = documents.flatMap((document) => document.errors);
-  if (errors.some((error) => error.code === "DUPLICATE_KEY")) {
-    return failure("YAML contains a duplicate mapping key.");
-  }
-  if (errors.length > 0) return failure("YAML is malformed.");
+  if (errors.some((error) => error.code === "DUPLICATE_KEY")) return failure("duplicate_key");
+  if (errors.length > 0) return failure("malformed");
 
   const [document] = documents;
-  if (document === undefined) return failure("YAML document is empty.");
+  if (document === undefined) return failure("empty");
 
   let parsed: unknown;
   try {
     parsed = document.toJS();
   } catch {
     // An unresolved alias only throws when the document is converted to JS.
-    return failure("YAML is malformed.");
+    return failure("malformed");
   }
-  if (parsed === null) return failure("YAML document is empty.");
-  if (!isRecord(parsed)) return failure("YAML document must be a mapping.");
+  if (parsed === null) return failure("empty");
+  if (!isRecord(parsed)) return failure("not_mapping");
   const value = toYamlMapping(parsed);
-  if (value === undefined) return failure("YAML is malformed.");
+  if (value === undefined) return failure("malformed");
   return { ok: true, value, text };
 }
 
@@ -68,6 +84,6 @@ function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null && !Array.isArray(value);
 }
 
-function failure(message: string): ParseResult {
-  return { ok: false, message };
+function failure(code: YamlErrorCode): ParseResult {
+  return { ok: false, code };
 }

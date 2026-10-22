@@ -118,5 +118,20 @@
   "config.saveError": "Не удалось сохранить конфигурацию.",
   "config.saved": "Конфигурация сохранена.",
   "config.save": "Сохранить",
-  "config.editorLabel": "YAML конфигурации"
+  "config.editorLabel": "YAML конфигурации",
+  "config.error.multiple_documents": "YAML должен содержать ровно один документ.",
+  "config.error.duplicate_key": "YAML содержит повторяющийся ключ словаря.",
+  "config.error.malformed": "YAML некорректен.",
+  "config.error.empty": "Документ YAML пуст.",
+  "config.error.not_mapping": "Документ YAML должен быть словарём.",
+  "config.saveBadRequest": "Сервер отклонил запрос на сохранение.",
+  "config.saveInvalid": "Сервер отклонил эту конфигурацию как некорректную.",
+  "config.saveReadOnly": "Конфигурация содержит поле, которое доступно только для чтения на сервере.",
+  "config.diffTitle": "Проверьте изменения конфигурации",
+  "config.diffDescription": "Проверьте изменения перед записью в config.yaml.",
+  "config.diffEmpty": "Изменений не обнаружено.",
+  "config.diffAdded": "Добавлено",
+  "config.diffRemoved": "Удалено",
+  "config.diffChanged": "Изменено",
+  "config.diffConfirm": "Сохранить изменения"
 }
