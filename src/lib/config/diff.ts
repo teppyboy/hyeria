@@ -11,7 +11,8 @@ export interface ConfigDiff {
 
 const REDACTED = "[redacted]";
 // Matches by key substring so variants such as `openai-api-key` and `client_secret` are caught.
-const SENSITIVE_KEY = /secret|token|password|passwd|credential|authorization|api[-_]?key/i;
+const SENSITIVE_KEY =
+  /secret|token|password|passwd|credential|authorization|api[-_]?key|user[-_]?name/i;
 const URL_USERINFO = /^([a-z][a-z\d+.-]*:\/\/)[^/?#@\s]+@/i;
 
 /**
@@ -63,17 +64,19 @@ function collectChanges(
 /** A value under any sensitive ancestor is hidden whole, so its leaves cannot leak. */
 function render(path: string[], value: YamlValue): string {
   if (path.some((segment) => SENSITIVE_KEY.test(segment))) return JSON.stringify(REDACTED);
-  return JSON.stringify(redact(value));
+  return stringifyValue(redact(value), false);
 }
 
 function redact(value: YamlValue): YamlValue {
   if (Array.isArray(value)) return value.map(redact);
   if (isMapping(value)) {
-    const redacted: YamlMapping = {};
-    for (const [key, item] of Object.entries(value)) {
-      redacted[key] = SENSITIVE_KEY.test(key) ? REDACTED : redact(item);
-    }
-    return redacted;
+    // Object.fromEntries keeps a `__proto__` key as own data instead of setting the prototype.
+    return Object.fromEntries(
+      Object.entries(value).map(([key, item]) => [
+        key,
+        SENSITIVE_KEY.test(key) ? REDACTED : redact(item),
+      ]),
+    );
   }
   if (typeof value === "string") return value.replace(URL_USERINFO, `$1${REDACTED}@`);
   return value;
@@ -81,13 +84,24 @@ function redact(value: YamlValue): YamlValue {
 
 /** Stable key order at every depth, so equal mappings compare equal regardless of key order. */
 function canonicalJson(value: YamlValue): string {
-  if (Array.isArray(value)) return `[${value.map(canonicalJson).join(",")}]`;
+  return stringifyValue(value, true);
+}
+
+/**
+ * JSON text, except non-finite numbers are written bare (Infinity, NaN). JSON.stringify would emit
+ * null for them, which made `.inf` and `null` compare equal.
+ */
+function stringifyValue(value: YamlValue, sortKeys: boolean): string {
+  if (Array.isArray(value))
+    return `[${value.map((item) => stringifyValue(item, sortKeys)).join(",")}]`;
   if (isMapping(value)) {
-    const entries = Object.keys(value)
-      .sort()
-      .map((key) => `${JSON.stringify(key)}:${canonicalJson(value[key])}`);
+    const keys = sortKeys ? Object.keys(value).sort() : Object.keys(value);
+    const entries = keys.map(
+      (key) => `${JSON.stringify(key)}:${stringifyValue(value[key], sortKeys)}`,
+    );
     return `{${entries.join(",")}}`;
   }
+  if (typeof value === "number" && !Number.isFinite(value)) return String(value);
   return JSON.stringify(value);
 }
 

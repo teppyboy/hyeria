@@ -38,13 +38,14 @@ export function parseAndValidateYaml(text: string): ParseResult {
 
 /** Returns undefined for any value outside the JSON-compatible set, such as binary or dates. */
 function toYamlMapping(value: Record<string, unknown>): YamlMapping | undefined {
-  const mapping: YamlMapping = {};
+  const entries: [string, YamlValue][] = [];
   for (const [key, item] of Object.entries(value)) {
     const converted = toYamlValue(item);
     if (converted === undefined) return undefined;
-    mapping[key] = converted;
+    entries.push([key, converted]);
   }
-  return mapping;
+  // Object.fromEntries keeps a `__proto__` key as own data instead of setting the prototype.
+  return Object.fromEntries(entries);
 }
 
 function toYamlValue(value: unknown): YamlValue | undefined {

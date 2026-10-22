@@ -109,6 +109,41 @@ describe("buildConfigDiff", () => {
     ]);
   });
 
+  it("masks a username value under a username key", () => {
+    const diff = buildConfigDiff("db:\n  user-name: alice\n", "db:\n  user-name: bob\n");
+
+    expect(JSON.stringify(diff)).not.toMatch(/alice|bob/);
+    expect(diff.changes).toEqual([
+      {
+        path: ["db", "user-name"],
+        kind: "changed",
+        before: '"[redacted]"',
+        after: '"[redacted]"',
+      },
+    ]);
+  });
+
+  it("does not treat .inf and null as equal", () => {
+    expect(buildConfigDiff("x: .inf\n", "x: null\n").changes).toEqual([
+      { path: ["x"], kind: "changed", before: "Infinity", after: "null" },
+    ]);
+  });
+
+  it("does not treat .nan and null as equal", () => {
+    expect(buildConfigDiff("x: .nan\n", "x: null\n").changes).toEqual([
+      { path: ["x"], kind: "changed", before: "NaN", after: "null" },
+    ]);
+  });
+
+  it("keeps a __proto__ mapping key as data and reports its change", () => {
+    const diff = buildConfigDiff("__proto__:\n  a: 1\n", "__proto__:\n  a: 2\n");
+
+    expect(diff.changes).toEqual([
+      { path: ["__proto__", "a"], kind: "changed", before: "1", after: "2" },
+    ]);
+    expect(({} as Record<string, unknown>).a).toBeUndefined();
+  });
+
   it("keeps non-sensitive values readable", () => {
     expect(buildConfigDiff("port: 1\n", "port: 2\n").changes).toEqual([
       { path: ["port"], kind: "changed", before: "1", after: "2" },

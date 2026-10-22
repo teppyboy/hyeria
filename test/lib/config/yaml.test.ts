@@ -26,6 +26,15 @@ describe("parseAndValidateYaml", () => {
     expect(parseAndValidateYaml(text)).toEqual({ ok: false, message: "YAML is malformed." });
   });
 
+  it("keeps a __proto__ mapping key as own data", () => {
+    const result = parseAndValidateYaml("__proto__:\n  polluted: true\n");
+
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+    expect(Object.hasOwn(result.value, "__proto__")).toBe(true);
+    expect(({} as Record<string, unknown>).polluted).toBeUndefined();
+  });
+
   it("rejects duplicate mapping keys", () => {
     const result = parseAndValidateYaml("secret-key: sk-live-123\nsecret-key: sk-live-456\n");
 
