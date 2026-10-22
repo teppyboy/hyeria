@@ -41,9 +41,9 @@ function collectChanges(
     for (const key of keys) {
       const childPath = [...path, key];
       if (!Object.hasOwn(after, key)) {
-        changes.push({ path: childPath, kind: "removed", before: render(key, before[key]) });
+        changes.push({ path: childPath, kind: "removed", before: render(childPath, before[key]) });
       } else if (!Object.hasOwn(before, key)) {
-        changes.push({ path: childPath, kind: "added", after: render(key, after[key]) });
+        changes.push({ path: childPath, kind: "added", after: render(childPath, after[key]) });
       } else {
         collectChanges(before[key], after[key], childPath, changes);
       }
@@ -51,18 +51,18 @@ function collectChanges(
     return;
   }
   if (canonicalJson(before) !== canonicalJson(after)) {
-    const key = path.at(-1);
     changes.push({
       path,
       kind: "changed",
-      before: render(key, before),
-      after: render(key, after),
+      before: render(path, before),
+      after: render(path, after),
     });
   }
 }
 
-function render(key: string | undefined, value: YamlValue): string {
-  if (key !== undefined && SENSITIVE_KEY.test(key)) return JSON.stringify(REDACTED);
+/** A value under any sensitive ancestor is hidden whole, so its leaves cannot leak. */
+function render(path: string[], value: YamlValue): string {
+  if (path.some((segment) => SENSITIVE_KEY.test(segment))) return JSON.stringify(REDACTED);
   return JSON.stringify(redact(value));
 }
 

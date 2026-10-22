@@ -95,6 +95,20 @@ describe("buildConfigDiff", () => {
     ]);
   });
 
+  it("masks a changed leaf under a sensitive ancestor key", () => {
+    const diff = buildConfigDiff("credentials:\n  user: alice\n", "credentials:\n  user: bob\n");
+
+    expect(JSON.stringify(diff)).not.toMatch(/alice|bob/);
+    expect(diff.changes).toEqual([
+      {
+        path: ["credentials", "user"],
+        kind: "changed",
+        before: '"[redacted]"',
+        after: '"[redacted]"',
+      },
+    ]);
+  });
+
   it("keeps non-sensitive values readable", () => {
     expect(buildConfigDiff("port: 1\n", "port: 2\n").changes).toEqual([
       { path: ["port"], kind: "changed", before: "1", after: "2" },
