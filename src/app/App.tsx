@@ -9,6 +9,7 @@ import { ConfigPage } from "@/features/config/routes/ConfigPage";
 import { ProvidersPage } from "@/features/providers/routes/ProvidersPage";
 import { AuthFilesPage } from "@/features/auth-files/routes/AuthFilesPage";
 import { OAuthPage } from "@/features/oauth/routes/OAuthPage";
+import { QuotaPage } from "@/features/quota/routes/QuotaPage";
 
 function UnavailablePage() {
   const language = usePreferencesStore((state) => state.language);
@@ -32,9 +33,10 @@ export function App() {
           <Route path="/dashboard" element={<Navigate to="/" replace />} />
           <Route path="/settings" element={<Navigate to="/config" replace />} />
           <Route path="/api-keys" element={<Navigate to="/config" replace />} />
-          {["quick-start", "quota", "logs", "analytics", "plugins", "plugin-store"].map((path) => (
+          {["quick-start", "analytics", "plugins", "plugin-store"].map((path) => (
             <Route key={path} path={`/${path}`} element={<UnavailablePage />} />
           ))}
+          <Route path="/quota" element={<QuotaPage />} />
           <Route path="/ai-providers" element={<ProvidersPage />} />
           <Route path="/auth-files" element={<AuthFilesPage />} />
           <Route path="/oauth" element={<OAuthPage />} />

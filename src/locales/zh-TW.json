@@ -211,5 +211,16 @@
   "oauth.vertexLocation": "位置（選填）",
   "oauth.vertexImport": "匯入 Vertex 憑證",
   "oauth.vertexSuccess": "Vertex 憑證已匯入",
-  "oauth.vertexError": "無法匯入 Vertex 憑證。"
+  "oauth.vertexError": "無法匯入 Vertex 憑證。",
+  "quota.cooldown": "Cooldown reset",
+  "quota.cooldownDescription": "Reset routing cooldown for a selected credential. This action is confirmed before it runs.",
+  "quota.credentialsError": "Credential metadata could not be loaded.",
+  "quota.empty": "No credentials are available for cooldown reset.",
+  "quota.reset": "Reset cooldown",
+  "quota.resetTitle": "Reset routing cooldown?",
+  "quota.resetDescription": "This changes server routing state for this credential. Continue?",
+  "quota.resetSuccess": "Cooldown reset.",
+  "quota.resetError": "The cooldown could not be reset.",
+  "quota.pluginTitle": "Plugin quotas",
+  "quota.pluginUnavailable": "Plugin quota providers are unavailable until the server exposes verified plugin IDs. No quota request was made."
 }

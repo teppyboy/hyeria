@@ -105,12 +105,13 @@ describe("protected routing", () => {
     expect(host.querySelector("main#main-content")).not.toBeNull();
   });
 
-  it("localizes placeholder page text", async () => {
+  it("reaches the localized quota page", async () => {
     sessionStore.setState({ isAuthenticated: true });
     preferencesStore.getState().setLanguage("ru");
     const { host } = mount("/quota");
     await settle();
-    expect(host.textContent).toContain("Эта страница пока недоступна.");
+    expect(host.textContent).toContain("Квоты");
+    expect(host.textContent).toContain("Сброс задержки");
     expect(host.textContent).not.toContain("This page is not available yet.");
   });
 
