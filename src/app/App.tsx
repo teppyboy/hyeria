@@ -8,6 +8,7 @@ import { SystemPage } from "@/features/system/routes/SystemPage";
 import { ConfigPage } from "@/features/config/routes/ConfigPage";
 import { ProvidersPage } from "@/features/providers/routes/ProvidersPage";
 import { AuthFilesPage } from "@/features/auth-files/routes/AuthFilesPage";
+import { OAuthPage } from "@/features/oauth/routes/OAuthPage";
 
 function UnavailablePage() {
   const language = usePreferencesStore((state) => state.language);
@@ -31,13 +32,12 @@ export function App() {
           <Route path="/dashboard" element={<Navigate to="/" replace />} />
           <Route path="/settings" element={<Navigate to="/config" replace />} />
           <Route path="/api-keys" element={<Navigate to="/config" replace />} />
-          {["quick-start", "oauth", "quota", "logs", "analytics", "plugins", "plugin-store"].map(
-            (path) => (
-              <Route key={path} path={`/${path}`} element={<UnavailablePage />} />
-            ),
-          )}
+          {["quick-start", "quota", "logs", "analytics", "plugins", "plugin-store"].map((path) => (
+            <Route key={path} path={`/${path}`} element={<UnavailablePage />} />
+          ))}
           <Route path="/ai-providers" element={<ProvidersPage />} />
           <Route path="/auth-files" element={<AuthFilesPage />} />
+          <Route path="/oauth" element={<OAuthPage />} />
           <Route path="/config" element={<ConfigPage />} />
           <Route path="/system" element={<SystemPage />} />
           <Route path="*" element={<UnavailablePage />} />
