@@ -110,5 +110,13 @@
   "system.session": "此浏览器",
   "system.sessionDescription": "仅从此浏览器中移除已记住的密钥，不会联系服务器。",
   "system.forgetSession": "忘记已记住的会话",
-  "system.forgotten": "已从此浏览器移除记住的会话。"
+  "system.forgotten": "已从此浏览器移除记住的会话。",
+  "config.title": "配置",
+  "config.description": "编辑原始 YAML；保存前会进行校验。",
+  "config.loading": "正在加载配置…",
+  "config.loadError": "无法加载配置。",
+  "config.saveError": "无法保存配置。",
+  "config.saved": "配置已保存。",
+  "config.save": "保存",
+  "config.editorLabel": "配置 YAML"
 }

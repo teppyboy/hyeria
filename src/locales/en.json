@@ -110,5 +110,13 @@
   "system.session": "This browser",
   "system.sessionDescription": "Removes the remembered key from this browser only. The server is not contacted.",
   "system.forgetSession": "Forget remembered session",
-  "system.forgotten": "Remembered session removed from this browser."
+  "system.forgotten": "Remembered session removed from this browser.",
+  "config.title": "Config",
+  "config.description": "Edit the raw YAML; it is validated before saving.",
+  "config.loading": "Loading config…",
+  "config.loadError": "Config could not be loaded.",
+  "config.saveError": "Config could not be saved.",
+  "config.saved": "Config saved.",
+  "config.save": "Save",
+  "config.editorLabel": "Config YAML"
 }

@@ -110,5 +110,13 @@
   "system.session": "此瀏覽器",
   "system.sessionDescription": "僅從此瀏覽器移除已記住的金鑰，不會連線至伺服器。",
   "system.forgetSession": "忘記已記住的工作階段",
-  "system.forgotten": "已從此瀏覽器移除已記住的工作階段。"
+  "system.forgotten": "已從此瀏覽器移除已記住的工作階段。",
+  "config.title": "設定",
+  "config.description": "編輯原始 YAML；儲存前會先驗證。",
+  "config.loading": "正在載入設定…",
+  "config.loadError": "無法載入設定。",
+  "config.saveError": "無法儲存設定。",
+  "config.saved": "設定已儲存。",
+  "config.save": "儲存",
+  "config.editorLabel": "設定 YAML"
 }

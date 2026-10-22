@@ -4,9 +4,13 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Skeleton } from "@/components/ui/skeleton";
 import { YamlEditor } from "@/features/config/components/YamlEditor";
 import { useConfigYamlQuery, useSaveConfigYamlMutation } from "@/features/config/queries";
+import { translate } from "@/lib/i18n";
 import { parseAndValidateYaml } from "@/lib/config/yaml";
+import { usePreferencesStore } from "@/stores/preferences";
 
 export function ConfigPage() {
+  const language = usePreferencesStore((state) => state.language);
+  const t = (key: string) => translate(language, key);
   const yaml = useConfigYamlQuery();
   const save = useSaveConfigYamlMutation();
   const [draft, setDraft] = useState<string | undefined>(undefined);
@@ -28,33 +32,33 @@ export function ConfigPage() {
     save.mutate(text, { onSuccess: () => setSaved(true) });
   }
 
-  const saveError = save.isError ? "Config could not be saved." : undefined;
+  const saveError = save.isError ? t("config.saveError") : undefined;
   const alertMessage = validationError ?? saveError;
 
   return (
     <section className="mx-auto grid max-w-5xl gap-4">
-      <h1 className="text-2xl font-semibold">Config</h1>
+      <h1 className="text-2xl font-semibold">{t("config.title")}</h1>
       <Card>
         <CardHeader>
           <CardTitle>config.yaml</CardTitle>
-          <CardDescription>Edit the raw YAML; it is validated before saving.</CardDescription>
+          <CardDescription>{t("config.description")}</CardDescription>
         </CardHeader>
         <CardContent className="space-y-3">
           {yaml.isPending && (
             <div className="space-y-2">
-              <p className="text-muted-foreground">Loading config…</p>
+              <p className="text-muted-foreground">{t("config.loading")}</p>
               <Skeleton className="h-64 w-full" />
             </div>
           )}
-          {yaml.isError && <p role="alert">Config could not be loaded.</p>}
+          {yaml.isError && <p role="alert">{t("config.loadError")}</p>}
           {yaml.isSuccess && (
             <>
               <YamlEditor value={text} onChange={setDraft} />
               {alertMessage && <p role="alert">{alertMessage}</p>}
-              {saved && <p role="status">Config saved.</p>}
+              {saved && <p role="status">{t("config.saved")}</p>}
               <div className="flex justify-end">
                 <Button onClick={handleSave} disabled={save.isPending}>
-                  Save
+                  {t("config.save")}
                 </Button>
               </div>
             </>

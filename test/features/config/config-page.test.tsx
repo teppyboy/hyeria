@@ -3,6 +3,7 @@ import { act } from "react";
 import { createRoot, type Root } from "react-dom/client";
 import { Providers } from "../../../src/app/providers";
 import { ConfigPage } from "../../../src/features/config/routes/ConfigPage";
+import { preferencesStore } from "../../../src/stores/preferences";
 import { sessionStore } from "../../../src/stores/session";
 import config from "../../fixtures/v8/config.json";
 import configYaml from "../../fixtures/v8/config.yaml?raw";
@@ -15,6 +16,7 @@ afterEach(() => {
   root = undefined;
   document.body.innerHTML = "";
   vi.unstubAllGlobals();
+  preferencesStore.getState().setLanguage(null);
   sessionStore.getState().disconnect();
 });
 
@@ -142,6 +144,16 @@ describe("config page", () => {
     const write = fetchMock.mock.calls.find(([, init]) => init?.method === "PUT");
     expect(write?.[1]?.body).toBe(draft);
     expect(host.querySelector('[role="status"]')?.textContent).toBe("Config saved.");
+  });
+
+  it("localizes visible strings and the editor label to the selected language", async () => {
+    preferencesStore.getState().setLanguage("ru");
+    const { host } = await mountPage(() => new Response(configYaml));
+    expect(host.querySelector("h1")?.textContent).toBe("Конфигурация");
+    expect(editor(host)?.getAttribute("aria-label")).toBe("YAML конфигурации");
+    expect(
+      [...host.querySelectorAll("button")].some((button) => button.textContent === "Сохранить"),
+    ).toBe(true);
   });
 
   it("shows an alert when the write fails", async () => {
