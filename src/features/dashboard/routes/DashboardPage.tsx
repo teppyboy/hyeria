@@ -99,7 +99,13 @@ export function DashboardPage() {
           <CardDescription>{t("dashboard.modelsDescription")}</CardDescription>
         </CardHeader>
         <CardContent>
-          {snapshot.modelChannels.length === 0 ? (
+          {credentials.isPending ? (
+            <p className="text-sm text-muted-foreground">{t("dashboard.channelLoading")}</p>
+          ) : credentials.isError ? (
+            <p role="alert" className="text-sm text-muted-foreground">
+              {t("dashboard.credentialsError")}
+            </p>
+          ) : snapshot.modelChannels.length === 0 ? (
             <p className="text-sm text-muted-foreground">{t("dashboard.noChannels")}</p>
           ) : (
             <ul className="space-y-2">

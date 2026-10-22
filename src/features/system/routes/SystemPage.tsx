@@ -11,7 +11,8 @@ export function SystemPage() {
   const language = usePreferencesStore((state) => state.language);
   const current = useSessionStore((state) => state.capabilities.version);
   const t = (key: string) => translate(language, key);
-  const { latestVersion, channels, modelDefinitions, forgetRememberedSession } = useSystemQueries();
+  const { latestVersion, credentials, channels, modelDefinitions, forgetRememberedSession } =
+    useSystemQueries();
   const comparison = latestVersion.isSuccess
     ? compareVersions(current, latestVersion.data)
     : "unknown";
@@ -48,7 +49,13 @@ export function SystemPage() {
           <CardDescription>{t("system.modelChannelsDescription")}</CardDescription>
         </CardHeader>
         <CardContent className="text-sm">
-          {channels.length === 0 ? (
+          {credentials.isPending ? (
+            <p className="text-muted-foreground">{t("dashboard.channelLoading")}</p>
+          ) : credentials.isError ? (
+            <p role="alert" className="text-muted-foreground">
+              {t("dashboard.credentialsError")}
+            </p>
+          ) : channels.length === 0 ? (
             <p className="text-muted-foreground">{t("system.noChannels")}</p>
           ) : (
             <ul className="space-y-1">

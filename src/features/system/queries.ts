@@ -28,5 +28,5 @@ export function useSystemQueries() {
     mutationKey: [...systemKeys.all, "forget-remembered-session"],
     mutationFn: async () => sessionStore.getState().clearPersistedConnection(),
   });
-  return { latestVersion, channels, modelDefinitions, forgetRememberedSession };
+  return { latestVersion, credentials, channels, modelDefinitions, forgetRememberedSession };
 }

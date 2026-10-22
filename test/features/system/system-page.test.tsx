@@ -29,6 +29,39 @@ async function settle() {
 }
 
 describe("system page", () => {
+  it("does not show the empty channel state when credential discovery fails", async () => {
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async (input: URL) => {
+        const path = new URL(input).pathname.replace("/v8/management", "");
+        if (path === "/config") return new Response(JSON.stringify(config));
+        if (path === "/credentials") return new Response("{}", { status: 502 });
+        if (path === "/server/latest-version") return new Response(JSON.stringify(latest));
+        return new Response("{}", { status: 404 });
+      }),
+    );
+    await sessionStore
+      .getState()
+      .connect({ apiBase: API_BASE, managementKey: "mk", remember: false });
+    const host = document.createElement("div");
+    document.body.append(host);
+    root = createRoot(host);
+    act(() =>
+      root?.render(
+        <Providers>
+          <SystemPage />
+        </Providers>,
+      ),
+    );
+    await vi.waitFor(
+      () => expect(host.textContent).toContain("Credential summary is unavailable."),
+      {
+        timeout: 4000,
+      },
+    );
+    expect(host.textContent).not.toContain("No candidate channels yet.");
+  });
+
   it("names each model channel row with its channel label and count", async () => {
     vi.stubGlobal(
       "fetch",

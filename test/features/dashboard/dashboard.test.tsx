@@ -146,6 +146,7 @@ describe("dashboard", () => {
       },
     );
     expect(host.textContent).toContain("Version: v8.0.0");
+    expect(host.textContent).not.toContain("No candidate channels yet.");
   });
 
   it("never requests the destructive usage queue", async () => {
