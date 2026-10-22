@@ -1,0 +1,96 @@
+import { parseAndValidateYaml, type YamlMapping, type YamlValue } from "./yaml";
+
+export type ConfigChange =
+  | { path: string[]; kind: "added"; after: string }
+  | { path: string[]; kind: "removed"; before: string }
+  | { path: string[]; kind: "changed"; before: string; after: string };
+
+export interface ConfigDiff {
+  changes: ConfigChange[];
+}
+
+const REDACTED = "[redacted]";
+// Matches by key substring so variants such as `openai-api-key` and `client_secret` are caught.
+const SENSITIVE_KEY = /secret|token|password|passwd|credential|authorization|api[-_]?key/i;
+const URL_USERINFO = /^([a-z][a-z\d+.-]*:\/\/)[^/?#@\s]+@/i;
+
+/**
+ * Returns the changed config paths between two YAML documents. Mapping key order is ignored,
+ * lists are compared as whole values, and sensitive values are redacted in the rendered output.
+ */
+export function buildConfigDiff(before: string, after: string): ConfigDiff {
+  const parsedBefore = parseAndValidateYaml(before);
+  if (!parsedBefore.ok) throw new Error(parsedBefore.message);
+  const parsedAfter = parseAndValidateYaml(after);
+  if (!parsedAfter.ok) throw new Error(parsedAfter.message);
+
+  const changes: ConfigChange[] = [];
+  collectChanges(parsedBefore.value, parsedAfter.value, [], changes);
+  return { changes };
+}
+
+function collectChanges(
+  before: YamlValue,
+  after: YamlValue,
+  path: string[],
+  changes: ConfigChange[],
+): void {
+  if (isMapping(before) && isMapping(after)) {
+    // Sorted keys make the change list come out in lexicographic path order.
+    const keys = [...new Set([...Object.keys(before), ...Object.keys(after)])].sort();
+    for (const key of keys) {
+      const childPath = [...path, key];
+      if (!Object.hasOwn(after, key)) {
+        changes.push({ path: childPath, kind: "removed", before: render(key, before[key]) });
+      } else if (!Object.hasOwn(before, key)) {
+        changes.push({ path: childPath, kind: "added", after: render(key, after[key]) });
+      } else {
+        collectChanges(before[key], after[key], childPath, changes);
+      }
+    }
+    return;
+  }
+  if (canonicalJson(before) !== canonicalJson(after)) {
+    const key = path.at(-1);
+    changes.push({
+      path,
+      kind: "changed",
+      before: render(key, before),
+      after: render(key, after),
+    });
+  }
+}
+
+function render(key: string | undefined, value: YamlValue): string {
+  if (key !== undefined && SENSITIVE_KEY.test(key)) return JSON.stringify(REDACTED);
+  return JSON.stringify(redact(value));
+}
+
+function redact(value: YamlValue): YamlValue {
+  if (Array.isArray(value)) return value.map(redact);
+  if (isMapping(value)) {
+    const redacted: YamlMapping = {};
+    for (const [key, item] of Object.entries(value)) {
+      redacted[key] = SENSITIVE_KEY.test(key) ? REDACTED : redact(item);
+    }
+    return redacted;
+  }
+  if (typeof value === "string") return value.replace(URL_USERINFO, `$1${REDACTED}@`);
+  return value;
+}
+
+/** Stable key order at every depth, so equal mappings compare equal regardless of key order. */
+function canonicalJson(value: YamlValue): string {
+  if (Array.isArray(value)) return `[${value.map(canonicalJson).join(",")}]`;
+  if (isMapping(value)) {
+    const entries = Object.keys(value)
+      .sort()
+      .map((key) => `${JSON.stringify(key)}:${canonicalJson(value[key])}`);
+    return `{${entries.join(",")}}`;
+  }
+  return JSON.stringify(value);
+}
+
+function isMapping(value: YamlValue): value is YamlMapping {
+  return typeof value === "object" && value !== null && !Array.isArray(value);
+}
