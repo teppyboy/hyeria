@@ -1,7 +1,6 @@
 import tailwindcss from "@tailwindcss/vite";
 import react from "@vitejs/plugin-react";
-import type { UserConfig } from "vite-plus";
-import { lazyPlugins } from "vite-plus";
+import { lazyPlugins, type UserConfig } from "vite-plus";
 
 const demoEntry = "/src/app/entry/demo.tsx";
 

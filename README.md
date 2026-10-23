@@ -21,8 +21,10 @@ vp check                   # format, lint, type checks
 vp test                    # tests
 vp build                   # normal static build -> dist/
 vp run build:management    # management build -> dist-management/management.html
+vp run build:demo          # interactive demo build -> dist-demo/
 vp run smoke:management    # verify the management artifact is self-contained
-vp run check:sensitive    # scan both build outputs for credential markers
+vp run check:sensitive     # scan both build outputs for credential markers
+vp run check:demo          # scan the demo artifact for credentials/config
 vp preview                 # preview a build
 ```
 
@@ -30,8 +32,12 @@ vp preview                 # preview a build
 
 1. Install Node.js 24.22.1 and Vite+ (`vp`).
 2. `vp install`
-3. `vp build` for the static site in `dist/`, and `vp run build:management` for the single-file `dist-management/management.html` artifact.
-4. Run `vp run smoke:management`, `vp run check:sensitive`, and `vp run check:licenses` before distribution.
+3. `vp build` for the static site in `dist/`, `vp run build:management` for the single-file `dist-management/management.html` artifact, or `DEMO_BASE=/hyeria/ vp run build:demo` for the Pages demo.
+4. Run `vp run smoke:management`, `vp run check:sensitive`, `vp run check:demo`, and `vp run check:licenses` before distribution.
+
+## Interactive demo
+
+The demo is published at `https://<owner>.github.io/<repository>/` and uses the repository name as its project path. It is a demo-only in-memory session: dashboard data and management actions are synthetic, while configuration, log, and auth-file changes are simulated. Nothing is sent to a backend, no visitor credentials are requested, and all changes reset when the page is reloaded. The demo build is separate from the normal static and management builds.
 
 Builds contain no credentials. Management keys are entered by the user at runtime.
 

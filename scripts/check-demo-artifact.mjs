@@ -30,7 +30,6 @@ if (!files.includes(htmlPath))
 const unexpected = files.filter((path) => path.endsWith("/index.html") && path !== htmlPath);
 if (unexpected.length > 0)
   throw new Error(`Unexpected demo HTML artifacts: ${unexpected.join(", ")}`);
-
 for (const file of files) {
   const content = await readFile(file, "utf8");
   const match = forbidden.find((pattern) => pattern.test(content));
@@ -39,5 +38,4 @@ for (const file of files) {
 
 const html = await readFile(htmlPath, "utf8");
 if (!/<script\b[^>]*src=/i.test(html)) throw new Error("Demo artifact has no application script.");
-
 console.log(`Demo artifact scan passed: ${htmlPath}`);
