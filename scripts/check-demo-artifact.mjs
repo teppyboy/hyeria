@@ -10,6 +10,7 @@ const forbidden = [
   /sk-(?:live|test)-[A-Za-z0-9_-]{12,}/i,
   /Bearer\s+[A-Za-z0-9._~+/=-]{16,}/i,
   /(?:management[_-]?key|apiBase|api[_-]?base)\s*[:=]\s*["'][^"']+/i,
+  /\$\{GITHUB_REPOSITORY\b/,
   /(?:https?:\/\/[^"'\s<]*)?\/v8\/management(?:[/?#"'\s<]|$)/i,
   /(?:^|[/\\])dist(?:-management|-static)?[/\\]/i,
 ];

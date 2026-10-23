@@ -20,13 +20,21 @@ describe("demo build safeguards", () => {
     await expect(scan('<script src="app.js">/v8/management/config</script>')).rejects.toThrow();
   });
 
+  it("rejects an unexpanded GitHub repository path in asset URLs", async () => {
+    await expect(
+      scan('<script src="/${GITHUB_REPOSITORY/assets/app.js"></script>'),
+    ).rejects.toThrow();
+  });
+
   it("accepts a regular application artifact", async () => {
-    await expect(scan('<script type="module" src="/assets/app.js"></script>')).resolves.toBeDefined();
+    await expect(
+      scan('<script type="module" src="/assets/app.js"></script>'),
+    ).resolves.toBeDefined();
   });
 
   it("selects the demo entry in the dedicated Vite config", async () => {
     const config = await readFile(join(root, "vite.config.demo.ts"), "utf8");
     expect(config).toContain("/src/app/entry/demo.tsx");
-    expect(config).toContain("process.env.DEMO_BASE ?? \"/\"");
+    expect(config).toContain('process.env.DEMO_BASE ?? "/"');
   });
 });

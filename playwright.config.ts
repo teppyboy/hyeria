@@ -4,6 +4,7 @@ import process from "node:process";
 const host = process.env.E2E_HOST ?? "127.0.0.1";
 const staticBaseURL = process.env.E2E_APP_URL ?? `http://${host}:5173`;
 const managementBaseURL = process.env.E2E_MANAGEMENT_URL ?? `http://${host}:4173`;
+const demoBaseURL = process.env.E2E_DEMO_URL ?? `http://${host}:4174/`;
 
 export default defineConfig({
   testDir: "./e2e/specs",
@@ -18,6 +19,11 @@ export default defineConfig({
   },
   projects: [
     {
+      name: "demo",
+      testMatch: /demo\.spec\.ts/,
+      use: { ...devices["Desktop Chrome"], baseURL: demoBaseURL },
+    },
+    {
       name: "static-history",
       testMatch: /(auth|config|workflows)\.spec\.ts/,
       use: { ...devices["Desktop Chrome"] },
@@ -31,6 +37,12 @@ export default defineConfig({
   globalSetup: "./e2e/global-setup.ts",
   globalTeardown: "./e2e/global-teardown.ts",
   webServer: [
+    {
+      command: "vp preview --host 127.0.0.1 --port 4174 --outDir dist-demo",
+      url: demoBaseURL,
+      reuseExistingServer: true,
+      timeout: 60_000,
+    },
     {
       command: "vp dev --host 127.0.0.1",
       url: staticBaseURL,

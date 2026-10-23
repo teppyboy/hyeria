@@ -10,7 +10,7 @@
     "test": "vp test",
     "build": "vp build",
     "build:management": "vp build --mode management --outDir dist-management",
-    "build:demo": "vp build --mode demo --outDir dist-demo",
+    "build:demo": "vp build --mode demo --outDir dist-demo && mv dist-demo/demo.html dist-demo/index.html",
     "smoke:management": "node scripts/smoke-management-artifact.mjs",
     "check:sensitive": "node scripts/check-sensitive-output.mjs dist dist-management",
     "check:demo": "node scripts/check-demo-artifact.mjs dist-demo",

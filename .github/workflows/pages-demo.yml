@@ -19,8 +19,9 @@ jobs:
       - run: vp install
       - run: vp run build:demo
         env:
-          DEMO_BASE: /${GITHUB_REPOSITORY#*/}/
+          DEMO_BASE: /${{ github.event.repository.name }}/
       - run: node scripts/check-demo-artifact.mjs dist-demo
+      - run: vp check
       - run: vp test
       - uses: actions/upload-pages-artifact@v3
         with:

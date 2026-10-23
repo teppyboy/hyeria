@@ -1,5 +1,5 @@
 import { createStore, useStore, type StoreApi } from "zustand";
-import { ManagementApiClient } from "@/lib/api/client";
+import { ManagementApiClient, type ManagementApiTransport } from "@/lib/api/client";
 import { ApiError } from "@/lib/api/errors";
 import { EMPTY_CAPABILITIES, type ServerCapabilities } from "@/lib/api/headers";
 import { normalizeApiBase } from "@/lib/connection/normalize-api-base";
@@ -35,7 +35,7 @@ export interface SessionState {
   disconnect(): void;
   clearPersistedConnection(): void;
   /** Client bound to the active connection revision; throws when not authenticated. */
-  getClient(): ManagementApiClient;
+  getClient(): ManagementApiTransport;
   /** Installs an ephemeral transport without probing, normalizing, or persisting credentials. */
   initializeDemo(transport: DemoApiTransport): void;
 }
@@ -58,7 +58,7 @@ const LOGGED_OUT = {
 export function createSessionStore(deps: SessionStoreDeps = {}): StoreApi<SessionState> {
   const storage = deps.storage ?? createLocalRememberedSessionStorage();
   let controller = new AbortController();
-  let activeClient: ManagementApiClient | null = null;
+  let activeClient: ManagementApiTransport | null = null;
   let demoTransport: DemoApiTransport | null = null;
 
   return createStore<SessionState>()((set, get) => {
@@ -163,7 +163,7 @@ export function createSessionStore(deps: SessionStoreDeps = {}): StoreApi<Sessio
         controller = new AbortController();
         demoTransport = transport;
         // SAFETY: DemoApiTransport and ManagementApiClient expose the same request method port.
-        activeClient = transport as unknown as ManagementApiClient;
+        activeClient = transport;
         set({
           isAuthenticated: true,
           isDemo: true,

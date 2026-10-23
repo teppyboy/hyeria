@@ -6,7 +6,7 @@ const demoEntry = "/src/app/entry/demo.tsx";
 
 export const demoConfig: UserConfig = {
   base: process.env.DEMO_BASE ?? "/",
-  build: { rollupOptions: { input: "index.html" } },
+  build: { rollupOptions: { input: "demo.html" } },
   plugins: lazyPlugins(() => [
     react(),
     tailwindcss(),

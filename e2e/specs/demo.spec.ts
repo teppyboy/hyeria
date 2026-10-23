@@ -14,6 +14,7 @@ test("renders the isolated interactive demo and resets on reload", async ({ page
   await page.getByRole("link", { name: "Configuration" }).click();
   await expect(page.getByRole("heading", { name: "Config" })).toBeVisible();
   await page.reload();
-  await expect(page.getByRole("heading", { name: "Dashboard" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Config" })).toBeVisible();
+  await expect(page.getByText(/interactive demo/i)).toBeVisible();
   expect(externalRequests).toEqual([]);
 });

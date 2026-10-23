@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import type { ManagementApiClient } from "@/lib/api/client";
+import type { ManagementApiTransport } from "@/lib/api/client";
 import { useManagementClient } from "@/features/auth/queries";
 import { useSessionStore } from "@/stores/session";
 import {
@@ -38,7 +38,7 @@ export function useAuthFileModelsQuery(fileName: string | null) {
 /** Every mutation here can change the list, so each one refreshes it when it settles. */
 function useAuthFileMutation<TVariables, TData>(
   mutationKey: string,
-  mutationFn: (client: ManagementApiClient, variables: TVariables) => Promise<TData>,
+  mutationFn: (client: ManagementApiTransport, variables: TVariables) => Promise<TData>,
 ) {
   const queryClient = useQueryClient();
   const getClient = useManagementClient();
