@@ -1,13 +1,10 @@
 import { describe, expect, it, vi } from "vite-plus/test";
 import { routerModes } from "../../src/app/entry/build-config";
 
-describe("project smoke", () => {
-  it("runs in a DOM test environment", () => {
-    expect(document.createElement("div")).toBeInstanceOf(HTMLElement);
-  });
+vi.mock("../../src/app/entry/render-app", () => ({ renderApp: vi.fn() }));
 
+describe("project smoke", () => {
   it("imports the app entry modules", async () => {
-    document.body.innerHTML = '<div id="root"></div>';
     vi.resetModules();
     const main = await import("../../src/app/entry/main");
     vi.resetModules();

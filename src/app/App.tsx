@@ -11,6 +11,9 @@ import { AuthFilesPage } from "@/features/auth-files/routes/AuthFilesPage";
 import { OAuthPage } from "@/features/oauth/routes/OAuthPage";
 import { QuotaPage } from "@/features/quota/routes/QuotaPage";
 import { LogsPage } from "@/features/logs/routes/LogsPage";
+import { PluginsPage } from "@/features/plugins/routes/PluginsPage";
+import { PluginStorePage } from "@/features/plugins/routes/PluginStorePage";
+import { AnalyticsPage } from "@/features/analytics/routes/AnalyticsPage";
 
 function UnavailablePage() {
   const language = usePreferencesStore((state) => state.language);
@@ -21,6 +24,7 @@ function UnavailablePage() {
     </section>
   );
 }
+
 export function App() {
   const language = usePreferencesStore((state) => state.language);
   return (
@@ -34,9 +38,10 @@ export function App() {
           <Route path="/dashboard" element={<Navigate to="/" replace />} />
           <Route path="/settings" element={<Navigate to="/config" replace />} />
           <Route path="/api-keys" element={<Navigate to="/config" replace />} />
-          {["quick-start", "analytics", "plugins", "plugin-store"].map((path) => (
-            <Route key={path} path={`/${path}`} element={<UnavailablePage />} />
-          ))}
+          <Route path="/quick-start" element={<UnavailablePage />} />
+          <Route path="/analytics" element={<AnalyticsPage />} />
+          <Route path="/plugins" element={<PluginsPage />} />
+          <Route path="/plugin-store" element={<PluginStorePage />} />
           <Route path="/quota" element={<QuotaPage />} />
           <Route path="/logs" element={<LogsPage />} />
           <Route path="/ai-providers" element={<ProvidersPage />} />

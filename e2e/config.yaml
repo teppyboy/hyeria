@@ -1,0 +1,8 @@
+host: 0.0.0.0
+port: 8317
+management:
+  secret-key: $2a$10$bl65R0YcwFvj7Lf7eH.zLuGsodR1fsBdpjGgwBDbl6WkUDLUISaha
+  allow-remote: true
+observability:
+  logs:
+    logging-to-file: true

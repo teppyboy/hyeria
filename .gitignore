@@ -24,6 +24,9 @@ dist-ssr
 *.sw?
 dist-management
 coverage
+test-results
+playwright-report
+e2e/.compose.env
 
 # Environment files
 .env

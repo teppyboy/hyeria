@@ -43,7 +43,8 @@ export function usePostOAuthCallbackMutation() {
   const getClient = useManagementClient();
   return useMutation({
     mutationKey: [...oauthKeys.all, "callback"],
-    mutationFn: (body: OAuthCallbackBody) => postOAuthCallback(getClient(), body),
+    mutationFn: (input: { body: OAuthCallbackBody; signal?: AbortSignal }) =>
+      postOAuthCallback(getClient(), input.body, input.signal),
   });
 }
 

@@ -17,8 +17,35 @@ temporary and carries no trademark grant.
 
 Third-party notices
 -------------------
-Third-party software is used under its own license. Notices are listed below
-and must be completed from the dependency tree before each release.
+Direct production and development dependencies (license metadata from the installed package manifests):
 
-- React, React DOM — MIT License, Meta Platforms, Inc. and affiliates
-- Vite+ (vite-plus), Vite — MIT License, VoidZero Inc. and Vite contributors
+- @codemirror/commands — MIT, Marijn Haverbeke
+- @codemirror/lang-yaml — MIT, Marijn Haverbeke
+- @codemirror/state — MIT, Marijn Haverbeke
+- @codemirror/view — MIT, Marijn Haverbeke
+- @tailwindcss/vite — MIT
+- @tanstack/react-query — MIT
+- class-variance-authority — Apache-2.0
+- clsx — MIT, Luke Edwards
+- lucide-react — ISC
+- radix-ui — MIT
+- react — MIT
+- react-dom — MIT
+- react-router — MIT
+- sonner — MIT
+- tailwind-merge — MIT
+- tailwindcss — MIT
+- tw-animate-css — MIT, Luca Bosin
+- yaml — ISC
+- zod — MIT
+- zustand — MIT
+- @types/node — MIT
+- @types/react — MIT
+- @types/react-dom — MIT
+- @vitejs/plugin-react — MIT
+- jsdom — MIT
+- @playwright/test — Apache-2.0
+- typescript — Apache-2.0
+- vite — license metadata unavailable
+- vite-plugin-singlefile — MIT
+- vite-plus — MIT

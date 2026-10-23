@@ -8,6 +8,8 @@ import { sessionStore } from "../../../src/stores/session";
 import { preferencesStore } from "../../../src/stores/preferences";
 import authUrlFixture from "../../fixtures/v8/oauth-auth-url.json";
 import statusOkFixture from "../../fixtures/v8/oauth-status-ok.json";
+import cancelFixture from "../../fixtures/v8/oauth-cancel.json";
+import callbackFixture from "../../fixtures/v8/oauth-callback-ok.json";
 
 const API_BASE = "http://cpa.example.invalid";
 
@@ -59,10 +61,20 @@ describe("OAuth page", () => {
       const path = new URL(input).pathname.replace("/v8/management", "");
       if (path === "/oauth/auth-url") return response(authUrlFixture);
       if (path === "/oauth/status") return response(statusOkFixture);
+      if (path === "/oauth/callback") return response(callbackFixture);
+      if (path === "/oauth/session") return response(cancelFixture);
       return response({});
     });
     vi.stubGlobal("fetch", fetchMock);
-    vi.stubGlobal("open", vi.fn());
+    vi.stubGlobal(
+      "open",
+      vi.fn(() => ({
+        location: { replace: vi.fn() },
+        close: vi.fn(),
+        document: { title: "", body: { textContent: "" } },
+        opener: null,
+      })),
+    );
 
     const { host, router } = mountRoute("/oauth");
     expect(router.state.location.pathname).toBe("/oauth");
@@ -79,5 +91,56 @@ describe("OAuth page", () => {
       "/v8/management/oauth/auth-url",
       "/v8/management/oauth/status",
     ]);
+  });
+
+  it("submits a pasted callback without exposing OAuth values in state, then clears it", async () => {
+    await connect();
+    const fetchMock = vi.fn(async (input: URL) => {
+      const path = new URL(input).pathname.replace("/v8/management", "");
+      if (path === "/oauth/auth-url") return response(authUrlFixture);
+      if (path === "/oauth/status") return response({ status: "wait" });
+      if (path === "/oauth/callback") return response(callbackFixture);
+      if (path === "/oauth/session") return response(cancelFixture);
+      return response({});
+    });
+    vi.stubGlobal("fetch", fetchMock);
+    vi.stubGlobal(
+      "open",
+      vi.fn(() => ({
+        location: { replace: vi.fn() },
+        close: vi.fn(),
+        document: { title: "", body: { textContent: "" } },
+        opener: null,
+      })),
+    );
+    const { host } = mountRoute("/oauth");
+    const start = [...host.querySelectorAll("button")].find(
+      (button) => button.textContent === "Start OAuth",
+    );
+    await act(async () => start?.click());
+    await vi.waitFor(() => expect(host.textContent).toContain("Complete callback"));
+    const input = host.querySelector<HTMLInputElement>("#oauth-redirect-url");
+    expect(input).not.toBeNull();
+    await act(async () => {
+      const setter = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, "value")?.set;
+      setter?.call(input, "https://callback.example.invalid/?code=secret&state=private");
+      input?.dispatchEvent(new Event("input", { bubbles: true }));
+    });
+    const complete = [...host.querySelectorAll("button")].find(
+      (button) => button.textContent === "Complete callback",
+    );
+    await act(async () => complete?.click());
+    await vi.waitFor(() => expect(host.textContent).toContain("OAuth completed"));
+    const callbackCall = fetchMock.mock.calls.find(([input]) =>
+      new URL(input).pathname.endsWith("/oauth/callback"),
+    ) as unknown as [URL, RequestInit] | undefined;
+    expect(callbackCall).toBeDefined();
+    expect(JSON.stringify(callbackCall?.[1].body)).toContain(
+      "https://callback.example.invalid/?code=secret&state=private",
+    );
+    expect(new Headers(callbackCall?.[1].headers).has("Authorization")).toBe(false);
+    expect(host.textContent).not.toContain("secret");
+    expect(host.textContent).not.toContain("private");
+    expect(host.querySelector<HTMLInputElement>("#oauth-redirect-url")).toBeNull();
   });
 });

@@ -1,4 +1,4 @@
-import { useEffect, useReducer, useRef, useState } from "react";
+import { useCallback, useEffect, useReducer, useRef, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -43,6 +43,14 @@ export function OAuthPage() {
   const [deviceCode, setDeviceCode] = useState<string | null>(null);
   const [redirectUrl, setRedirectUrl] = useState("");
   const [callbackInputError, setCallbackInputError] = useState(false);
+  const [authorizationUrl, setAuthorizationUrl] = useState<string | null>(null);
+  const callbackAbortRef = useRef<AbortController | null>(null);
+  const popupRef = useRef<Window | null>(null);
+
+  const cancelServerState = useCallback(
+    (stateValue: string) => void cancelAsync(stateValue).catch(() => undefined),
+    [cancelAsync],
+  );
 
   useEffect(() => {
     if (state.status !== "polling" || authRef.current === null) return;
@@ -56,6 +64,10 @@ export function OAuthPage() {
         Date.now() - startedAtRef.current >=
           Math.min(MAX_EXPIRY_MS, (auth.expiresIn ?? 900) * 1_000)
       ) {
+        cancelServerState(auth.state);
+        authRef.current = null;
+        setDeviceCode(null);
+        setRedirectUrl("");
         dispatch({ type: "expire" });
         return;
       }
@@ -68,8 +80,13 @@ export function OAuthPage() {
           if (result === "wait") timer = window.setTimeout(run, POLL_INTERVAL_MS);
         }
       } catch {
-        if (!stopped && !controller.signal.aborted)
+        if (!stopped && !controller.signal.aborted) {
+          cancelServerState(auth.state);
+          authRef.current = null;
+          setDeviceCode(null);
+          setRedirectUrl("");
           dispatch({ type: "fail", reason: "request-failed" });
+        }
       } finally {
         if (abortRef.current === controller) abortRef.current = null;
       }
@@ -81,7 +98,7 @@ export function OAuthPage() {
       abortRef.current?.abort();
       abortRef.current = null;
     };
-  }, [pollAsync, state.status]);
+  }, [cancelServerState, pollAsync, state.status]);
 
   useEffect(() => {
     if (state.status === "success") {
@@ -93,14 +110,12 @@ export function OAuthPage() {
     return () => {
       flowIdRef.current += 1;
       abortRef.current?.abort();
+      callbackAbortRef.current?.abort();
+      popupRef.current?.close();
       const auth = authRef.current;
       if (auth !== null) void cancelAsync(auth.state).catch(() => undefined);
     };
   }, [cancelAsync]);
-
-  function cancelServerState(stateValue: string) {
-    void cancelAsync(stateValue).catch(() => undefined);
-  }
 
   function resetTerminal() {
     if (state.status === "success" || state.status === "error" || state.status === "cancelled") {
@@ -110,6 +125,9 @@ export function OAuthPage() {
       startedAtRef.current = null;
       setDeviceCode(null);
       setRedirectUrl("");
+      setAuthorizationUrl(null);
+      callbackAbortRef.current?.abort();
+      callback.reset();
       setCallbackInputError(false);
     }
   }
@@ -122,6 +140,13 @@ export function OAuthPage() {
     setCallbackInputError(false);
     callback.reset();
     cancel.reset();
+    setAuthorizationUrl(null);
+    popupRef.current = window.open("about:blank", "_blank");
+    if (popupRef.current !== null) {
+      popupRef.current.opener = null;
+      popupRef.current.document.title = "OAuth sign-in";
+      popupRef.current.document.body.textContent = "Waiting for authorization…";
+    }
     dispatch({ type: "start", providerId: provider });
     try {
       const auth = await start.mutateAsync(provider);
@@ -131,6 +156,9 @@ export function OAuthPage() {
       }
       const url = parseHttpsUrl(auth.url);
       if (url === null) {
+        popupRef.current?.close();
+        popupRef.current = null;
+        cancelServerState(auth.state);
         dispatch({ type: "fail", reason: "request-failed" });
         return;
       }
@@ -138,9 +166,16 @@ export function OAuthPage() {
       startedAtRef.current = Date.now();
       setDeviceCode(auth.userCode);
       dispatch({ type: "auth-url", flow: auth.flow });
-      window.open(url, "_blank", "noopener,noreferrer");
+      if (popupRef.current !== null) {
+        popupRef.current.location.replace(url);
+        popupRef.current = null;
+      } else {
+        setAuthorizationUrl(url);
+      }
       dispatch({ type: "poll" });
     } catch {
+      popupRef.current?.close();
+      popupRef.current = null;
       if (flowId === flowIdRef.current) dispatch({ type: "fail", reason: "request-failed" });
     }
   }
@@ -149,12 +184,21 @@ export function OAuthPage() {
     flowIdRef.current += 1;
     const auth = authRef.current;
     abortRef.current?.abort();
+    callbackAbortRef.current?.abort();
+    popupRef.current?.close();
+    popupRef.current = null;
+    authRef.current = null;
+    setDeviceCode(null);
+    setRedirectUrl("");
+    setAuthorizationUrl(null);
+    callback.reset();
     dispatch({ type: "cancel" });
     if (auth !== null) cancelServerState(auth.state);
   }
 
   async function completeCallback() {
     const auth = authRef.current;
+    const flowId = flowIdRef.current;
     const value = redirectUrl.trim();
     if (auth === null || value === "") return;
     let parsed: URL;
@@ -164,21 +208,30 @@ export function OAuthPage() {
       setCallbackInputError(true);
       return;
     }
-    if (parsed.protocol !== "https:" && parsed.protocol !== "http:") {
+    if (parsed.protocol !== "https:") {
       setCallbackInputError(true);
       return;
     }
     setCallbackInputError(false);
+    const controller = new AbortController();
+    callbackAbortRef.current = controller;
     try {
       await callback.mutateAsync({
-        provider,
-        state: auth.state,
-        redirect_url: parsed.href,
+        body: { provider, state: auth.state, redirect_url: parsed.href },
+        signal: controller.signal,
       });
-      setRedirectUrl("");
-      dispatch({ type: "callback" });
+      if (flowId === flowIdRef.current) {
+        setRedirectUrl("");
+        authRef.current = null;
+        setDeviceCode(null);
+        dispatch({ type: "callback" });
+      }
     } catch {
+      setRedirectUrl("");
+      setCallbackInputError(false);
       // The mutation error is rendered below; callback values remain memory-only.
+    } finally {
+      if (callbackAbortRef.current === controller) callbackAbortRef.current = null;
     }
   }
 
@@ -241,6 +294,16 @@ export function OAuthPage() {
             <p aria-live="polite">
               {t("oauth.deviceCode")}: <strong>{deviceCode}</strong>
             </p>
+          )}
+          {authorizationUrl && (
+            <a
+              className="text-sm underline"
+              href={authorizationUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              {t("oauth.openAuthorization")}
+            </a>
           )}
           {(state.status === "awaiting-user" || state.status === "polling") && (
             <div className="grid gap-1.5">

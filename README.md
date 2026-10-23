@@ -20,7 +20,9 @@ vp dev                     # development server
 vp check                   # format, lint, type checks
 vp test                    # tests
 vp build                   # normal static build -> dist/
-vp run build:management    # management build -> dist-management/ (single-file output arrives in a later task)
+vp run build:management    # management build -> dist-management/management.html
+vp run smoke:management    # verify the management artifact is self-contained
+vp run check:sensitive    # scan both build outputs for credential markers
 vp preview                 # preview a build
 ```
 
@@ -28,9 +30,26 @@ vp preview                 # preview a build
 
 1. Install Node.js 24.22.1 and Vite+ (`vp`).
 2. `vp install`
-3. `vp build`; the static site is written to `dist/`.
+3. `vp build` for the static site in `dist/`, and `vp run build:management` for the single-file `dist-management/management.html` artifact.
+4. Run `vp run smoke:management`, `vp run check:sensitive`, and `vp run check:licenses` before distribution.
 
 Builds contain no credentials. Management keys are entered by the user at runtime.
+
+## Backend and security
+
+Hyeria requires a separately running CLI Proxy API v8 instance with its Management API enabled. It does not support the deprecated `/v0/management` API. Remote browser access must also be allowed by the backend and its CORS policy; do not expose the management API to untrusted networks.
+
+The management key is held in browser memory by default. Opt-in remembered sessions use browser persistence, which is not encryption. Anyone who can run code in the same browser origin can potentially access an active session. Use a trusted browser/device, disconnect when finished, and never share screenshots or diagnostics that may contain private backend metadata.
+
+Plugin installation can download executable code onto the backend. Install only plugins and sources you trust. Hyeria displays plugin metadata but does not execute plugin-provided scripts or render arbitrary plugin HTML; undocumented plugin resource pages are not enabled.
+
+## Analytics scope
+
+The available analytics view is a live snapshot of backend in-memory API-key usage buckets. It is not durable history, may reset when the backend restarts, and does not claim complete request coverage. Hyeria does not automatically consume the destructive usage queue.
+
+## Source and branding
+
+The source repository is the Corresponding Source for this release. The logo is a temporary text mark; replace it only with approved branding assets and preserve their license/attribution notices.
 
 ## License
 

@@ -1,0 +1,11 @@
+services:
+  api:
+    image: ${CPA_IMAGE:-eceasy/cli-proxy-api:v8.0.4}
+    command: ["./CLIProxyAPI", "-config", "/CLIProxyAPI/config.yaml"]
+    volumes:
+      - ${E2E_CONFIG:-./e2e/config.yaml}:/CLIProxyAPI/config.yaml
+      - hyeria-e2e-auth:/root/.cli-proxy-api
+    ports:
+      - "127.0.0.1:${E2E_API_PORT:-8327}:8317"
+volumes:
+  hyeria-e2e-auth:

@@ -154,7 +154,8 @@ export async function getOAuthCallback(
 export async function postOAuthCallback(
   client: ManagementApiClient,
   body: OAuthCallbackBody,
+  signal?: AbortSignal,
 ): Promise<void> {
-  const parsed = okStatusSchema.safeParse(await client.post("/oauth/callback", body));
+  const parsed = okStatusSchema.safeParse(await client.post("/oauth/callback", body, { signal }));
   if (!parsed.success) throw invalidResponse("The server did not confirm the OAuth callback.");
 }
