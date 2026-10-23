@@ -15,7 +15,7 @@ describe("project smoke", () => {
     vi.unstubAllEnvs();
   });
 
-  it("exposes only hash and history router modes", () => {
-    expect(routerModes).toEqual(["hash", "history"]);
+  it("exposes hash, history, and demo router modes", () => {
+    expect(routerModes).toEqual(["hash", "history", "demo"]);
   });
 });
