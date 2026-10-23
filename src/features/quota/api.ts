@@ -1,4 +1,4 @@
-import type { ManagementApiClient } from "@/lib/api/client";
+import type { ManagementApiTransport } from "@/lib/api/client";
 import { ApiError, redactDeep } from "@/lib/api/errors";
 import { authIndexSchema, cooldownResetSchema, pluginIdSchema, pluginQuotaSchema } from "./schemas";
 
@@ -34,7 +34,7 @@ function requireAuthIndex(index: string): string {
 
 /** Clears the routing cooldown for one credential; the caller must confirm before calling. */
 export async function resetCooldown(
-  client: ManagementApiClient,
+  client: ManagementApiTransport,
   authIndex: string,
 ): Promise<CooldownResetResult> {
   requireAuthIndex(authIndex);
@@ -50,7 +50,7 @@ export async function resetCooldown(
  * are UNKNOWN in the contract, so they stay out until confirmed on a real instance.
  */
 export async function fetchPluginQuota(
-  client: ManagementApiClient,
+  client: ManagementApiTransport,
   pluginId: string,
   authIndex: string,
   signal?: AbortSignal,

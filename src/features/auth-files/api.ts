@@ -1,4 +1,4 @@
-import type { ManagementApiClient } from "@/lib/api/client";
+import type { ManagementApiTransport } from "@/lib/api/client";
 import { ApiError } from "@/lib/api/errors";
 import {
   authFileFieldsSchema,
@@ -48,7 +48,7 @@ function requireAuthFileIdentifier(name: string): string {
 }
 
 /** Lists metadata only; credential contents and backend-specific fields never leave this function. */
-export async function listAuthFiles(client: ManagementApiClient): Promise<AuthFileView[]> {
+export async function listAuthFiles(client: ManagementApiTransport): Promise<AuthFileView[]> {
   const parsed = authFileListSchema.safeParse(await client.get("/credentials"));
   if (!parsed.success) {
     throw invalidResponse("The server did not return a credential file list.");
@@ -70,7 +70,7 @@ export async function listAuthFiles(client: ManagementApiClient): Promise<AuthFi
 
 /** Uploads the JSON text as the raw request body, named by the query string. */
 export async function uploadAuthFileRaw(
-  client: ManagementApiClient,
+  client: ManagementApiTransport,
   name: string,
   json: string,
 ): Promise<void> {
@@ -83,7 +83,7 @@ export async function uploadAuthFileRaw(
 
 /** Uploads as multipart field `file`; the filename carries the validated name. */
 export async function uploadAuthFileMultipart(
-  client: ManagementApiClient,
+  client: ManagementApiTransport,
   name: string,
   file: Blob,
 ): Promise<void> {
@@ -94,13 +94,13 @@ export async function uploadAuthFileMultipart(
   if (!parsed.success) throw invalidResponse("The server did not confirm the credential upload.");
 }
 
-export async function deleteAuthFile(client: ManagementApiClient, name: string): Promise<void> {
+export async function deleteAuthFile(client: ManagementApiTransport, name: string): Promise<void> {
   requireFileName(name);
   await client.delete("/credentials", { query: { name } });
 }
 
 /** Returns how many credential files the server deleted. */
-export async function deleteAllAuthFiles(client: ManagementApiClient): Promise<number> {
+export async function deleteAllAuthFiles(client: ManagementApiTransport): Promise<number> {
   const parsed = deleteAllResultSchema.safeParse(
     await client.delete("/credentials", { query: { all: true } }),
   );
@@ -110,7 +110,7 @@ export async function deleteAllAuthFiles(client: ManagementApiClient): Promise<n
 
 /** Sets the disabled flag by name and preserves the undocumented response without inspecting it. */
 export async function setAuthFileDisabled(
-  client: ManagementApiClient,
+  client: ManagementApiTransport,
   name: string,
   disabled: boolean,
 ): Promise<unknown> {
@@ -120,7 +120,7 @@ export async function setAuthFileDisabled(
 
 /** Writes metadata fields by name; keys get syntactic validation only, the server stays authoritative for writable fields. */
 export async function patchAuthFileFields(
-  client: ManagementApiClient,
+  client: ManagementApiTransport,
   name: string,
   fields: Record<string, unknown>,
 ): Promise<unknown> {
@@ -133,13 +133,13 @@ export async function patchAuthFileFields(
 }
 
 /** Asks the server to refresh file-backed OAuth credentials; one request per call, never retried. */
-export async function refreshAuthFiles(client: ManagementApiClient): Promise<unknown> {
+export async function refreshAuthFiles(client: ManagementApiTransport): Promise<unknown> {
   return client.post("/credentials/refresh");
 }
 
 /** Lists the models one credential file exposes; entries are undocumented and passed through unread. */
 export async function listAuthFileModels(
-  client: ManagementApiClient,
+  client: ManagementApiTransport,
   name: string,
 ): Promise<unknown[]> {
   requireAuthFileIdentifier(name);
@@ -154,7 +154,7 @@ export async function listAuthFileModels(
 
 /** Downloads the credential file; the save name is sanitized, the request name is validated. */
 export async function downloadAuthFile(
-  client: ManagementApiClient,
+  client: ManagementApiTransport,
   name: string,
 ): Promise<{ blob: Blob; filename: string }> {
   requireFileName(name);

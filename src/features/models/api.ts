@@ -1,10 +1,10 @@
-import type { ManagementApiClient } from "@/lib/api/client";
+import type { ManagementApiTransport } from "@/lib/api/client";
 import { ApiError } from "@/lib/api/errors";
 import { modelDefinitionsSchema } from "./schemas";
 
 /** Model count for one channel; a body without a models array is a malformed response. */
 export async function fetchModelCount(
-  client: ManagementApiClient,
+  client: ManagementApiTransport,
   channel: string,
   signal?: AbortSignal,
 ): Promise<number> {

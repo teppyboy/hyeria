@@ -1,4 +1,4 @@
-import type { ManagementApiClient } from "@/lib/api/client";
+import type { ManagementApiTransport } from "@/lib/api/client";
 import { ApiError } from "@/lib/api/errors";
 import { configNodePath } from "@/lib/config/config-paths";
 import { z } from "zod";
@@ -46,16 +46,16 @@ function assertJsonValue(value: unknown, path: readonly string[] = []): void {
   }
 }
 
-export async function readConfig(client: ManagementApiClient): Promise<ConfigDocument> {
+export async function readConfig(client: ManagementApiTransport): Promise<ConfigDocument> {
   return client.get<ConfigDocument>("/config");
 }
 
-export async function readConfigYaml(client: ManagementApiClient): Promise<string> {
+export async function readConfigYaml(client: ManagementApiTransport): Promise<string> {
   return client.getText("/config.yaml", { accept: "application/yaml" });
 }
 
 export async function writeConfig(
-  client: ManagementApiClient,
+  client: ManagementApiTransport,
   document: ConfigDocument,
 ): Promise<MutationResult> {
   if (typeof document !== "object" || document === null || Array.isArray(document)) {
@@ -66,7 +66,7 @@ export async function writeConfig(
 }
 
 export async function writeConfigYaml(
-  client: ManagementApiClient,
+  client: ManagementApiTransport,
   yaml: string,
 ): Promise<MutationResult> {
   if (yaml.trim() === "") throw new TypeError("A config YAML document cannot be empty.");
@@ -77,7 +77,7 @@ export async function writeConfigYaml(
 
 /** Sends the value as-is; `undefined` has no JSON form, so it must not reach the wire as an empty body. */
 export async function putConfigPath(
-  client: ManagementApiClient,
+  client: ManagementApiTransport,
   path: readonly string[],
   value: unknown,
 ): Promise<MutationResult> {
@@ -86,7 +86,7 @@ export async function putConfigPath(
 }
 
 export async function patchConfigPath(
-  client: ManagementApiClient,
+  client: ManagementApiTransport,
   path: readonly string[],
   value: unknown,
 ): Promise<MutationResult> {
@@ -96,7 +96,7 @@ export async function patchConfigPath(
 
 /** `configNodePath` rejects the empty path, so deleting the root is never sent. */
 export async function deleteConfigPath(
-  client: ManagementApiClient,
+  client: ManagementApiTransport,
   path: readonly string[],
 ): Promise<MutationResult> {
   return toMutationResult(await client.delete(configNodePath(path)));

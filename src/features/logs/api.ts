@@ -1,4 +1,4 @@
-import type { ManagementApiClient } from "@/lib/api/client";
+import type { ManagementApiTransport } from "@/lib/api/client";
 import { ApiError, redactDeep, redactSensitive } from "@/lib/api/errors";
 import {
   errorLogListSchema,
@@ -41,7 +41,7 @@ function invalidResponse(message: string): ApiError {
 
 /** Fetches a page of log lines; the caller passes `nextCursor` back for incremental reads. */
 export async function fetchLogPage(
-  client: ManagementApiClient,
+  client: ManagementApiTransport,
   query: LogPageQuery,
   signal?: AbortSignal,
 ): Promise<LogPageView> {
@@ -65,7 +65,7 @@ export async function fetchLogPage(
 }
 
 /** Deletes the log file contents on the server; irreversible, so the caller must confirm first. */
-export async function clearLogs(client: ManagementApiClient): Promise<{ removed: number; message: string }> {
+export async function clearLogs(client: ManagementApiTransport): Promise<{ removed: number; message: string }> {
   const parsed = logClearSchema.safeParse(await client.delete("/observability/logs"));
   if (!parsed.success) throw invalidResponse("The server did not confirm the log clear.");
   return { removed: parsed.data.removed, message: redactSensitive(parsed.data.message) };
@@ -73,7 +73,7 @@ export async function clearLogs(client: ManagementApiClient): Promise<{ removed:
 
 /** Lists request-error log files; names outside `error-*.log` are listed but marked not downloadable. */
 export async function listErrorLogs(
-  client: ManagementApiClient,
+  client: ManagementApiTransport,
   signal?: AbortSignal,
 ): Promise<ErrorLogFileView[]> {
   const parsed = errorLogListSchema.safeParse(
@@ -93,7 +93,7 @@ export async function listErrorLogs(
  * server never chooses a path. Download failures surface as ApiError from the client.
  */
 export async function downloadErrorLog(
-  client: ManagementApiClient,
+  client: ManagementApiTransport,
   name: string,
 ): Promise<{ blob: Blob; filename: string }> {
   if (!errorLogNameSchema.safeParse(name).success) {
@@ -108,7 +108,7 @@ export async function downloadErrorLog(
  * only run from an explicit user action and must never be retried or prefetched.
  */
 export async function consumeUsageQueue(
-  client: ManagementApiClient,
+  client: ManagementApiTransport,
   count: number,
 ): Promise<unknown[]> {
   if (!Number.isInteger(count) || count < 1) {

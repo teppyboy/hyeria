@@ -1,5 +1,5 @@
 import { z } from "zod";
-import type { ManagementApiClient } from "@/lib/api/client";
+import type { ManagementApiTransport } from "@/lib/api/client";
 import { ApiError } from "@/lib/api/errors";
 import type { OAuthFlowKind, OAuthStatusResult } from "./state-machine";
 
@@ -75,7 +75,7 @@ export function parseHttpsUrl(value: string): string | null {
 
 /** Starts a browser or device flow; the returned URL is untrusted and must pass parseHttpsUrl. */
 export async function startOAuth(
-  client: ManagementApiClient,
+  client: ManagementApiTransport,
   provider: string,
   webui = false,
 ): Promise<OAuthAuthUrl> {
@@ -99,7 +99,7 @@ export async function startOAuth(
 
 /** Maps the documented wait/ok/error values; any other provider value is reported as unknown. */
 export async function pollOAuthStatus(
-  client: ManagementApiClient,
+  client: ManagementApiTransport,
   state: string,
   signal?: AbortSignal,
 ): Promise<OAuthStatusResult> {
@@ -112,7 +112,7 @@ export async function pollOAuthStatus(
 }
 
 export async function cancelOAuthSession(
-  client: ManagementApiClient,
+  client: ManagementApiTransport,
   state: string,
 ): Promise<void> {
   const parsed = okStatusSchema.safeParse(
@@ -123,7 +123,7 @@ export async function cancelOAuthSession(
 
 /** Uploads a Vertex service-account file as multipart; the response's file path is not returned. */
 export async function importVertexCredential(
-  client: ManagementApiClient,
+  client: ManagementApiTransport,
   serviceAccount: Blob,
   location?: string,
 ): Promise<VertexImportResult> {
@@ -143,7 +143,7 @@ export async function importVertexCredential(
 
 /** Unauthenticated by design; the shared client omits the management key on this path. */
 export async function getOAuthCallback(
-  client: ManagementApiClient,
+  client: ManagementApiTransport,
   query: OAuthCallbackQuery,
 ): Promise<void> {
   const parsed = okStatusSchema.safeParse(await client.get("/oauth/callback", { query }));
@@ -152,7 +152,7 @@ export async function getOAuthCallback(
 
 /** Unauthenticated by design; the shared client omits the management key on this path. */
 export async function postOAuthCallback(
-  client: ManagementApiClient,
+  client: ManagementApiTransport,
   body: OAuthCallbackBody,
   signal?: AbortSignal,
 ): Promise<void> {

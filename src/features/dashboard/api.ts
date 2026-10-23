@@ -1,4 +1,4 @@
-import type { ManagementApiClient } from "@/lib/api/client";
+import type { ManagementApiTransport } from "@/lib/api/client";
 import { ApiError } from "@/lib/api/errors";
 import { credentialsListSchema, pluginsListSchema } from "./schemas";
 
@@ -17,7 +17,7 @@ function invalidResponse(message: string): ApiError {
 
 /** Plugin support probe. The /plugins body is read for `plugins_enabled` only; items are not shown. */
 export async function fetchPluginsProbe(
-  client: ManagementApiClient,
+  client: ManagementApiTransport,
   signal?: AbortSignal,
 ): Promise<{ pluginsEnabled: boolean | null }> {
   const parsed = pluginsListSchema.safeParse(await client.get("/plugins", { signal }));
@@ -26,7 +26,7 @@ export async function fetchPluginsProbe(
 }
 
 export async function fetchCredentialsSummary(
-  client: ManagementApiClient,
+  client: ManagementApiTransport,
   signal?: AbortSignal,
 ): Promise<CredentialsSummary> {
   const parsed = credentialsListSchema.safeParse(await client.get("/credentials", { signal }));

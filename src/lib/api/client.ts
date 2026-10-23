@@ -32,9 +32,20 @@ export interface RequestOptions {
   accept?: string;
 }
 
+export interface ManagementApiTransport {
+  get<T = unknown>(path: string, options?: RequestOptions): Promise<T>;
+  post<T = unknown>(path: string, body?: unknown, options?: RequestOptions): Promise<T>;
+  put<T = unknown>(path: string, body?: unknown, options?: RequestOptions): Promise<T>;
+  patch<T = unknown>(path: string, body?: unknown, options?: RequestOptions): Promise<T>;
+  delete<T = unknown>(path: string, options?: RequestOptions): Promise<T>;
+  getText(path: string, options?: RequestOptions): Promise<string>;
+  getBlob(path: string, options?: RequestOptions): Promise<Blob>;
+  postForm<T = unknown>(path: string, form: FormData, options?: RequestOptions): Promise<T>;
+}
+
 type Method = "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
 
-export class ManagementApiClient {
+export class ManagementApiClient implements ManagementApiTransport {
   readonly revision: number;
   private readonly config: ManagementApiClientConfig;
   constructor(config: ManagementApiClientConfig) {

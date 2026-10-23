@@ -1,4 +1,4 @@
-import type { ManagementApiClient } from "@/lib/api/client";
+import type { ManagementApiTransport } from "@/lib/api/client";
 import { ApiError } from "@/lib/api/errors";
 import {
   configMutationResponseSchema,
@@ -47,7 +47,7 @@ function configResult(value: unknown): { status: "ok"; configVersion?: number } 
 }
 
 export async function getPluginConfig(
-  client: ManagementApiClient,
+  client: ManagementApiTransport,
   signal?: AbortSignal,
 ): Promise<Record<string, unknown>> {
   const parsed = pluginConfigSchema.safeParse(await client.get("/config/plugins", { signal }));
@@ -56,7 +56,7 @@ export async function getPluginConfig(
 }
 
 export async function listPlugins(
-  client: ManagementApiClient,
+  client: ManagementApiTransport,
   signal?: AbortSignal,
 ): Promise<{
   pluginsEnabled?: boolean;
@@ -83,7 +83,7 @@ export async function listPlugins(
 }
 
 export async function setPluginConfig(
-  client: ManagementApiClient,
+  client: ManagementApiTransport,
   id: string,
   config: Record<string, unknown>,
 ): Promise<{ status: "ok"; configVersion?: number }> {
@@ -94,7 +94,7 @@ export async function setPluginConfig(
 }
 
 export async function patchPluginConfig(
-  client: ManagementApiClient,
+  client: ManagementApiTransport,
   id: string,
   config: Record<string, unknown>,
 ): Promise<{ status: "ok"; configVersion?: number }> {
@@ -105,7 +105,7 @@ export async function patchPluginConfig(
 }
 
 export async function setPluginEnabled(
-  client: ManagementApiClient,
+  client: ManagementApiTransport,
   id: string,
   enabled: boolean,
 ): Promise<{ status: "ok"; configVersion?: number }> {
@@ -114,7 +114,7 @@ export async function setPluginEnabled(
 }
 
 export async function patchPluginEnabled(
-  client: ManagementApiClient,
+  client: ManagementApiTransport,
   id: string,
   enabled: boolean,
 ): Promise<{ status: "ok"; configVersion?: number }> {
@@ -123,7 +123,7 @@ export async function patchPluginEnabled(
 }
 
 export async function listPluginStore(
-  client: ManagementApiClient,
+  client: ManagementApiTransport,
   signal?: AbortSignal,
 ): Promise<{ plugins: PluginStoreRecord[]; errors: unknown }> {
   const parsed = pluginStoreResponseSchema.safeParse(
@@ -140,7 +140,7 @@ export async function listPluginStore(
 }
 
 export async function installPlugin(
-  client: ManagementApiClient,
+  client: ManagementApiTransport,
   id: string,
   options: { source?: string; version?: string } = {},
 ): Promise<PluginInstallResult> {
@@ -158,13 +158,16 @@ export async function installPlugin(
   return parsed.data;
 }
 
-export async function uninstallPlugin(client: ManagementApiClient, id: string): Promise<unknown> {
+export async function uninstallPlugin(
+  client: ManagementApiTransport,
+  id: string,
+): Promise<unknown> {
   requireId(id);
   return client.delete(`/plugins/${id}`);
 }
 
 export async function postPluginQuota(
-  client: ManagementApiClient,
+  client: ManagementApiTransport,
   id: string,
   authIndex: string,
 ): Promise<unknown> {
@@ -174,7 +177,7 @@ export async function postPluginQuota(
 }
 
 export async function deletePluginQuota(
-  client: ManagementApiClient,
+  client: ManagementApiTransport,
   id: string,
   authIndex: string,
 ): Promise<unknown> {
@@ -184,7 +187,7 @@ export async function deletePluginQuota(
 }
 
 export async function getPluginQuota(
-  client: ManagementApiClient,
+  client: ManagementApiTransport,
   id: string,
   authIndex: string,
   signal?: AbortSignal,

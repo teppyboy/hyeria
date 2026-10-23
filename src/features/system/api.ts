@@ -1,4 +1,4 @@
-import type { ManagementApiClient } from "@/lib/api/client";
+import type { ManagementApiTransport } from "@/lib/api/client";
 import { ApiError } from "@/lib/api/errors";
 import { z } from "zod";
 
@@ -6,7 +6,7 @@ const latestVersionSchema = z.looseObject({ "latest-version": z.string().min(1) 
 
 /** Latest released version as reported by the backend; failure statuses are unverified (§3.2). */
 export async function fetchLatestVersion(
-  client: ManagementApiClient,
+  client: ManagementApiTransport,
   signal?: AbortSignal,
 ): Promise<string> {
   const body = await client.get("/server/latest-version", { signal });

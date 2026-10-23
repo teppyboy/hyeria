@@ -1,4 +1,4 @@
-import type { ManagementApiClient } from "@/lib/api/client";
+import type { ManagementApiTransport } from "@/lib/api/client";
 import { ApiError } from "@/lib/api/errors";
 import {
   putConfigPath,
@@ -56,7 +56,7 @@ function readGroupsSection(document: ConfigDocument): Record<string, unknown> {
 
 /** Reads `api-keys/<provider>` groups from GET /config for the management list. */
 export async function listProviderGroups(
-  client: ManagementApiClient,
+  client: ManagementApiTransport,
 ): Promise<ProviderGroupView[]> {
   const groups = readGroupsSection(await readConfig(client));
   return Object.entries(groups).map(([provider, value]) => {
@@ -82,7 +82,7 @@ export async function listProviderGroups(
  * write the list back with `replaceProviderGroup` without dropping data. An absent group reads as [].
  */
 export async function readProviderGroupEntries(
-  client: ManagementApiClient,
+  client: ManagementApiTransport,
   provider: string,
 ): Promise<ProviderEntry[]> {
   if (!providerGroupNameSchema.safeParse(provider).success) {
@@ -101,7 +101,7 @@ export async function readProviderGroupEntries(
  * with their unknown backend fields intact; PUT replaces the whole list, as the API requires.
  */
 export async function replaceProviderGroup(
-  client: ManagementApiClient,
+  client: ManagementApiTransport,
   provider: string,
   entries: readonly ProviderEntry[],
 ): Promise<MutationResult> {
