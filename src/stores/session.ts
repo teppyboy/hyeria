@@ -12,6 +12,12 @@ import { connectInputSchema, type ConnectInput } from "@/features/auth/schemas";
 
 export type SessionEndReason = "disconnected" | "unauthorized";
 
+/** Structural seam for the in-memory demo transport; the production client remains unchanged. */
+export type DemoApiTransport = Pick<
+  ManagementApiClient,
+  "get" | "post" | "put" | "patch" | "delete" | "getText" | "getBlob" | "postForm"
+>;
+
 export interface SessionState {
   isAuthenticated: boolean;
   apiBase: string | null;
@@ -22,6 +28,7 @@ export interface SessionState {
   capabilities: ServerCapabilities;
   remember: boolean;
   endReason: SessionEndReason | null;
+  isDemo: boolean;
   connect(input: ConnectInput): Promise<void>;
   /** Loads a remembered session (if any) and connects with it. Returns false when none is usable. */
   restoreRememberedConnection(): Promise<boolean>;
@@ -29,6 +36,8 @@ export interface SessionState {
   clearPersistedConnection(): void;
   /** Client bound to the active connection revision; throws when not authenticated. */
   getClient(): ManagementApiClient;
+  /** Installs an ephemeral transport without probing, normalizing, or persisting credentials. */
+  initializeDemo(transport: DemoApiTransport): void;
 }
 
 export interface SessionStoreDeps {
@@ -43,12 +52,14 @@ const LOGGED_OUT = {
   managementKey: null,
   capabilities: EMPTY_CAPABILITIES,
   remember: false,
+  isDemo: false,
 } as const;
 
 export function createSessionStore(deps: SessionStoreDeps = {}): StoreApi<SessionState> {
   const storage = deps.storage ?? createLocalRememberedSessionStorage();
   let controller = new AbortController();
   let activeClient: ManagementApiClient | null = null;
+  let demoTransport: DemoApiTransport | null = null;
 
   return createStore<SessionState>()((set, get) => {
     /** Ends the current connection: bumps the revision and aborts everything started under it. */
@@ -56,7 +67,12 @@ export function createSessionStore(deps: SessionStoreDeps = {}): StoreApi<Sessio
       controller.abort();
       controller = new AbortController();
       activeClient = null;
-      set({ ...LOGGED_OUT, endReason, connectionRevision: get().connectionRevision + 1 });
+      set({
+        ...LOGGED_OUT,
+        isDemo: demoTransport !== null,
+        endReason,
+        connectionRevision: get().connectionRevision + 1,
+      });
     };
 
     const buildClient = (
@@ -86,8 +102,10 @@ export function createSessionStore(deps: SessionStoreDeps = {}): StoreApi<Sessio
       ...LOGGED_OUT,
       connectionRevision: 0,
       endReason: null,
+      isDemo: false,
 
       async connect(input) {
+        demoTransport = null;
         const { managementKey, remember } = connectInputSchema.parse(input);
         const apiBase = normalizeApiBase(input.apiBase, deps.location);
         endConnection(null);
@@ -124,12 +142,13 @@ export function createSessionStore(deps: SessionStoreDeps = {}): StoreApi<Sessio
       },
 
       disconnect() {
-        storage.clear();
+        if (!demoTransport) storage.clear();
+        demoTransport = null;
         endConnection("disconnected");
       },
 
       clearPersistedConnection() {
-        storage.clear();
+        if (!demoTransport) storage.clear();
         set({ remember: false });
       },
 
@@ -137,6 +156,24 @@ export function createSessionStore(deps: SessionStoreDeps = {}): StoreApi<Sessio
         if (!get().isAuthenticated || !activeClient)
           throw new Error("Not connected to a management API.");
         return activeClient;
+      },
+
+      initializeDemo(transport) {
+        controller.abort();
+        controller = new AbortController();
+        demoTransport = transport;
+        // SAFETY: DemoApiTransport and ManagementApiClient expose the same request method port.
+        activeClient = transport as unknown as ManagementApiClient;
+        set({
+          isAuthenticated: true,
+          isDemo: true,
+          apiBase: null,
+          managementKey: null,
+          remember: false,
+          endReason: null,
+          connectionRevision: get().connectionRevision + 1,
+          capabilities: EMPTY_CAPABILITIES,
+        });
       },
     };
   });

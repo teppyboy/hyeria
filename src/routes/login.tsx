@@ -34,6 +34,7 @@ export function LoginPage() {
   const authenticated = useSessionStore((state) => state.isAuthenticated);
   const apiBase = useSessionStore((state) => state.apiBase);
   const endReason = useSessionStore((state) => state.endReason);
+  const isDemo = useSessionStore((state) => state.isDemo);
   const language = usePreferencesStore((state) => state.language);
   const legalOpen = useUiStore((state) => state.legalOpen);
   const setLegalOpen = (open: boolean) => useUiStore.getState().setLegalOpen(open);
@@ -54,11 +55,12 @@ export function LoginPage() {
   useEffect(() => {
     if (attempted.current) return;
     attempted.current = true;
+    if (isDemo) return;
     void sessionStore
       .getState()
       .restoreRememberedConnection()
       .finally(() => setRestoring(false));
-  }, []);
+  }, [isDemo]);
   useEffect(() => {
     if (authenticated)
       void navigate(safeFrom((location.state as { from?: unknown } | null)?.from), {
@@ -75,6 +77,25 @@ export function LoginPage() {
       setError(errorText(caught, t("login.invalid")));
     }
   }
+  if (isDemo)
+    return (
+      <main className="grid min-h-screen place-items-center bg-background p-4">
+        <section className="w-full max-w-md space-y-5 rounded-xl border bg-card p-6 shadow-sm">
+          <h1 className="text-2xl font-semibold">Interactive demo</h1>
+          <p className="text-sm text-muted-foreground">
+            This demo does not use an API address or management key. Return to the dashboard to
+            explore simulated actions.
+          </p>
+          <button
+            type="button"
+            onClick={() => void navigate("/", { replace: true })}
+            className="w-full rounded-md bg-primary px-4 py-2 text-primary-foreground"
+          >
+            Open demo dashboard
+          </button>
+        </section>
+      </main>
+    );
   if (restoring && !authenticated)
     return (
       <main className="grid min-h-screen place-items-center" aria-live="polite">

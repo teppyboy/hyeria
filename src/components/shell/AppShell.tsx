@@ -10,6 +10,7 @@ import { ConfirmDialog } from "@/components/feedback/ConfirmDialog";
 import { ErrorBoundary } from "@/components/feedback/ErrorBoundary";
 import { LegalNotice } from "@/components/feedback/LegalNotice";
 import { translate } from "@/lib/i18n";
+import { DemoBanner } from "@/features/demo/DemoBanner";
 
 export function AppShell({ children }: { children: ReactNode }) {
   const language = usePreferencesStore((state) => state.language);
@@ -17,6 +18,7 @@ export function AppShell({ children }: { children: ReactNode }) {
   const sidebarOpen = useUiStore((state) => state.sidebarOpen);
   const legalOpen = useUiStore((state) => state.legalOpen);
   const revision = useSessionStore((state) => state.connectionRevision);
+  const isDemo = useSessionStore((state) => state.isDemo);
   const t = (key: string) => translate(language, key);
 
   useEffect(() => {
@@ -28,6 +30,7 @@ export function AppShell({ children }: { children: ReactNode }) {
   }, [revision]);
   return (
     <div className="min-h-screen bg-background text-foreground">
+      {isDemo && <DemoBanner />}
       <a
         className="sr-only focus:not-sr-only focus:absolute focus:z-50 focus:bg-background focus:p-3"
         href="#main-content"

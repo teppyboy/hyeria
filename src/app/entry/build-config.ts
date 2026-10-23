@@ -1,3 +1,3 @@
-export const routerModes = ["hash", "history"] as const;
+export const routerModes = ["hash", "history", "demo"] as const;
 
 export type RouterMode = (typeof routerModes)[number];
