@@ -1,6 +1,7 @@
 import { afterEach, describe, expect, it } from "vite-plus/test";
 import { act, type ReactNode } from "react";
 import { createRoot, type Root } from "react-dom/client";
+import { Button } from "../../../src/components/ui/button";
 import { ActionGroup } from "../../../src/components/workspace/ActionGroup";
 import { StatusCell } from "../../../src/components/workspace/StatusCell";
 import { WorkspaceHeader } from "../../../src/components/workspace/WorkspaceHeader";
@@ -43,6 +44,8 @@ describe("workspace primitives", () => {
     expect(host.querySelector('[data-slot="workspace-actions"] button')?.textContent).toBe(
       "Refresh",
     );
+    expect(host.querySelector('[data-slot="workspace-actions"]')?.className).toContain("w-full");
+    expect(host.querySelector('[data-slot="workspace-actions"]')?.className).toContain("sm:w-auto");
   });
 
   it("exposes status cell facts with semantic tone tokens", () => {
@@ -87,8 +90,8 @@ describe("workspace primitives", () => {
   it("preserves action order and marks destructive groups", () => {
     const host = render(
       <ActionGroup destructive>
-        <button type="button">Keep</button>
-        <button type="button">Delete</button>
+        <Button variant="outline">Keep</Button>
+        <Button variant="destructive">Delete</Button>
       </ActionGroup>,
     );
     const group = host.querySelector('[data-slot="action-group"]');
@@ -99,5 +102,8 @@ describe("workspace primitives", () => {
     ]);
     expect(group?.getAttribute("data-destructive")).toBe("true");
     expect(group?.className).toContain("border-destructive");
+    expect(
+      [...host.querySelectorAll("button")].every((button) => button.className.includes("min-h-11")),
+    ).toBe(true);
   });
 });

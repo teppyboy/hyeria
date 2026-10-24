@@ -31,7 +31,7 @@ export function Header() {
   return (
     <header
       data-slot="app-header"
-      className="sticky top-0 z-30 flex h-14 items-center gap-3 border-b bg-background px-4"
+      className="sticky top-0 z-30 flex h-14 items-center gap-1 border-b bg-background px-2 sm:gap-3 sm:px-4"
     >
       <Button
         variant="ghost"
@@ -49,13 +49,13 @@ export function Header() {
         Hyeria
       </Link>
       <span className="hidden text-sm text-muted-foreground sm:inline">{t("app.tagline")}</span>
-      <div className="ml-auto flex items-center gap-2">
+      <div className="ml-auto flex min-w-0 items-center gap-1 sm:gap-2">
         {isAuthenticated && (
           <span
             data-slot="connection-status"
             data-session-mode={isDemo ? "demo" : "connected"}
             role="status"
-            className="min-h-11 max-w-36 truncate rounded-md border px-2 py-1 text-xs text-muted-foreground"
+            className="min-h-11 max-w-11 truncate rounded-md border px-1 py-1 text-xs text-muted-foreground sm:max-w-36 sm:px-2"
           >
             {isDemo ? t("shell.connectionDemo") : t("shell.connectionConnected")}
           </span>
@@ -63,11 +63,11 @@ export function Header() {
         <label className="sr-only" htmlFor="language">
           {t("shell.language")}
         </label>
-        <Languages className="size-4" />
+        <Languages className="hidden size-4 sm:block" />
         <select
           id="language"
           aria-label={t("shell.language")}
-          className="min-h-11 rounded-md border bg-background px-2 text-sm"
+          className="min-h-11 w-12 rounded-md border bg-background px-0 text-sm sm:w-auto sm:px-2"
           value={language}
           onChange={(event) => setLanguage(event.target.value as typeof language)}
         >
@@ -80,11 +80,11 @@ export function Header() {
         <label className="sr-only" htmlFor="theme">
           {t("shell.theme")}
         </label>
-        <Palette className="size-4" />
+        <Palette className="hidden size-4 sm:block" />
         <select
           id="theme"
           aria-label={t("shell.theme")}
-          className="min-h-11 rounded-md border bg-background px-2 text-sm"
+          className="min-h-11 w-12 rounded-md border bg-background px-0 text-sm sm:w-auto sm:px-2"
           value={theme}
           onChange={(event) => setTheme(event.target.value as Theme)}
         >

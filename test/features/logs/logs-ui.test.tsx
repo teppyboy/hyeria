@@ -46,6 +46,8 @@ describe("logs UI", () => {
     const viewer = host.querySelector("pre");
     expect(viewer?.className).toContain("overflow-auto");
     expect(viewer?.className).toContain("max-h-[32rem]");
+    expect(viewer?.closest('[data-slot="log-viewer"]')?.className).toContain("max-w-full");
+    expect(viewer?.closest('[data-slot="log-viewer"]')?.className).toContain("overflow-x-auto");
   });
 
   it("filters management lines and searches across fetched pages", () => {

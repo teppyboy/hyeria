@@ -269,7 +269,7 @@ export function OAuthPage() {
                 <Label htmlFor="oauth-provider-select">{t("oauth.provider")}</Label>
                 <select
                   id="oauth-provider-select"
-                  className="h-9 rounded-md border bg-transparent px-3 text-sm"
+                  className="min-h-11 rounded-md border bg-transparent px-3 text-sm"
                   value={provider}
                   onChange={(event) => setProvider(event.target.value)}
                   disabled={active}

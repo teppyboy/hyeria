@@ -1,3 +1,5 @@
+import { readFileSync } from "node:fs";
+import { resolve } from "node:path";
 import { afterEach, describe, expect, it } from "vite-plus/test";
 import { act } from "react";
 import { createRoot, type Root } from "react-dom/client";
@@ -177,13 +179,42 @@ describe("application shell", () => {
   it("keeps shell controls at the minimum touch target", () => {
     const host = renderShell();
     expect(host.querySelector("#language")?.className).toContain("min-h-11");
+    expect(host.querySelector("#language")?.className).toContain("w-12");
+    expect(host.querySelector("#language")?.className).toContain("sm:w-auto");
     expect(host.querySelector("#theme")?.className).toContain("min-h-11");
+    expect(host.querySelector("#theme")?.className).toContain("w-12");
+    expect(host.querySelector("#theme")?.className).toContain("sm:w-auto");
     expect(host.querySelector("button[aria-label='About Hyeria']")?.className).toContain(
+      "min-h-11",
+    );
+    expect(host.querySelector("button[aria-label='Disconnect']")?.className).toContain("min-h-11");
+    expect(host.querySelector("button[aria-label='Open navigation']")?.className).toContain(
       "min-h-11",
     );
     expect(host.querySelector("aside#app-navigation a[href='/']")?.className).toContain(
       "sidebar-link",
     );
+  });
+
+  it("preserves selected and status styling for reduced-motion users", () => {
+    sessionStore.setState({ isAuthenticated: true, isDemo: false });
+    const host = renderShell();
+    expect(host.querySelector('[data-shell="app-shell"]')?.className).toContain("motion-shell");
+    expect(host.querySelector("aside#app-navigation a[aria-current='page']")?.className).toContain(
+      "bg-accent",
+    );
+    expect(host.querySelector('[data-slot="connection-status"]')?.className).toContain(
+      "text-muted-foreground",
+    );
+  });
+
+  it("keeps reduced-motion selectors free of entrance and spatial choreography", () => {
+    const css = readFileSync(resolve(process.cwd(), "src/styles/tokens.css"), "utf8");
+    const reducedMotion = css.slice(css.indexOf("@media (prefers-reduced-motion: reduce)"));
+    expect(reducedMotion).toContain("animation: none");
+    expect(reducedMotion).toContain("transform: none");
+    expect(reducedMotion).toContain('.sidebar-link[aria-current="page"]');
+    expect(reducedMotion).toContain("#main-content > *");
   });
 
   it("keeps the desktop sidebar control out of the mobile header and exposes the mobile trigger", () => {

@@ -33,8 +33,8 @@ export function LogViewer({
   if (isError) return <WorkspaceState kind="error" title={t("logs.loadError")} />;
   if (lines.length === 0) return <WorkspaceState kind="empty" title={t("logs.empty")} />;
   return (
-    <div data-slot="log-viewer">
-      <pre className="max-h-[32rem] overflow-auto rounded-md border bg-muted/30 p-3 text-xs leading-5">
+    <div data-slot="log-viewer" className="max-w-full overflow-x-auto">
+      <pre className="max-h-[32rem] min-w-0 overflow-auto rounded-md border bg-muted/30 p-3 text-xs leading-5">
         {lines.map((line, index) => (
           <code className="block whitespace-pre-wrap break-words" key={`${index}-${line}`}>
             {line}

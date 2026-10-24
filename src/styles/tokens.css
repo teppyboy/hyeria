@@ -311,13 +311,13 @@
     animation: none;
   }
 
+  #main-content > * {
+    animation: none;
+  }
+
   .sidebar-link:hover,
   .sidebar-link:hover .sidebar-icon,
   .sidebar-link[aria-current="page"] .sidebar-icon {
     transform: none;
-  }
-
-  #main-content > * {
-    animation: none;
   }
 }

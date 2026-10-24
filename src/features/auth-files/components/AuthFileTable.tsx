@@ -29,8 +29,8 @@ export function AuthFileTable({
   const language = usePreferencesStore((state) => state.language);
   const t = (key: string) => translate(language, key);
   return (
-    <div className="overflow-x-auto">
-      <table className="w-full text-sm">
+    <div data-slot="bounded-table" className="max-w-full overflow-x-auto">
+      <table className="min-w-[52rem] w-full text-sm">
         <thead>
           <tr className="border-b text-left text-muted-foreground">
             <th className="px-2 py-1.5 font-medium">{t("authFiles.name")}</th>
