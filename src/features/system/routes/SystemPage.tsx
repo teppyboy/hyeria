@@ -1,5 +1,7 @@
+import { ActionGroup } from "@/components/workspace/ActionGroup";
+import { StatusCell } from "@/components/workspace/StatusCell";
+import { WorkspaceHeader } from "@/components/workspace/WorkspaceHeader";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useSystemQueries } from "@/features/system/queries";
 import { compareVersions } from "@/lib/feature-support/capabilities";
@@ -18,73 +20,75 @@ export function SystemPage() {
     : "unknown";
 
   return (
-    <section className="mx-auto grid max-w-5xl gap-4 md:grid-cols-2">
-      <h1 className="text-2xl font-semibold md:col-span-2">{t("nav.system")}</h1>
+    <section className="mx-auto grid max-w-5xl gap-6">
+      <WorkspaceHeader title={t("nav.system")} />
 
-      <Card>
-        <CardHeader>
-          <CardTitle>{t("system.latestVersion")}</CardTitle>
-          <CardDescription>{t("system.latestVersionDescription")}</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-1 text-sm">
-          {latestVersion.isPending && <Skeleton className="h-10 w-full" />}
-          {latestVersion.isError && <p role="alert">{t("system.latestVersionError")}</p>}
-          {latestVersion.isSuccess && (
-            <>
-              <p>
-                {t("system.latest")}: {latestVersion.data}
-              </p>
-              <p>
-                {t("system.current")}: {current ?? t("dashboard.unknown")}
-              </p>
-              <p>{t(`system.compare.${comparison}`)}</p>
-            </>
-          )}
-        </CardContent>
-      </Card>
+      <section aria-labelledby="system-latest" className="grid gap-3">
+        <div>
+          <h2 id="system-latest" className="text-base font-medium">
+            {t("system.latestVersion")}
+          </h2>
+          <p className="text-sm text-muted-foreground">{t("system.latestVersionDescription")}</p>
+        </div>
+        {latestVersion.isPending && <Skeleton className="h-10 w-full" />}
+        {latestVersion.isError && <p role="alert">{t("system.latestVersionError")}</p>}
+        {latestVersion.isSuccess && (
+          <div className="grid gap-4 border-y py-4 sm:grid-cols-2">
+            <StatusCell label={t("system.latest")} value={latestVersion.data} />
+            <StatusCell
+              label={t("system.current")}
+              value={current ?? t("dashboard.unknown")}
+              tone={comparison === "update-available" ? "warning" : "default"}
+              detail={t(`system.compare.${comparison}`)}
+            />
+          </div>
+        )}
+      </section>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>{t("system.modelChannels")}</CardTitle>
-          <CardDescription>{t("system.modelChannelsDescription")}</CardDescription>
-        </CardHeader>
-        <CardContent className="text-sm">
-          {credentials.isPending ? (
-            <p className="text-muted-foreground">{t("dashboard.channelLoading")}</p>
-          ) : credentials.isError ? (
-            <p role="alert" className="text-muted-foreground">
-              {t("dashboard.credentialsError")}
-            </p>
-          ) : channels.length === 0 ? (
-            <p className="text-muted-foreground">{t("system.noChannels")}</p>
-          ) : (
-            <ul className="space-y-1">
-              {channels.map((channel, index) => {
-                const query = modelDefinitions[index];
-                return (
-                  <li key={channel} className="flex justify-between gap-2">
-                    <span className="font-mono">{channel}</span>
-                    {query?.isPending && <Skeleton className="h-4 w-24" />}
-                    {query?.isError && <span>{t("system.channelError")}</span>}
-                    {query?.isSuccess && (
-                      <span>
-                        {t("system.channelCount")}: {query.data}
-                      </span>
-                    )}
-                  </li>
-                );
-              })}
-            </ul>
-          )}
-        </CardContent>
-      </Card>
+      <section aria-labelledby="system-channels" className="grid gap-3">
+        <div>
+          <h2 id="system-channels" className="text-base font-medium">
+            {t("system.modelChannels")}
+          </h2>
+          <p className="text-sm text-muted-foreground">{t("system.modelChannelsDescription")}</p>
+        </div>
+        {credentials.isPending ? (
+          <p className="text-sm text-muted-foreground">{t("dashboard.channelLoading")}</p>
+        ) : credentials.isError ? (
+          <p role="alert" className="text-sm text-muted-foreground">
+            {t("dashboard.credentialsError")}
+          </p>
+        ) : channels.length === 0 ? (
+          <p className="text-sm text-muted-foreground">{t("system.noChannels")}</p>
+        ) : (
+          <ul className="divide-y border-y">
+            {channels.map((channel, index) => {
+              const query = modelDefinitions[index];
+              return (
+                <li key={channel} className="flex justify-between gap-2 py-3 text-sm">
+                  <span className="font-mono">{channel}</span>
+                  {query?.isPending && <Skeleton className="h-4 w-24" />}
+                  {query?.isError && <span>{t("system.channelError")}</span>}
+                  {query?.isSuccess && (
+                    <span className="font-mono">
+                      {t("system.channelCount")}: {query.data}
+                    </span>
+                  )}
+                </li>
+              );
+            })}
+          </ul>
+        )}
+      </section>
 
-      <Card className="md:col-span-2">
-        <CardHeader>
-          <CardTitle>{t("system.session")}</CardTitle>
-          <CardDescription>{t("system.sessionDescription")}</CardDescription>
-        </CardHeader>
-        <CardContent>
+      <section aria-labelledby="system-session" className="grid gap-3">
+        <div>
+          <h2 id="system-session" className="text-base font-medium">
+            {t("system.session")}
+          </h2>
+          <p className="text-sm text-muted-foreground">{t("system.sessionDescription")}</p>
+        </div>
+        <ActionGroup>
           <Button
             variant="outline"
             disabled={forgetRememberedSession.isPending}
@@ -92,13 +96,13 @@ export function SystemPage() {
           >
             {t("system.forgetSession")}
           </Button>
-          {forgetRememberedSession.isSuccess && (
-            <p role="status" className="mt-2 text-sm">
-              {t("system.forgotten")}
-            </p>
-          )}
-        </CardContent>
-      </Card>
+        </ActionGroup>
+        {forgetRememberedSession.isSuccess && (
+          <p role="status" className="text-sm">
+            {t("system.forgotten")}
+          </p>
+        )}
+      </section>
     </section>
   );
 }

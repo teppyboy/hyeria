@@ -24,6 +24,30 @@ function mount(element: React.ReactNode) {
 }
 
 describe("logs UI", () => {
+  it("keeps the viewer scrolling inside its own bounded region", () => {
+    const host = mount(
+      <LogViewer
+        batches={[
+          {
+            lines: ["request accepted"],
+            lineCount: 1,
+            latestTimestamp: 1,
+            nextCursor: "",
+            cursorReset: false,
+          },
+        ]}
+        isPending={false}
+        isError={false}
+        search=""
+        showManagement={false}
+      />,
+    );
+
+    const viewer = host.querySelector("pre");
+    expect(viewer?.className).toContain("overflow-auto");
+    expect(viewer?.className).toContain("max-h-[32rem]");
+  });
+
   it("filters management lines and searches across fetched pages", () => {
     const host = mount(
       <LogViewer

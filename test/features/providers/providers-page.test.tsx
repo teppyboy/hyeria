@@ -146,6 +146,19 @@ describe("providers page", () => {
     expect(host.textContent).not.toContain("X-Team");
   });
 
+  it("gives the page one workspace header and a bounded table region", async () => {
+    stubConfig(() => new Response(JSON.stringify(configWithGroups)));
+    await connect();
+    const host = mountPage();
+    await vi.waitFor(() => expect(host.querySelector("table")).not.toBeNull());
+
+    expect(host.querySelectorAll("[data-slot='workspace-header']")).toHaveLength(1);
+    expect(host.querySelector("h1")?.textContent).toBe("AI providers");
+    expect(
+      host.querySelector("section[aria-labelledby] table")?.parentElement?.className,
+    ).toContain("overflow-x-auto");
+  });
+
   it("states that editing is deferred and links to the raw configuration editor", async () => {
     stubConfig(() => new Response(JSON.stringify(configWithGroups)));
     await connect();

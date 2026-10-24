@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
+import { ActionGroup } from "@/components/workspace/ActionGroup";
+import { WorkspaceHeader } from "@/components/workspace/WorkspaceHeader";
 import { usePreferencesStore } from "@/stores/preferences";
 import { useUiStore } from "@/stores/ui";
 import { translate } from "@/lib/i18n";
@@ -39,33 +40,38 @@ export function LogsPage() {
   };
 
   return (
-    <section className="mx-auto grid max-w-5xl gap-4">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <h1 className="text-2xl font-semibold">{t("nav.logs")}</h1>
-        <Button variant="destructive" disabled={clear.isPending} onClick={confirmClear}>
-          {t("logs.clear")}
-        </Button>
-      </div>
-      <Card>
-        <CardHeader>
-          <CardTitle>{t("logs.viewerTitle")}</CardTitle>
-          <CardDescription>{t("logs.viewerDescription")}</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <LogFilters
-            search={search}
-            showManagement={showManagement}
-            onSearchChange={setSearch}
-            onShowManagementChange={setShowManagement}
-          />
-          <LogViewer
-            batches={logs.data?.pages ?? []}
-            isPending={logs.isPending}
-            isError={logs.isError}
-            search={search}
-            showManagement={showManagement}
-          />
-          {logs.hasNextPage && (
+    <section className="mx-auto grid max-w-5xl gap-6">
+      <WorkspaceHeader
+        title={t("nav.logs")}
+        description={t("logs.viewerDescription")}
+        actions={
+          <ActionGroup destructive>
+            <Button variant="destructive" disabled={clear.isPending} onClick={confirmClear}>
+              {t("logs.clear")}
+            </Button>
+          </ActionGroup>
+        }
+      />
+
+      <section aria-labelledby="logs-viewer" className="grid gap-4">
+        <h2 id="logs-viewer" className="text-base font-medium">
+          {t("logs.viewerTitle")}
+        </h2>
+        <LogFilters
+          search={search}
+          showManagement={showManagement}
+          onSearchChange={setSearch}
+          onShowManagementChange={setShowManagement}
+        />
+        <LogViewer
+          batches={logs.data?.pages ?? []}
+          isPending={logs.isPending}
+          isError={logs.isError}
+          search={search}
+          showManagement={showManagement}
+        />
+        {logs.hasNextPage && (
+          <ActionGroup>
             <Button
               variant="outline"
               disabled={logs.isFetchingNextPage}
@@ -73,29 +79,30 @@ export function LogsPage() {
             >
               {logs.isFetchingNextPage ? t("logs.loadingMore") : t("logs.loadMore")}
             </Button>
-          )}
-          {logs.isSuccess && logs.data.pages.length > 0 && (
-            <p className="text-xs text-muted-foreground">
-              {t("logs.lineCount")}: {logs.data.pages.reduce((sum, page) => sum + page.lineCount, 0)}
-            </p>
-          )}
-        </CardContent>
-      </Card>
-      <Card>
-        <CardHeader>
-          <CardTitle>{t("logs.errorFilesTitle")}</CardTitle>
-          <CardDescription>{t("logs.errorFilesDescription")}</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <ErrorLogDownloads
-            files={errorLogs.data}
-            isPending={errorLogs.isPending}
-            isError={errorLogs.isError}
-            busy={download.isPending}
-            onDownload={(name) => download.mutate(name)}
-          />
-        </CardContent>
-      </Card>
+          </ActionGroup>
+        )}
+        {logs.isSuccess && logs.data.pages.length > 0 && (
+          <p className="text-xs text-muted-foreground">
+            {t("logs.lineCount")}: {logs.data.pages.reduce((sum, page) => sum + page.lineCount, 0)}
+          </p>
+        )}
+      </section>
+
+      <section aria-labelledby="logs-errors" className="grid gap-3">
+        <div>
+          <h2 id="logs-errors" className="text-base font-medium">
+            {t("logs.errorFilesTitle")}
+          </h2>
+          <p className="text-sm text-muted-foreground">{t("logs.errorFilesDescription")}</p>
+        </div>
+        <ErrorLogDownloads
+          files={errorLogs.data}
+          isPending={errorLogs.isPending}
+          isError={errorLogs.isError}
+          busy={download.isPending}
+          onDownload={(name) => download.mutate(name)}
+        />
+      </section>
       {(logs.isFetching || errorLogs.isFetching) && !logs.isPending && !errorLogs.isPending && (
         <Skeleton className="h-1 w-full" />
       )}

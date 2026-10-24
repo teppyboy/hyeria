@@ -93,6 +93,36 @@ describe("auth files page", () => {
     expect(host.textContent).not.toContain("This page is not available yet.");
   });
 
+  it("gives the page one workspace header with safe actions grouped apart from delete", async () => {
+    await connectAndList([fileRow]);
+    const { host } = mountRoute("/auth-files");
+    await waitForRows(host);
+
+    expect(host.querySelectorAll("[data-slot='workspace-header']")).toHaveLength(1);
+    expect(host.querySelector("[data-slot='workspace-header'] h1")?.textContent).toBe("Auth files");
+    const safeGroup = host.querySelector("[data-slot='action-group'][data-destructive='false']");
+    const destructiveGroup = host.querySelector(
+      "[data-slot='action-group'][data-destructive='true']",
+    );
+    expect(safeGroup).not.toBeNull();
+    expect(destructiveGroup).not.toBeNull();
+    expect(buttonIn(host, "Refresh").closest("[data-slot='action-group']")).toBe(safeGroup);
+    expect(buttonIn(host, "Delete all").closest("[data-slot='action-group']")).toBe(
+      destructiveGroup,
+    );
+    expect(buttonIn(host, "Upload").closest("[data-slot='action-group']")).toBe(safeGroup);
+    expect(host.querySelector("table")?.parentElement?.className).toContain("overflow-x-auto");
+    const row = rowFor(host, "user.json");
+    const rowDelete = buttonIn(row, "Delete").closest("[data-slot='action-group']");
+    expect(rowDelete?.getAttribute("data-destructive")).toBe("true");
+    expect(buttonIn(row, "Download").closest("[data-slot='action-group']")).not.toBe(rowDelete);
+    expect(
+      buttonIn(row, "Download")
+        .closest("[data-slot='action-group']")
+        ?.getAttribute("data-destructive"),
+    ).toBe("false");
+  });
+
   it("lists metadata rows without credential contents", async () => {
     await connect(() => new Response("{}", { status: 404 }));
     stubApi((path) => {

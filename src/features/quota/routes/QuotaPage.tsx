@@ -1,5 +1,6 @@
+import { ActionGroup } from "@/components/workspace/ActionGroup";
+import { WorkspaceHeader } from "@/components/workspace/WorkspaceHeader";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { usePreferencesStore } from "@/stores/preferences";
 import { useUiStore } from "@/stores/ui";
@@ -24,46 +25,53 @@ export function QuotaPage() {
     });
   };
   return (
-    <section className="mx-auto grid max-w-5xl gap-4">
-      <h1 className="text-2xl font-semibold">{t("nav.quota")}</h1>
-      <Card>
-        <CardHeader>
-          <CardTitle>{t("quota.cooldown")}</CardTitle>
-          <CardDescription>{t("quota.cooldownDescription")}</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-3">
-          {credentials.isPending && <Skeleton className="h-12 w-full" />}
-          {credentials.isError && <p role="alert">{t("quota.credentialsError")}</p>}
-          {credentials.isSuccess && credentials.data.length === 0 && (
-            <p className="text-muted-foreground">{t("quota.empty")}</p>
-          )}
-          {credentials.isSuccess &&
-            credentials.data.map((file) => (
-              <div
+    <section className="mx-auto grid max-w-5xl gap-6">
+      <WorkspaceHeader title={t("nav.quota")} description={t("quota.cooldownDescription")} />
+
+      <section aria-labelledby="quota-cooldown" className="grid gap-3">
+        <h2 id="quota-cooldown" className="text-base font-medium">
+          {t("quota.cooldown")}
+        </h2>
+        {credentials.isPending && <Skeleton className="h-12 w-full" />}
+        {credentials.isError && <p role="alert">{t("quota.credentialsError")}</p>}
+        {credentials.isSuccess && credentials.data.length === 0 && (
+          <p className="text-sm text-muted-foreground">{t("quota.empty")}</p>
+        )}
+        {credentials.isSuccess && credentials.data.length > 0 && (
+          <ul className="divide-y border-y">
+            {credentials.data.map((file) => (
+              <li
                 key={file.id}
-                className="flex flex-wrap items-center justify-between gap-2 rounded-md border p-3 text-sm"
+                data-slot="quota-credential"
+                className="flex flex-wrap items-center justify-between gap-3 py-3 text-sm"
               >
-                <span>
+                <span className="min-w-0 break-all">
                   {file.name} ({file.provider})
                 </span>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  disabled={reset.isPending}
-                  onClick={() => resetCooldown(file.authIndex)}
-                >
-                  {t("quota.reset")}
-                </Button>
-              </div>
+                <ActionGroup>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    disabled={reset.isPending}
+                    onClick={() => resetCooldown(file.authIndex)}
+                  >
+                    {t("quota.reset")}
+                  </Button>
+                </ActionGroup>
+              </li>
             ))}
-        </CardContent>
-      </Card>
-      <Card>
-        <CardHeader>
-          <CardTitle>{t("quota.pluginTitle")}</CardTitle>
-          <CardDescription>{t("quota.pluginUnavailable")}</CardDescription>
-        </CardHeader>
-      </Card>
+          </ul>
+        )}
+      </section>
+
+      <section aria-labelledby="quota-plugins" className="grid gap-3">
+        <div>
+          <h2 id="quota-plugins" className="text-base font-medium">
+            {t("quota.pluginTitle")}
+          </h2>
+          <p className="text-sm text-muted-foreground">{t("quota.pluginUnavailable")}</p>
+        </div>
+      </section>
     </section>
   );
 }

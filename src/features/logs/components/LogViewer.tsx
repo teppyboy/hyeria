@@ -33,12 +33,14 @@ export function LogViewer({
   if (isError) return <p role="alert">{t("logs.loadError")}</p>;
   if (lines.length === 0) return <p className="text-muted-foreground">{t("logs.empty")}</p>;
   return (
-    <pre className="max-h-[32rem] overflow-auto rounded-md border bg-muted/30 p-3 text-xs leading-5">
-      {lines.map((line, index) => (
-        <code className="block whitespace-pre-wrap break-words" key={`${index}-${line}`}>
-          {line}
-        </code>
-      ))}
-    </pre>
+    <div data-slot="log-viewer">
+      <pre className="max-h-[32rem] overflow-auto rounded-md border bg-muted/30 p-3 text-xs leading-5">
+        {lines.map((line, index) => (
+          <code className="block whitespace-pre-wrap break-words" key={`${index}-${line}`}>
+            {line}
+          </code>
+        ))}
+      </pre>
+    </div>
   );
 }

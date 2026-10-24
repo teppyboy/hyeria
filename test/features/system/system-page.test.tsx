@@ -28,6 +28,16 @@ async function settle() {
   }
 }
 
+/** Finds a labelled region by the text of the heading that names it. */
+function regionNamed(host: HTMLElement, name: string) {
+  const region = [...host.querySelectorAll<HTMLElement>("section[aria-labelledby]")].find(
+    (section) =>
+      document.getElementById(section.getAttribute("aria-labelledby") ?? "")?.textContent === name,
+  );
+  if (!region) throw new Error(`no region ${name}`);
+  return region;
+}
+
 describe("system page", () => {
   it("does not show the empty channel state when credential discovery fails", async () => {
     vi.stubGlobal(
@@ -93,5 +103,44 @@ describe("system page", () => {
     expect(host.textContent).toContain("codex");
     expect(host.textContent).toContain("Models: 2");
     expect(host.textContent).not.toContain("user@example.invalid");
+  });
+
+  it("uses one workspace header and separates version, channel, and browser-session regions", async () => {
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async (input: URL) => {
+        const path = new URL(input).pathname.replace("/v8/management", "");
+        if (path === "/config") return new Response(JSON.stringify(config));
+        if (path === "/credentials") return new Response(JSON.stringify(credentials));
+        if (path === "/server/latest-version") return new Response(JSON.stringify(latest));
+        if (path.startsWith("/routing/model-definitions/"))
+          return new Response(JSON.stringify(models));
+        return new Response("{}", { status: 404 });
+      }),
+    );
+    await sessionStore
+      .getState()
+      .connect({ apiBase: API_BASE, managementKey: "mk", remember: false });
+    const host = document.createElement("div");
+    document.body.append(host);
+    root = createRoot(host);
+    act(() =>
+      root?.render(
+        <Providers>
+          <SystemPage />
+        </Providers>,
+      ),
+    );
+    await settle();
+
+    expect(host.querySelectorAll("[data-slot='workspace-header']")).toHaveLength(1);
+    expect(host.querySelector("h1")?.textContent).toBe("System");
+    expect(regionNamed(host, "Latest version").textContent).toContain("v1.2.3");
+    expect(regionNamed(host, "Model channels").textContent).toContain("Models: 2");
+    const session = regionNamed(host, "This browser");
+    const sessionButton = [...session.querySelectorAll("button")].find(
+      (button) => button.textContent === "Forget remembered session",
+    );
+    expect(sessionButton).toBeDefined();
   });
 });

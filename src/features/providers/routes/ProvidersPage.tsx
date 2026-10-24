@@ -1,6 +1,7 @@
 import { Link } from "react-router";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
+import { WorkspaceHeader } from "@/components/workspace/WorkspaceHeader";
+import { WorkspaceState } from "@/components/workspace/WorkspaceState";
 import { ProviderTable } from "@/features/providers/components/ProviderTable";
 import { useProviderGroupsQuery } from "@/features/providers/queries";
 import { translate } from "@/lib/i18n";
@@ -12,35 +13,33 @@ export function ProvidersPage() {
   const groups = useProviderGroupsQuery();
 
   return (
-    <section className="mx-auto grid max-w-5xl gap-4">
-      <h1 className="text-2xl font-semibold">{t("nav.providers")}</h1>
-      <Card>
-        <CardHeader>
-          <CardTitle>{t("providers.groups")}</CardTitle>
-          <CardDescription>{t("providers.description")}</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-3">
-          {groups.isPending && (
-            <div className="space-y-2">
-              <p className="text-muted-foreground">{t("providers.loading")}</p>
-              <Skeleton className="h-32 w-full" />
-            </div>
-          )}
-          {groups.isError && <p role="alert">{t("providers.loadError")}</p>}
-          {groups.isSuccess && groups.data.length === 0 && (
-            <p className="text-muted-foreground">{t("providers.empty")}</p>
-          )}
-          {groups.isSuccess && groups.data.length > 0 && <ProviderTable groups={groups.data} />}
-          {groups.isSuccess && (
-            <div className="space-y-2 text-sm">
-              <p>{t("providers.deferred")}</p>
-              <Link className="underline" to="/config">
-                {t("providers.rawLink")}
-              </Link>
-            </div>
-          )}
-        </CardContent>
-      </Card>
+    <section className="mx-auto grid max-w-5xl gap-6">
+      <WorkspaceHeader title={t("nav.providers")} description={t("providers.description")} />
+
+      <section aria-labelledby="providers-groups" className="grid gap-3">
+        <h2 id="providers-groups" className="text-base font-medium">
+          {t("providers.groups")}
+        </h2>
+        {groups.isPending && (
+          <div className="space-y-2">
+            <p className="text-sm text-muted-foreground">{t("providers.loading")}</p>
+            <Skeleton className="h-32 w-full" />
+          </div>
+        )}
+        {groups.isError && <p role="alert">{t("providers.loadError")}</p>}
+        {groups.isSuccess && groups.data.length === 0 && (
+          <WorkspaceState kind="empty" title={t("providers.empty")} />
+        )}
+        {groups.isSuccess && groups.data.length > 0 && <ProviderTable groups={groups.data} />}
+        {groups.isSuccess && (
+          <div className="space-y-2 text-sm">
+            <p>{t("providers.deferred")}</p>
+            <Link className="underline" to="/config">
+              {t("providers.rawLink")}
+            </Link>
+          </div>
+        )}
+      </section>
     </section>
   );
 }

@@ -1,5 +1,6 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { ActionGroup } from "@/components/workspace/ActionGroup";
 import { translate } from "@/lib/i18n";
 import { usePreferencesStore } from "@/stores/preferences";
 import type { AuthFileView } from "../api";
@@ -60,37 +61,41 @@ export function AuthFileTable({
                 </td>
                 <td className="px-2 py-1.5">{file.source}</td>
                 <td className="px-2 py-1.5">
-                  <div className="flex flex-wrap gap-1">
-                    <Button variant="outline" size="sm" onClick={() => onDetails(file)}>
-                      {t("authFiles.details")}
-                    </Button>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      aria-label={`${file.disabled ? t("authFiles.enable") : t("authFiles.disable")}: ${file.name}`}
-                      disabled={!editable}
-                      onClick={() => onToggleDisabled(file)}
-                    >
-                      {file.disabled ? t("authFiles.enable") : t("authFiles.disable")}
-                    </Button>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      aria-label={`${t("authFiles.download")}: ${file.name}`}
-                      disabled={!editable}
-                      onClick={() => onDownload(file)}
-                    >
-                      {t("authFiles.download")}
-                    </Button>
-                    <Button
-                      variant="destructive"
-                      size="sm"
-                      aria-label={`${t("authFiles.delete")}: ${file.name}`}
-                      disabled={!editable}
-                      onClick={() => onDelete(file)}
-                    >
-                      {t("authFiles.delete")}
-                    </Button>
+                  <div className="flex flex-wrap gap-2">
+                    <ActionGroup>
+                      <Button variant="outline" size="sm" onClick={() => onDetails(file)}>
+                        {t("authFiles.details")}
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        aria-label={`${file.disabled ? t("authFiles.enable") : t("authFiles.disable")}: ${file.name}`}
+                        disabled={!editable}
+                        onClick={() => onToggleDisabled(file)}
+                      >
+                        {file.disabled ? t("authFiles.enable") : t("authFiles.disable")}
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        aria-label={`${t("authFiles.download")}: ${file.name}`}
+                        disabled={!editable}
+                        onClick={() => onDownload(file)}
+                      >
+                        {t("authFiles.download")}
+                      </Button>
+                    </ActionGroup>
+                    <ActionGroup destructive>
+                      <Button
+                        variant="destructive"
+                        size="sm"
+                        aria-label={`${t("authFiles.delete")}: ${file.name}`}
+                        disabled={!editable}
+                        onClick={() => onDelete(file)}
+                      >
+                        {t("authFiles.delete")}
+                      </Button>
+                    </ActionGroup>
                   </div>
                 </td>
               </tr>
