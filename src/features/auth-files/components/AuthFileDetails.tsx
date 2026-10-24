@@ -25,7 +25,6 @@ export function AuthFileDetails({ file, onClose }: AuthFileDetailsProps) {
     [t("authFiles.provider"), file.provider],
     [t("authFiles.status"), file.status],
     [t("authFiles.source"), file.source],
-    [t("authFiles.authIndex"), file.authIndex],
     [t("authFiles.disabled"), String(file.disabled)],
     [t("authFiles.unavailable"), String(file.unavailable)],
     [t("authFiles.runtimeOnly"), String(file.runtimeOnly)],

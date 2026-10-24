@@ -315,6 +315,14 @@
     animation: none;
   }
 
+  [data-slot="dialog-overlay"],
+  [data-slot="dialog-content"],
+  [data-slot="sheet-overlay"],
+  [data-slot="sheet-content"] {
+    animation: none !important;
+    transition: none !important;
+  }
+
   .sidebar-link:hover,
   .sidebar-link:hover .sidebar-icon,
   .sidebar-link[aria-current="page"] .sidebar-icon {

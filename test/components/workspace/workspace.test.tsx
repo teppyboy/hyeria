@@ -48,6 +48,11 @@ describe("workspace primitives", () => {
     expect(host.querySelector('[data-slot="workspace-actions"]')?.className).toContain("sm:w-auto");
   });
 
+  it("omits the action region when no actions are supplied", () => {
+    const host = render(<WorkspaceHeader title="Dashboard" />);
+    expect(host.querySelector('[data-slot="workspace-actions"]')).toBeNull();
+  });
+
   it("exposes status cell facts with semantic tone tokens", () => {
     const host = render(<StatusCell label="Version" value="v8.0" tone="success" detail="Ready" />);
     const cell = host.querySelector('[data-slot="status-cell"]');

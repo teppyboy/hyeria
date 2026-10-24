@@ -28,6 +28,7 @@ describe("feedback components", () => {
     useUiStore.getState().notify("Saved", "success");
     const host = mount(<NotificationProvider />);
     expect(host.querySelector('[role="status"]')?.textContent).toContain("Saved");
+    expect(host.querySelector("button")?.className).toContain("min-h-11");
     act(() => host.querySelector("button")?.click());
     expect(host.querySelector('[role="status"]')).toBeNull();
   });

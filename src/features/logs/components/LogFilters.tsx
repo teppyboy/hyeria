@@ -34,6 +34,7 @@ export function LogFilters({
       <label className="flex items-center gap-2 text-sm sm:mt-5">
         <input
           type="checkbox"
+          className="min-h-11 min-w-11"
           checked={showManagement}
           onChange={(event) => onShowManagementChange(event.target.checked)}
         />

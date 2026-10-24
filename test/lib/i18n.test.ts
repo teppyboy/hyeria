@@ -16,4 +16,27 @@ describe("language selection and catalogs", () => {
     expect(translate("en", "app.name")).toBe("Hyeria");
     expect(translate("ru", "missing.key")).toBe("missing.key");
   });
+
+  it("translates the quota workflow in both Chinese locales", () => {
+    const quotaKeys = [
+      "quota.cooldown",
+      "quota.cooldownDescription",
+      "quota.credentialsError",
+      "quota.empty",
+      "quota.reset",
+      "quota.resetTitle",
+      "quota.resetDescription",
+      "quota.resetSuccess",
+      "quota.resetError",
+    ] as const;
+    for (const locale of ["zh-CN", "zh-TW"] as const) {
+      for (const key of quotaKeys) {
+        const value = translate(locale, key);
+        expect(value).not.toBe(messages.en[key]);
+        expect(value).not.toMatch(
+          /^(Cooldown|Reset|Credential|No credentials|This changes|The cooldown)/,
+        );
+      }
+    }
+  });
 });

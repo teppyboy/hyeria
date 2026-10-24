@@ -35,12 +35,14 @@ export function WorkspaceHeader({
         )}
         {children}
       </div>
-      <div
-        data-slot="workspace-actions"
-        className="flex min-h-11 w-full shrink-0 flex-wrap items-center justify-start gap-2 sm:w-auto sm:justify-end"
-      >
-        {actions}
-      </div>
+      {actions && (
+        <div
+          data-slot="workspace-actions"
+          className="flex min-h-11 w-full shrink-0 flex-wrap items-center justify-start gap-2 sm:w-auto sm:justify-end"
+        >
+          {actions}
+        </div>
+      )}
     </header>
   );
 }

@@ -216,6 +216,9 @@ describe("application shell", () => {
     expect(reducedMotion).toContain("button:active:not(:disabled)");
     expect(reducedMotion).toContain('.sidebar-link[aria-current="page"]');
     expect(reducedMotion).toContain("#main-content > *");
+    expect(reducedMotion).toContain('[data-slot="dialog-content"]');
+    expect(reducedMotion).toContain('[data-slot="sheet-content"]');
+    expect(reducedMotion).toContain("transition: none");
   });
 
   it("keeps the desktop sidebar control out of the mobile header and exposes the mobile trigger", () => {

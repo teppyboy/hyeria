@@ -29,7 +29,7 @@ export function NotificationProvider() {
           {item.message}
           <button
             type="button"
-            className="ml-3 underline"
+            className="ml-3 inline-flex min-h-11 items-center underline"
             onClick={() => useUiStore.getState().dismissNotification(item.id)}
           >
             {translate(language, "feedback.dismiss")}

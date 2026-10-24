@@ -141,6 +141,23 @@ describe("auth files page", () => {
     expect(host.textContent).not.toContain("x@example.invalid");
   });
 
+  it("does not render the internal auth index in file details", async () => {
+    await connectAndList([fileRow]);
+    const { host } = mountRoute("/auth-files");
+    await waitForRows(host);
+
+    act(() => buttonIn(rowFor(host, "user.json"), "Details").click());
+    await vi.waitFor(() =>
+      expect(document.querySelector('[data-slot="dialog-content"]')).not.toBeNull(),
+    );
+    expect(document.querySelector('[data-slot="dialog-content"]')?.textContent).not.toContain(
+      fileRow.auth_index,
+    );
+    expect(document.querySelector('[data-slot="dialog-content"]')?.textContent).not.toContain(
+      "Auth index",
+    );
+  });
+
   it("disables per-file actions for runtime-only entries with no file name", async () => {
     await connect(() => new Response("{}", { status: 404 }));
     stubApi((path) => {
