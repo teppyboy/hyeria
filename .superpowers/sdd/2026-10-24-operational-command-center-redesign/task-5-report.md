@@ -2,7 +2,14 @@
 
 ## Status
 
-Task 5 is complete. The final changes preserve the approved motion grammar, finish the responsive shell/workspace composition, and keep the existing route behavior and safety boundaries unchanged.
+Task 5 review fixes are complete. The final changes preserve the approved motion grammar, finish the responsive shell/workspace composition, and keep the existing route behavior and safety boundaries unchanged.
+
+### Final review fixes
+
+- Localized demo banner and demo login copy across `en`, `ru`, `zh-CN`, and `zh-TW`, with regression coverage.
+- Converted `/quick-start` and unmatched protected routes to `WorkspaceHeader` plus `WorkspaceState`, preserving the localized unavailable state and route semantics.
+- Disabled the global active-button scale under `prefers-reduced-motion` and asserted the selector in the regression test.
+- Added 44px minimum hit areas to the provider raw-config, visual raw-YAML, and OAuth authorization links, with focused assertions.
 
 ## Reconciled partial pass
 
@@ -45,7 +52,11 @@ Task 5 is complete. The final changes preserve the approved motion grammar, fini
   - Verifies mobile workspace action wrapping classes.
 - `test/features/logs/logs-ui.test.tsx`
   - Verifies the log viewer host has bounded horizontal overflow.
-- Existing `test/lib/i18n.test.ts` continues to verify exact key parity across `en`, `ru`, `zh-CN`, and `zh-TW`; no new user-facing copy was introduced in this pass.
+- `test/app/app.test.tsx`
+  - Verifies `/quick-start` and unmatched routes use the workspace header/state surface and remain localized.
+- `test/features/demo/demo-entry.test.tsx`
+  - Verifies localized demo banner/login copy and credential-free demo login.
+- Existing `test/lib/i18n.test.ts` verifies exact key parity across `en`, `ru`, `zh-CN`, and `zh-TW`, including the new demo keys.
 
 ## Visual review
 
@@ -67,9 +78,9 @@ The batch confirmed persistent desktop navigation, single-column mobile composit
 
 All commands passed unless noted:
 
-- `vp test test/components/workspace test/components/shell test/lib/i18n.test.ts test/features/logs/logs-ui.test.tsx test/features/auth-files/auth-files-page.test.tsx test/features/providers/providers-page.test.tsx` — 7 files, 57 tests.
-- `vp test` — 51 files, 457 tests.
-- `vp check --fix && vp check` — 0 errors; 7 existing warnings remain in unrelated/shared existing code.
+- `vp test test/app/app.test.tsx test/features/demo/demo-entry.test.tsx test/features/providers/providers-page.test.tsx test/features/config/visual-config-form.test.tsx test/features/oauth/oauth-page.test.tsx test/components/shell/shell.test.tsx test/lib/i18n.test.ts` — 7 files, 38 tests.
+- `vp test` — 52 files, 460 tests.
+- `vp check --fix` — 0 errors; 7 existing warnings remain in unrelated/shared existing code.
 - `vp exec tsc --noEmit` — passed.
 - `vp build` — passed (static build).
 - `vp run build:management` — passed.
@@ -78,7 +89,7 @@ All commands passed unless noted:
 - `vp run check:demo` — passed.
 - `vp run check:sensitive` — passed.
 - `vp run check:licenses` — passed for 30 direct dependencies.
-- `/home/tretrauit/.agents/skills/impeccable/scripts/impeccable detect --json src/components/shell src/components/ui src/components/workspace src/features/auth-files src/features/logs src/features/oauth src/features/providers src/styles/tokens.css` — returned `[]`.
+- `/home/tretrauit/.agents/skills/impeccable/scripts/impeccable detect --json <changed UI targets>` — returned `[]`.
 - `git diff --check` — passed.
 
 ## Residual risks and concerns
@@ -89,9 +100,9 @@ All commands passed unless noted:
 
 ## Commit
 
-Pending final commit in this checkout:
+Final review-fix commit in this checkout:
 
-`feat(ui): finish command center redesign`
+`feat(ui): finish command center redesign review fixes`
 
 No push performed.
 
@@ -101,12 +112,12 @@ No push performed.
     {
       "id": "criterion-1",
       "status": "satisfied",
-      "evidence": "Responsive 44px controls, bounded table/log overflow, mobile workspace action wrapping, restored approved motion, and targeted reduced-motion CSS were implemented without route/API/safety scope changes."
+      "evidence": "Responsive 44px controls, bounded table/log overflow, mobile workspace action wrapping, localized demo copy, workspace unavailable surfaces, and targeted reduced-motion CSS were implemented without route/API/safety scope changes."
     },
     {
       "id": "criterion-2",
       "status": "satisfied",
-      "evidence": "Focused tests (57), full suite (457), check/type/build matrix, artifact scans, detector, and inspected 8 bounded screenshots provide independent evidence."
+      "evidence": "Focused tests (38), full suite (460), check/type/build matrix, artifact scans, detector, and existing screenshot evidence provide independent evidence."
     }
   ],
   "changedFiles": [
@@ -130,7 +141,7 @@ No push performed.
     "test/features/logs/logs-ui.test.tsx"
   ],
   "commandsRun": [
-    { "command": "vp test", "result": "passed", "summary": "51 files, 457 tests passed" },
+    { "command": "vp test", "result": "passed", "summary": "52 files, 460 tests passed" },
     { "command": "vp check", "result": "passed", "summary": "0 errors; 7 pre-existing warnings" },
     { "command": "vp exec tsc --noEmit", "result": "passed", "summary": "TypeScript passed" },
     { "command": "vp build", "result": "passed", "summary": "Static build passed" },
@@ -153,10 +164,10 @@ No push performed.
     "Visual review used isolated demo mode rather than a live backend."
   ],
   "noStagedFiles": true,
-  "diffSummary": "Finished responsive touch targets, bounded overflow, mobile workspace action wrapping, restored approved motion, reduced-motion assertions, and bounded visual evidence.",
+  "diffSummary": "Localized demo copy, converted unavailable routes to workspace surfaces, disabled reduced-motion button scaling, and added 44px hit areas for named links while retaining prior responsive fixes.",
   "reviewFindings": [
     "no blockers found"
   ],
-  "manualNotes": "Commit b402cc5 created; no push performed."
+  "manualNotes": "Final review-fix commit created in this checkout; no push performed."
 }
 ```

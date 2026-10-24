@@ -313,7 +313,7 @@ export function OAuthPage() {
             )}
             {authorizationUrl && (
               <a
-                className="text-sm underline"
+                className="inline-flex min-h-11 items-center text-sm underline"
                 href={authorizationUrl}
                 target="_blank"
                 rel="noopener noreferrer"

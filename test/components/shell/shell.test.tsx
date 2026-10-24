@@ -213,6 +213,7 @@ describe("application shell", () => {
     const reducedMotion = css.slice(css.indexOf("@media (prefers-reduced-motion: reduce)"));
     expect(reducedMotion).toContain("animation: none");
     expect(reducedMotion).toContain("transform: none");
+    expect(reducedMotion).toContain("button:active:not(:disabled)");
     expect(reducedMotion).toContain('.sidebar-link[aria-current="page"]');
     expect(reducedMotion).toContain("#main-content > *");
   });

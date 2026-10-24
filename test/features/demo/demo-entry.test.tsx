@@ -10,6 +10,7 @@ import {
   sessionStore,
   type DemoApiTransport,
 } from "../../../src/stores/session";
+import { preferencesStore } from "../../../src/stores/preferences";
 
 // SAFETY: This test fake deliberately ignores generic response types; the bootstrap only checks identity.
 const transport = {
@@ -30,6 +31,7 @@ afterEach(() => {
   root = undefined;
   document.body.innerHTML = "";
   sessionStore.getState().disconnect();
+  preferencesStore.getState().setLanguage(null);
 });
 
 describe("demo bootstrap", () => {
@@ -51,7 +53,8 @@ describe("demo bootstrap", () => {
     expect(storage.clear).not.toHaveBeenCalled();
   });
 
-  it("identifies the shared protected shell as an interactive demo", () => {
+  it("localizes the shared demo copy", () => {
+    preferencesStore.getState().setLanguage("ru");
     const host = document.createElement("div");
     document.body.append(host);
     root = createRoot(host);
@@ -63,12 +66,13 @@ describe("demo bootstrap", () => {
       ),
     );
 
-    expect(host.textContent).toContain("Interactive demo");
-    expect(host.textContent).toContain("Actions are simulated");
-    expect(host.textContent).toContain("reset when you reload");
+    expect(host.textContent).toContain("Интерактивная демонстрация.");
+    expect(host.textContent).toContain("Действия имитируются");
+    expect(host.textContent).toContain("после перезагрузки");
   });
 
-  it("does not expose credential controls on the demo login route", () => {
+  it("localizes the demo login copy without exposing credential controls", () => {
+    preferencesStore.getState().setLanguage("ru");
     sessionStore.getState().initializeDemo(transport);
     const host = document.createElement("div");
     document.body.append(host);
@@ -83,7 +87,10 @@ describe("demo bootstrap", () => {
       ),
     );
 
-    expect(host.textContent).toContain("does not use an API address or management key");
+    expect(host.textContent).toContain(
+      "Эта демонстрация не использует адрес API или ключ управления",
+    );
+    expect(host.textContent).toContain("Открыть обзор демонстрации");
     expect(host.querySelector('input[autocomplete="url"]')).toBeNull();
     expect(host.querySelector('input[type="password"]')).toBeNull();
   });

@@ -31,7 +31,7 @@ export function VisualConfigForm({ text }: VisualConfigFormProps) {
         ))}
       </ul>
       <a
-        className="underline"
+        className="inline-flex min-h-11 items-center underline"
         href="#config-raw-yaml"
         onClick={(event) => {
           // Keeps the link an in-page jump; a hash navigation would change the router location.

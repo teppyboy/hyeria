@@ -83,17 +83,14 @@ export function LoginPage() {
     return (
       <main className="grid min-h-screen place-items-center bg-background p-4">
         <section className="w-full max-w-md space-y-5 rounded-xl border bg-card p-6 shadow-sm">
-          <h1 className="text-2xl font-semibold">Interactive demo</h1>
-          <p className="text-sm text-muted-foreground">
-            This demo does not use an API address or management key. Return to the dashboard to
-            explore simulated actions.
-          </p>
+          <h1 className="text-2xl font-semibold">{t("demo.loginTitle")}</h1>
+          <p className="text-sm text-muted-foreground">{t("demo.loginDescription")}</p>
           <Button
             type="button"
             onClick={() => void navigate("/", { replace: true })}
             className="w-full"
           >
-            Open demo dashboard
+            {t("demo.loginOpenDashboard")}
           </Button>
         </section>
       </main>

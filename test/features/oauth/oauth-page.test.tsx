@@ -1,3 +1,5 @@
+import { readFileSync } from "node:fs";
+import { resolve } from "node:path";
 import { afterEach, describe, expect, it, vi } from "vite-plus/test";
 import { act } from "react";
 import { createRoot, type Root } from "react-dom/client";
@@ -92,6 +94,9 @@ describe("OAuth page", () => {
     await act(async () => start?.click());
     expect(popup.document.title).toBe("OAuth sign-in");
     expect(popup.document.body.textContent).toBe("Waiting for authorization…");
+    expect(
+      readFileSync(resolve(process.cwd(), "src/features/oauth/routes/OAuthPage.tsx"), "utf8"),
+    ).toContain('className="inline-flex min-h-11 items-center text-sm underline"');
     await vi.waitFor(() => expect(host.textContent).toContain("OAuth completed"));
     expect(fetchMock.mock.calls.map(([input]) => new URL(input).pathname)).toEqual([
       "/v8/management/oauth/auth-url",

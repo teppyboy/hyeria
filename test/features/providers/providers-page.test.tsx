@@ -167,7 +167,9 @@ describe("providers page", () => {
 
     expect(host.textContent).toContain("Editing provider groups is deferred");
     expect(host.querySelector("button")).toBeNull();
-    expect(host.querySelector("a[href='/config']")?.textContent).toBe("Open raw configuration");
+    const rawLink = host.querySelector("a[href='/config']");
+    expect(rawLink?.textContent).toBe("Open raw configuration");
+    expect(rawLink?.className).toContain("min-h-11");
   });
 
   it("is reachable at /ai-providers instead of the placeholder page", async () => {

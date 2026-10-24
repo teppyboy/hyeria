@@ -15,13 +15,16 @@ import { LogsPage } from "@/features/logs/routes/LogsPage";
 import { PluginsPage } from "@/features/plugins/routes/PluginsPage";
 import { PluginStorePage } from "@/features/plugins/routes/PluginStorePage";
 import { AnalyticsPage } from "@/features/analytics/routes/AnalyticsPage";
+import { WorkspaceHeader } from "@/components/workspace/WorkspaceHeader";
+import { WorkspaceState } from "@/components/workspace/WorkspaceState";
 
 function UnavailablePage() {
   const language = usePreferencesStore((state) => state.language);
+  const t = (key: string) => translate(language, key);
   return (
-    <section className="mx-auto max-w-3xl">
-      <h1 className="text-2xl font-semibold">Hyeria</h1>
-      <p className="mt-2 text-muted-foreground">{translate(language, "nav.unavailable")}</p>
+    <section className="mx-auto grid max-w-5xl gap-6">
+      <WorkspaceHeader title={t("app.name")} />
+      <WorkspaceState kind="unavailable" title={t("nav.unavailable")} />
     </section>
   );
 }

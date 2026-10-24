@@ -320,4 +320,8 @@
   .sidebar-link[aria-current="page"] .sidebar-icon {
     transform: none;
   }
+
+  button:active:not(:disabled) {
+    transform: none;
+  }
 }

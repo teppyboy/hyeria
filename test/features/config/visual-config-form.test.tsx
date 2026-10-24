@@ -47,7 +47,9 @@ describe("visual config form", () => {
     expect(host.textContent).toContain(
       "Visual editing is not available yet. This is a read-only summary of non-secret sections; edit the raw YAML instead.",
     );
-    expect(host.querySelector("a")?.getAttribute("href")).toBe("#config-raw-yaml");
+    const rawLink = host.querySelector("a");
+    expect(rawLink?.getAttribute("href")).toBe("#config-raw-yaml");
+    expect(rawLink?.className).toContain("min-h-11");
   });
 
   it("shows only the unavailable copy when the draft is not a parseable mapping", () => {

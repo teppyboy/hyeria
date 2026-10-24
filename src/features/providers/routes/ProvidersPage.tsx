@@ -28,7 +28,7 @@ export function ProvidersPage() {
         {groups.isSuccess && (
           <div className="space-y-2 text-sm">
             <p>{t("providers.deferred")}</p>
-            <Link className="underline" to="/config">
+            <Link className="inline-flex min-h-11 items-center underline" to="/config">
               {t("providers.rawLink")}
             </Link>
           </div>
