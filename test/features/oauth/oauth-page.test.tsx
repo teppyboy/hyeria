@@ -78,6 +78,9 @@ describe("OAuth page", () => {
 
     const { host, router } = mountRoute("/oauth");
     expect(router.state.location.pathname).toBe("/oauth");
+    expect(host.querySelector('[data-slot="workspace-header"] h1')?.textContent).toBe("OAuth");
+    expect(host.querySelector('[aria-labelledby="oauth-provider"]')).not.toBeNull();
+    expect(host.querySelector('[aria-labelledby="oauth-state"]')).not.toBeNull();
     expect(host.textContent).toContain("OAuth sign-in");
     expect(host.textContent).not.toContain("This page is not available yet.");
 

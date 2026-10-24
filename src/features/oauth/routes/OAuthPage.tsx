@@ -1,5 +1,7 @@
 import { useCallback, useEffect, useReducer, useRef, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
+import { ActionGroup } from "@/components/workspace/ActionGroup";
+import { WorkspaceHeader } from "@/components/workspace/WorkspaceHeader";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -251,94 +253,109 @@ export function OAuthPage() {
   const vertexResult: VertexImportResult | undefined = vertexImport.data;
 
   return (
-    <section className="mx-auto grid max-w-5xl gap-4">
-      <h1 className="text-2xl font-semibold">{t("nav.oauth")}</h1>
-      <Card>
-        <CardHeader>
-          <CardTitle>{t("oauth.title")}</CardTitle>
-          <CardDescription>{t("oauth.description")}</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="flex flex-wrap items-end gap-2">
-            <div className="grid min-w-56 gap-1.5">
-              <Label htmlFor="oauth-provider">{t("oauth.provider")}</Label>
-              <select
-                id="oauth-provider"
-                className="h-9 rounded-md border bg-transparent px-3 text-sm"
-                value={provider}
-                onChange={(event) => setProvider(event.target.value)}
-                disabled={active}
-              >
-                {providers.map((item) => (
-                  <option key={item} value={item}>
-                    {item}
-                  </option>
-                ))}
-              </select>
-            </div>
-            <Button onClick={begin} disabled={active || start.isPending}>
-              {t("oauth.start")}
-            </Button>
-            {active && (
-              <Button variant="outline" onClick={handleCancel}>
-                {t("oauth.cancel")}
-              </Button>
-            )}
-            {terminal && (
-              <Button variant="outline" onClick={resetTerminal}>
-                {t("oauth.reset")}
-              </Button>
-            )}
-          </div>
-          {active && state.status !== "starting" && state.flow === "device" && deviceCode && (
-            <p aria-live="polite">
-              {t("oauth.deviceCode")}: <strong>{deviceCode}</strong>
-            </p>
-          )}
-          {authorizationUrl && (
-            <a
-              className="text-sm underline"
-              href={authorizationUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              {t("oauth.openAuthorization")}
-            </a>
-          )}
-          {(state.status === "awaiting-user" || state.status === "polling") && (
-            <div className="grid gap-1.5">
-              <Label htmlFor="oauth-redirect-url">{t("oauth.redirectUrl")}</Label>
-              <div className="flex flex-wrap gap-2">
-                <Input
-                  id="oauth-redirect-url"
-                  value={redirectUrl}
-                  onChange={(event) => {
-                    setRedirectUrl(event.target.value);
-                    setCallbackInputError(false);
-                  }}
-                  placeholder="https://..."
-                  autoComplete="off"
-                  spellCheck={false}
-                  disabled={callback.isPending}
-                />
-                <Button
-                  variant="outline"
-                  onClick={() => void completeCallback()}
-                  disabled={callback.isPending || redirectUrl.trim() === ""}
+    <section className="mx-auto grid max-w-5xl gap-6">
+      <WorkspaceHeader title={t("nav.oauth")} description={t("oauth.description")} />
+      <section aria-labelledby="oauth-provider" className="grid gap-3">
+        <h2 id="oauth-provider" className="text-base font-medium">
+          {t("oauth.title")}
+        </h2>
+        <Card>
+          <CardHeader>
+            <CardDescription>{t("oauth.description")}</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="flex flex-wrap items-end gap-2">
+              <div className="grid min-w-56 gap-1.5">
+                <Label htmlFor="oauth-provider-select">{t("oauth.provider")}</Label>
+                <select
+                  id="oauth-provider-select"
+                  className="h-9 rounded-md border bg-transparent px-3 text-sm"
+                  value={provider}
+                  onChange={(event) => setProvider(event.target.value)}
+                  disabled={active}
                 >
-                  {t("oauth.completeCallback")}
-                </Button>
+                  {providers.map((item) => (
+                    <option key={item} value={item}>
+                      {item}
+                    </option>
+                  ))}
+                </select>
               </div>
-              {callbackInputError && <p role="alert">{t("oauth.invalidRedirectUrl")}</p>}
-              {callback.isError && <p role="alert">{t("oauth.callbackError")}</p>}
+              <ActionGroup>
+                <Button onClick={begin} disabled={active || start.isPending}>
+                  {t("oauth.start")}
+                </Button>
+                {active && (
+                  <Button variant="outline" onClick={handleCancel}>
+                    {t("oauth.cancel")}
+                  </Button>
+                )}
+                {terminal && (
+                  <Button variant="outline" onClick={resetTerminal}>
+                    {t("oauth.reset")}
+                  </Button>
+                )}
+              </ActionGroup>
             </div>
-          )}
-          {state.status === "success" && <p role="status">{t("oauth.success")}</p>}
-          {state.status === "cancelled" && <p role="status">{t("oauth.cancelled")}</p>}
-          {error && <p role="alert">{error}</p>}
-          {cancel.isError && <p role="alert">{t("oauth.cancelError")}</p>}
-        </CardContent>
-      </Card>
+          </CardContent>
+        </Card>
+      </section>
+      <section aria-labelledby="oauth-state" className="grid gap-3">
+        <h2 id="oauth-state" className="text-base font-medium">
+          {t("oauth.state")}
+        </h2>
+        <Card>
+          <CardContent className="space-y-4 pt-6">
+            {active && state.status !== "starting" && state.flow === "device" && deviceCode && (
+              <p aria-live="polite">
+                {t("oauth.deviceCode")}: <strong>{deviceCode}</strong>
+              </p>
+            )}
+            {authorizationUrl && (
+              <a
+                className="text-sm underline"
+                href={authorizationUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                {t("oauth.openAuthorization")}
+              </a>
+            )}
+            {(state.status === "awaiting-user" || state.status === "polling") && (
+              <div className="grid gap-1.5">
+                <Label htmlFor="oauth-redirect-url">{t("oauth.redirectUrl")}</Label>
+                <div className="flex flex-wrap gap-2">
+                  <Input
+                    id="oauth-redirect-url"
+                    value={redirectUrl}
+                    onChange={(event) => {
+                      setRedirectUrl(event.target.value);
+                      setCallbackInputError(false);
+                    }}
+                    placeholder="https://..."
+                    autoComplete="off"
+                    spellCheck={false}
+                    disabled={callback.isPending}
+                  />
+                  <Button
+                    variant="outline"
+                    onClick={() => void completeCallback()}
+                    disabled={callback.isPending || redirectUrl.trim() === ""}
+                  >
+                    {t("oauth.completeCallback")}
+                  </Button>
+                </div>
+                {callbackInputError && <p role="alert">{t("oauth.invalidRedirectUrl")}</p>}
+                {callback.isError && <p role="alert">{t("oauth.callbackError")}</p>}
+              </div>
+            )}
+            {state.status === "success" && <p role="status">{t("oauth.success")}</p>}
+            {state.status === "cancelled" && <p role="status">{t("oauth.cancelled")}</p>}
+            {error && <p role="alert">{error}</p>}
+            {cancel.isError && <p role="alert">{t("oauth.cancelError")}</p>}
+          </CardContent>
+        </Card>
+      </section>
       <Card>
         <CardHeader>
           <CardTitle>{t("oauth.vertexTitle")}</CardTitle>

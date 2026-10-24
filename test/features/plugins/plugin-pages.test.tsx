@@ -56,6 +56,8 @@ describe("plugin management pages", () => {
         : { "config-version": 8 },
     );
     await vi.waitFor(() => expect(host.textContent).toContain("safe"));
+    expect(host.querySelector('[data-slot="workspace-header"] h1')?.textContent).toBe("Plugins");
+    expect(host.querySelector('[aria-labelledby="plugins-list"]')).not.toBeNull();
     expect(host.querySelector("script")).toBeNull();
     expect(host.innerHTML).not.toContain("executed()");
   });
@@ -74,6 +76,10 @@ describe("plugin management pages", () => {
       vi.fn(() => false),
     );
     await vi.waitFor(() => expect(host.textContent).toContain("store-plugin"));
+    expect(host.querySelector('[data-slot="workspace-header"] h1')?.textContent).toBe(
+      "Plugin store",
+    );
+    expect(host.querySelector('[aria-labelledby="plugin-store-list"]')).not.toBeNull();
     expect(host.textContent).toContain("install executable code on the backend");
     const button = [...host.querySelectorAll("button")].find(
       (item) => item.textContent === "Install",

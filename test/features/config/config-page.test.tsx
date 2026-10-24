@@ -127,6 +127,9 @@ describe("config page", () => {
 
   it("shows the loaded YAML verbatim in an accessible editor", async () => {
     const { host } = await mountPage(() => new Response(configYaml));
+    expect(host.querySelector('[data-slot="workspace-header"] h1')?.textContent).toBe("Config");
+    expect(host.querySelector('[aria-labelledby="config-editor"]')).not.toBeNull();
+    expect(host.querySelector('[aria-labelledby="config-review"]')).not.toBeNull();
     expect(host.querySelector(".cm-content")?.getAttribute("aria-label")).toBe("Config YAML");
     expect(editorText(host)).toBe(configYaml);
   });

@@ -29,13 +29,13 @@ export function ConfigDiffDialog({ diff, pending, onConfirm, onCancel }: ConfigD
         if (!open) onCancel();
       }}
     >
-      <DialogContent closeLabel={t("common.close")}>
-        <DialogHeader>
+      <DialogContent closeLabel={t("common.close")} className="border-destructive/40">
+        <DialogHeader className="border-b border-border pb-4">
           <DialogTitle>{t("config.diffTitle")}</DialogTitle>
           <DialogDescription>{t("config.diffDescription")}</DialogDescription>
         </DialogHeader>
         {diff.changes.length === 0 ? (
-          <p>{t("config.diffEmpty")}</p>
+          <p role="status">{t("config.diffEmpty")}</p>
         ) : (
           <ul className="max-h-80 space-y-2 overflow-auto text-sm">
             {diff.changes.map((change) => (

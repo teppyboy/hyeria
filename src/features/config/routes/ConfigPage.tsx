@@ -1,7 +1,10 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
+import { ActionGroup } from "@/components/workspace/ActionGroup";
+import { WorkspaceHeader } from "@/components/workspace/WorkspaceHeader";
+import { WorkspaceState } from "@/components/workspace/WorkspaceState";
 import { ConfigDiffDialog } from "@/features/config/components/ConfigDiffDialog";
 import { VisualConfigForm } from "@/features/config/components/VisualConfigForm";
 import { YamlEditor } from "@/features/config/components/YamlEditor";
@@ -81,45 +84,64 @@ export function ConfigPage() {
   const alertMessage = validationError ?? saveError;
 
   return (
-    <section className="mx-auto grid max-w-5xl gap-4">
-      <h1 className="text-2xl font-semibold">{t("config.title")}</h1>
-      <Card>
-        <CardHeader>
-          <CardTitle>config.yaml</CardTitle>
-          <CardDescription>{t("config.description")}</CardDescription>
-          <p className="text-sm text-muted-foreground">{t("config.safety")}</p>
-        </CardHeader>
-        <CardContent className="space-y-3">
-          {yaml.isPending && (
-            <div className="space-y-2">
-              <p className="text-muted-foreground">{t("config.loading")}</p>
-              <Skeleton className="h-64 w-full" />
-            </div>
-          )}
-          {yaml.isError && <p role="alert">{t("config.loadError")}</p>}
-          {yaml.isSuccess && (
-            <>
-              <VisualConfigForm text={text} />
-              <div id="config-raw-yaml">
-                <YamlEditor
-                  value={text}
-                  onChange={(value) => {
-                    setDraft(value);
-                    setSaved(false);
-                  }}
-                />
-              </div>
-              {alertMessage && <p role="alert">{alertMessage}</p>}
-              {saved && <p role="status">{t("config.saved")}</p>}
-              <div className="flex justify-end">
-                <Button onClick={handleSave} disabled={save.isPending}>
-                  {t("config.save")}
-                </Button>
-              </div>
-            </>
-          )}
-        </CardContent>
-      </Card>
+    <section className="mx-auto grid max-w-5xl gap-6">
+      <WorkspaceHeader
+        title={t("config.title")}
+        description={t("config.description")}
+        status={<p className="text-sm text-muted-foreground">{t("config.safety")}</p>}
+      />
+      {yaml.isPending && (
+        <WorkspaceState
+          kind="loading"
+          title={t("config.loading")}
+          description={<Skeleton className="mt-3 h-64 w-full" />}
+        />
+      )}
+      {yaml.isError && <WorkspaceState kind="error" title={t("config.loadError")} />}
+      {yaml.isSuccess && (
+        <>
+          <section aria-labelledby="config-editor" className="grid gap-3">
+            <h2 id="config-editor" className="text-base font-medium">
+              config.yaml
+            </h2>
+            <Card>
+              <CardHeader>
+                <CardDescription>{t("config.description")}</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                <VisualConfigForm text={text} />
+                <div id="config-raw-yaml">
+                  <YamlEditor
+                    value={text}
+                    onChange={(value) => {
+                      setDraft(value);
+                      setSaved(false);
+                    }}
+                  />
+                </div>
+              </CardContent>
+            </Card>
+          </section>
+          <section aria-labelledby="config-review" className="grid gap-3">
+            <h2 id="config-review" className="text-base font-medium">
+              {t("config.review")}
+            </h2>
+            <Card>
+              <CardContent className="space-y-3 pt-6">
+                {alertMessage && <p role="alert">{alertMessage}</p>}
+                {saved && <p role="status">{t("config.saved")}</p>}
+                <div data-slot="workspace-actions" className="flex justify-end">
+                  <ActionGroup>
+                    <Button onClick={handleSave} disabled={save.isPending}>
+                      {t("config.save")}
+                    </Button>
+                  </ActionGroup>
+                </div>
+              </CardContent>
+            </Card>
+          </section>
+        </>
+      )}
       {pending && (
         <ConfigDiffDialog
           diff={pending.diff}
