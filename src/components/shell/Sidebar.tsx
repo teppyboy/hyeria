@@ -1,4 +1,5 @@
 import { NavLink } from "react-router";
+import { navigationIcons } from "@/components/shell/navigation-icons";
 import { useSessionStore } from "@/stores/session";
 import { usePreferencesStore } from "@/stores/preferences";
 import { translate } from "@/lib/i18n";
@@ -58,9 +59,19 @@ export function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
                 {plugin && supportsPlugins === false ? (
                   <span
                     aria-disabled="true"
-                    className="block rounded-md px-2 py-1.5 text-sm text-muted-foreground"
+                    className="sidebar-link block rounded-md px-2 py-1.5 text-sm text-muted-foreground"
                   >
-                    {t(label)} — {t("nav.pluginUnsupported")}
+                    {(() => {
+                      const Icon = navigationIcons[label];
+                      return (
+                        <>
+                          {Icon && <Icon aria-hidden="true" className="sidebar-icon" />}
+                          <span className="sidebar-label">
+                            {t(label)} — {t("nav.pluginUnsupported")}
+                          </span>
+                        </>
+                      );
+                    })()}
                   </span>
                 ) : (
                   <NavLink
@@ -68,10 +79,18 @@ export function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
                     end={to === "/"}
                     onClick={onNavigate}
                     className={({ isActive }) =>
-                      `block rounded-md px-2 py-1.5 text-sm hover:bg-accent ${isActive ? "bg-accent font-medium" : "text-muted-foreground"}`
+                      `sidebar-link flex items-center gap-2 rounded-md px-2 py-1.5 text-sm hover:bg-accent ${isActive ? "bg-accent font-medium" : "text-muted-foreground"}`
                     }
                   >
-                    {t(label)}
+                    {(() => {
+                      const Icon = navigationIcons[label];
+                      return (
+                        <>
+                          {Icon && <Icon aria-hidden="true" className="sidebar-icon shrink-0" />}
+                          <span className="sidebar-label">{t(label)}</span>
+                        </>
+                      );
+                    })()}
                   </NavLink>
                 )}
               </li>
@@ -79,7 +98,7 @@ export function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
           </ul>
         </section>
       ))}
-      <section>
+      <section className="sidebar-extra">
         <h2 className="px-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
           {t("nav.pluginPages")}
         </h2>

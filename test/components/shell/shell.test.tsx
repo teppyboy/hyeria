@@ -63,6 +63,24 @@ describe("application shell", () => {
     act(() => button?.click());
     expect(useUiStore.getState().sidebarOpen).toBe(false);
     expect(button?.getAttribute("aria-expanded")).toBe("false");
+    expect(host.querySelector("aside#app-navigation")?.className).toContain("sidebar-collapsed");
+  });
+
+  it("renders navigation icons with accessible labels in the collapsed rail", () => {
+    const host = renderShell();
+    const navigation = host.querySelector("aside#app-navigation");
+    expect(navigation?.querySelector("a[href='/'] svg")).not.toBeNull();
+    expect(navigation?.querySelector("a[href='/config'] svg")).not.toBeNull();
+    expect(navigation?.querySelector("a[href='/']")?.textContent).toContain("Dashboard");
+  });
+
+  it("marks the collapsed rail for hover and keyboard expansion", () => {
+    const host = renderShell();
+    const button = host.querySelector<HTMLButtonElement>("button[aria-label='Toggle sidebar']");
+    act(() => button?.click());
+    const aside = host.querySelector("aside#app-navigation");
+    expect(aside?.getAttribute("data-collapsed")).toBe("true");
+    expect(aside?.getAttribute("data-hover-expand")).toBe("true");
   });
 
   it("opens mobile navigation from its keyboard-accessible trigger", () => {

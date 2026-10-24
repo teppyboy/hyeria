@@ -35,7 +35,9 @@ export function AppShell({ children }: { children: ReactNode }) {
       <div className="flex min-h-[calc(100vh-3.5rem)]">
         <aside
           id="app-navigation"
-          className={`hidden w-60 shrink-0 border-r bg-sidebar p-3 ${sidebarOpen ? "md:block" : "md:hidden"}`}
+          data-collapsed={!sidebarOpen ? "true" : "false"}
+          data-hover-expand="true"
+          className={`sidebar-rail hidden shrink-0 border-r bg-sidebar p-3 ${sidebarOpen ? "sidebar-expanded md:block" : "sidebar-collapsed md:block"}`}
         >
           <Sidebar />
         </aside>

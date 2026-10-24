@@ -1,0 +1,30 @@
+import {
+  Activity,
+  Blocks,
+  BookOpen,
+  ChartNoAxesCombined,
+  CircleGauge,
+  FileKey2,
+  Gauge,
+  KeyRound,
+  ListRestart,
+  Network,
+  Puzzle,
+  Settings2,
+  type LucideIcon,
+} from "lucide-react";
+
+export const navigationIcons: Record<string, LucideIcon> = {
+  "nav.dashboard": CircleGauge,
+  "nav.quickStart": BookOpen,
+  "nav.providers": Network,
+  "nav.authFiles": FileKey2,
+  "nav.oauth": KeyRound,
+  "nav.quota": Gauge,
+  "nav.logs": Activity,
+  "nav.config": Settings2,
+  "nav.plugins": Puzzle,
+  "nav.pluginStore": Blocks,
+  "nav.system": ListRestart,
+  "nav.analytics": ChartNoAxesCombined,
+};
