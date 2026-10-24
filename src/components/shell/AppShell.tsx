@@ -23,7 +23,7 @@ export function AppShell({ children }: { children: ReactNode }) {
     useUiStore.getState().reset();
   }, [revision]);
   return (
-    <div className="min-h-screen bg-background text-foreground">
+    <div data-shell="app-shell" className="min-h-screen bg-background text-foreground motion-shell">
       {isDemo && <DemoBanner />}
       <a
         className="sr-only focus:not-sr-only focus:absolute focus:z-50 focus:bg-background focus:p-3"
@@ -37,6 +37,7 @@ export function AppShell({ children }: { children: ReactNode }) {
           id="app-navigation"
           data-collapsed={!sidebarOpen ? "true" : "false"}
           data-hover-expand="true"
+          data-slot="app-sidebar"
           className={`sidebar-rail hidden shrink-0 border-r bg-sidebar p-3 ${sidebarOpen ? "sidebar-expanded md:block" : "sidebar-collapsed md:block"}`}
         >
           <Sidebar />

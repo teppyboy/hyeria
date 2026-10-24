@@ -29,7 +29,10 @@ export function Header() {
   const confirm = (request: ConfirmRequest) => useUiStore.getState().requestConfirm(request);
   const t = (key: string) => translate(language, key);
   return (
-    <header className="sticky top-0 z-30 flex h-14 items-center gap-3 border-b bg-background px-4">
+    <header
+      data-slot="app-header"
+      className="sticky top-0 z-30 flex h-14 items-center gap-3 border-b bg-background px-4"
+    >
       <Button
         variant="ghost"
         size="icon"
@@ -49,8 +52,10 @@ export function Header() {
       <div className="ml-auto flex items-center gap-2">
         {isAuthenticated && (
           <span
+            data-slot="connection-status"
+            data-session-mode={isDemo ? "demo" : "connected"}
             role="status"
-            className="max-w-36 truncate rounded-md border px-2 py-1 text-xs text-muted-foreground"
+            className="min-h-11 max-w-36 truncate rounded-md border px-2 py-1 text-xs text-muted-foreground"
           >
             {isDemo ? t("shell.connectionDemo") : t("shell.connectionConnected")}
           </span>
@@ -62,7 +67,7 @@ export function Header() {
         <select
           id="language"
           aria-label={t("shell.language")}
-          className="h-9 rounded-md border bg-background px-2 text-sm"
+          className="min-h-11 rounded-md border bg-background px-2 text-sm"
           value={language}
           onChange={(event) => setLanguage(event.target.value as typeof language)}
         >
@@ -79,7 +84,7 @@ export function Header() {
         <select
           id="theme"
           aria-label={t("shell.theme")}
-          className="h-9 rounded-md border bg-background px-2 text-sm"
+          className="min-h-11 rounded-md border bg-background px-2 text-sm"
           value={theme}
           onChange={(event) => setTheme(event.target.value as Theme)}
         >

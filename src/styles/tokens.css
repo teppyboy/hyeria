@@ -171,6 +171,12 @@
     box-shadow: none;
   }
 
+  .motion-shell {
+    transition:
+      color var(--duration-base) ease,
+      background-color var(--duration-base) ease;
+  }
+
   .sidebar-rail {
     position: relative;
     z-index: 20;
@@ -193,7 +199,7 @@
   }
 
   .sidebar-link {
-    min-height: 2.5rem;
+    min-height: 2.75rem;
     transition:
       color var(--duration-base) cubic-bezier(0.16, 1, 0.3, 1),
       background-color var(--duration-base) cubic-bezier(0.16, 1, 0.3, 1),
@@ -294,6 +300,7 @@
     scroll-behavior: auto;
   }
 
+  .motion-shell,
   .sidebar-rail,
   .sidebar-link,
   .sidebar-icon,

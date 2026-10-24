@@ -157,6 +157,35 @@ describe("application shell", () => {
     expect(host.textContent).not.toContain("managementKey");
   });
 
+  it("exposes safe session status and shell motion hooks without connection details", () => {
+    sessionStore.setState({
+      isAuthenticated: true,
+      isDemo: false,
+      apiBase: "https://private.invalid",
+    });
+    const host = renderShell();
+    expect(
+      host.querySelector('[data-slot="connection-status"]')?.getAttribute("data-session-mode"),
+    ).toBe("connected");
+    expect(host.querySelector('[data-shell="app-shell"]')?.className).toContain("motion-shell");
+    expect(host.querySelector('[data-slot="connection-status"]')?.textContent).toContain(
+      "Connected session",
+    );
+    expect(host.textContent).not.toContain("private.invalid");
+  });
+
+  it("keeps shell controls at the minimum touch target", () => {
+    const host = renderShell();
+    expect(host.querySelector("#language")?.className).toContain("min-h-11");
+    expect(host.querySelector("#theme")?.className).toContain("min-h-11");
+    expect(host.querySelector("button[aria-label='About Hyeria']")?.className).toContain(
+      "min-h-11",
+    );
+    expect(host.querySelector("aside#app-navigation a[href='/']")?.className).toContain(
+      "sidebar-link",
+    );
+  });
+
   it("keeps the desktop sidebar control out of the mobile header and exposes the mobile trigger", () => {
     const host = document.createElement("div");
     document.body.append(host);

@@ -44,7 +44,7 @@ export function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
   const supportsPlugins = useSessionStore((state) => state.capabilities.supportsPlugins);
   const t = (key: string) => translate(language, key);
   return (
-    <nav aria-label={t("nav.mainLabel")} className="space-y-5">
+    <nav data-slot="app-navigation" aria-label={t("nav.mainLabel")} className="space-y-5">
       {groups.map(([group, links]) => (
         <section key={group} aria-labelledby={`group-${group}`}>
           <h2
