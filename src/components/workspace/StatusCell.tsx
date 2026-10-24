@@ -28,7 +28,7 @@ export function StatusCell({ label, value, tone = "default", detail, className }
     >
       <dt className="text-xs font-medium uppercase tracking-wide text-muted-foreground">{label}</dt>
       <dd className={cn("font-mono text-sm font-medium", toneClasses[tone])}>{value}</dd>
-      {detail && <p className="text-xs text-muted-foreground">{detail}</p>}
+      {detail && <dd className="text-xs text-muted-foreground">{detail}</dd>}
     </dl>
   );
 }

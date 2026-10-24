@@ -57,3 +57,15 @@ Focused tests cover:
 
 - No browser screenshot or build/artifact scan was run; those belong to later redesign validation tasks and were not required for Task 1 focused implementation.
 - Existing `vp check` warnings remain as listed above; there are no new check errors.
+
+## Follow-up review fixes
+
+- P1 fixed: `WorkspaceState` now resolves fallback titles through the existing `translate` infrastructure and the active preference language. Explicit `title` content remains authoritative and unchanged.
+- P2 fixed: `StatusCell` now renders optional `detail` as a second semantic `dd`, keeping the entire status fact valid `dl` markup.
+- Added focused regression assertions for localized fallback/explicit titles and valid status-cell detail structure.
+
+Follow-up validation:
+
+- `vp test test/components/workspace/workspace.test.tsx test/components/shell/shell.test.tsx` — passed, 2 files / 19 tests.
+- `vp check` — passed with zero errors and the same seven pre-existing warnings.
+- `git diff --check` — passed.

@@ -5,6 +5,7 @@ import { ActionGroup } from "../../../src/components/workspace/ActionGroup";
 import { StatusCell } from "../../../src/components/workspace/StatusCell";
 import { WorkspaceHeader } from "../../../src/components/workspace/WorkspaceHeader";
 import { WorkspaceState } from "../../../src/components/workspace/WorkspaceState";
+import { preferencesStore } from "../../../src/stores/preferences";
 
 let root: Root | undefined;
 const render = (children: ReactNode) => {
@@ -19,6 +20,7 @@ afterEach(() => {
   if (root) act(() => root?.unmount());
   root = undefined;
   document.body.innerHTML = "";
+  preferencesStore.getState().setLanguage(null);
 });
 
 describe("workspace primitives", () => {
@@ -53,6 +55,17 @@ describe("workspace primitives", () => {
     expect(cell?.getAttribute("data-tone")).toBe("success");
     expect(cell?.className).toContain("text-success");
     expect(cell?.className).not.toMatch(/#[0-9a-f]/i);
+    expect(cell?.querySelector(":scope > p")).toBeNull();
+    expect(cell?.querySelector(":scope > dd:last-child")?.textContent).toBe("Ready");
+  });
+
+  it("localizes fallback state titles while preserving explicit titles", () => {
+    preferencesStore.getState().setLanguage("zh-CN");
+    const host = render(<WorkspaceState kind="loading" />);
+    expect(host.querySelector("h2")?.textContent).toBe("加载中");
+
+    const explicit = render(<WorkspaceState kind="loading" title="Custom loading" />);
+    expect(explicit.querySelector("h2")?.textContent).toBe("Custom loading");
   });
 
   it("announces workspace state with the appropriate live role", () => {
