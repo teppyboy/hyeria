@@ -37,7 +37,7 @@ export function createPreferencesStore(
   const initialTheme =
     saved.theme && ["system", "light", "white", "dark"].includes(saved.theme)
       ? saved.theme
-      : "system";
+      : "dark";
   return createStore<PreferencesState>()((set, get) => {
     const persist = () => {
       try {

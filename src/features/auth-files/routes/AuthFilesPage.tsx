@@ -91,6 +91,7 @@ export function AuthFilesPage() {
         <CardHeader>
           <CardTitle>{t("authFiles.files")}</CardTitle>
           <CardDescription>{t("authFiles.description")}</CardDescription>
+          <p className="text-sm text-muted-foreground">{t("authFiles.safety")}</p>
         </CardHeader>
         <CardContent className="space-y-3">
           <div className="flex flex-wrap justify-end gap-2">

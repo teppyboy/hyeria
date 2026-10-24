@@ -8,6 +8,8 @@ import { usePreferencesStore } from "@/stores/preferences";
 import { translate } from "@/lib/i18n";
 import { useUiStore } from "@/stores/ui";
 import { LegalNotice } from "@/components/feedback/LegalNotice";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 
 function safeFrom(value: unknown): string {
   if (
@@ -86,13 +88,13 @@ export function LoginPage() {
             This demo does not use an API address or management key. Return to the dashboard to
             explore simulated actions.
           </p>
-          <button
+          <Button
             type="button"
             onClick={() => void navigate("/", { replace: true })}
-            className="w-full rounded-md bg-primary px-4 py-2 text-primary-foreground"
+            className="w-full"
           >
             Open demo dashboard
-          </button>
+          </Button>
         </section>
       </main>
     );
@@ -122,23 +124,21 @@ export function LoginPage() {
         <form onSubmit={submit} className="space-y-4">
           <label className="grid gap-1 text-sm">
             {t("login.address")}
-            <input
+            <Input
               required
               autoComplete="url"
               value={address}
               onChange={(e) => setAddress(e.target.value)}
-              className="h-10 rounded-md border bg-background px-3"
             />
           </label>
           <label className="grid gap-1 text-sm">
             {t("login.key")}
-            <input
+            <Input
               required
               type="password"
               autoComplete="off"
               value={key}
               onChange={(e) => setKey(e.target.value)}
-              className="h-10 rounded-md border bg-background px-3"
             />
           </label>
           <label className="flex items-start gap-2 text-sm">
@@ -154,18 +154,18 @@ export function LoginPage() {
               </span>
             </span>
           </label>
-          <button
+          <Button
             type="submit"
             disabled={mutation.isPending || !key.trim()}
             aria-busy={mutation.isPending}
-            className="w-full rounded-md bg-primary px-4 py-2 text-primary-foreground disabled:opacity-50"
+            className="w-full"
           >
             {mutation.isPending ? t("login.connecting") : t("login.connect")}
-          </button>
+          </Button>
         </form>
-        <button type="button" onClick={() => setLegalOpen(true)} className="text-sm underline">
+        <Button type="button" variant="link" onClick={() => setLegalOpen(true)} className="px-0">
           {t("shell.about")}
-        </button>
+        </Button>
       </section>
       <LegalNotice open={legalOpen} onOpenChange={setLegalOpen} />
     </main>

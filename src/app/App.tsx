@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { Navigate, Route, Routes } from "react-router";
 import { usePreferencesStore } from "@/stores/preferences";
 import { translate } from "@/lib/i18n";
@@ -27,6 +28,11 @@ function UnavailablePage() {
 
 export function App() {
   const language = usePreferencesStore((state) => state.language);
+  const theme = usePreferencesStore((state) => state.theme);
+  useEffect(() => {
+    document.documentElement.dataset.theme = theme;
+    document.documentElement.lang = language;
+  }, [theme, language]);
   return (
     <div data-app="hyeria">
       <h1 className="sr-only">Hyeria</h1>

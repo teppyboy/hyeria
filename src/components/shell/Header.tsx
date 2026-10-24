@@ -19,6 +19,8 @@ export function Header() {
   const navigate = useNavigate();
   const language = usePreferencesStore((state) => state.language);
   const theme = usePreferencesStore((state) => state.theme);
+  const isDemo = useSessionStore((state) => state.isDemo);
+  const isAuthenticated = useSessionStore((state) => state.isAuthenticated);
   const setLanguage = (value: typeof language) => preferencesStore.getState().setLanguage(value);
   const setTheme = (value: Theme) => preferencesStore.getState().setTheme(value);
   const setLegalOpen = (open: boolean) => useUiStore.getState().setLegalOpen(open);
@@ -45,6 +47,14 @@ export function Header() {
       </Link>
       <span className="hidden text-sm text-muted-foreground sm:inline">{t("app.tagline")}</span>
       <div className="ml-auto flex items-center gap-2">
+        {isAuthenticated && (
+          <span
+            role="status"
+            className="max-w-36 truncate rounded-md border px-2 py-1 text-xs text-muted-foreground"
+          >
+            {isDemo ? t("shell.connectionDemo") : t("shell.connectionConnected")}
+          </span>
+        )}
         <label className="sr-only" htmlFor="language">
           {t("shell.language")}
         </label>

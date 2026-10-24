@@ -3,11 +3,13 @@
  * "system" follows prefers-color-scheme. Components consume only the semantic names.
  */
 :root {
-  --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-  --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  --font-sans:
+    "Google Sans", "Product Sans", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono:
+    "Google Code Sans", "Google Sans Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
   --radius: 0.5rem;
   --spacing-page: 1.5rem;
-  --duration-base: 150ms;
+  --duration-base: 180ms;
 
   /* light (neutral) */
   --background: oklch(0.985 0 0);
@@ -56,68 +58,146 @@
 }
 
 :root[data-theme="dark"] {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
-  --border: oklch(1 0 0 / 12%);
-  --input: oklch(1 0 0 / 16%);
+  --background: #000;
+  --foreground: #ededed;
+  --card: #0a0a0a;
+  --card-foreground: #ededed;
+  --popover: #0a0a0a;
+  --popover-foreground: #ededed;
+  --primary: #ededed;
+  --primary-foreground: #000;
+  --secondary: #111;
+  --secondary-foreground: #ededed;
+  --muted: #111;
+  --muted-foreground: #a1a1a1;
+  --accent: #1a1a1a;
+  --accent-foreground: #ededed;
+  --border: #262626;
+  --input: #333;
   --ring: oklch(0.65 0.18 260);
   --destructive: oklch(0.704 0.191 22.216);
   --success: oklch(0.72 0.16 150);
   --warning: oklch(0.8 0.15 80);
   --info: oklch(0.7 0.14 250);
-  --sidebar: oklch(0.175 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.65 0.18 260);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 12%);
+  --sidebar: #050505;
+  --sidebar-foreground: #ededed;
+  --sidebar-primary: #ededed;
+  --sidebar-primary-foreground: #000;
+  --sidebar-accent: #171717;
+  --sidebar-accent-foreground: #ededed;
+  --sidebar-border: #262626;
   --sidebar-ring: oklch(0.65 0.18 260);
 }
 
 @media (prefers-color-scheme: dark) {
   :root[data-theme="system"] {
-    --background: oklch(0.145 0 0);
-    --foreground: oklch(0.985 0 0);
-    --card: oklch(0.205 0 0);
-    --card-foreground: oklch(0.985 0 0);
-    --popover: oklch(0.205 0 0);
-    --popover-foreground: oklch(0.985 0 0);
-    --primary: oklch(0.922 0 0);
-    --primary-foreground: oklch(0.205 0 0);
-    --secondary: oklch(0.269 0 0);
-    --secondary-foreground: oklch(0.985 0 0);
-    --muted: oklch(0.269 0 0);
-    --muted-foreground: oklch(0.708 0 0);
-    --accent: oklch(0.269 0 0);
-    --accent-foreground: oklch(0.985 0 0);
-    --border: oklch(1 0 0 / 12%);
-    --input: oklch(1 0 0 / 16%);
+    --background: #000;
+    --foreground: #ededed;
+    --card: #0a0a0a;
+    --card-foreground: #ededed;
+    --popover: #0a0a0a;
+    --popover-foreground: #ededed;
+    --primary: #ededed;
+    --primary-foreground: #000;
+    --secondary: #111;
+    --secondary-foreground: #ededed;
+    --muted: #111;
+    --muted-foreground: #a1a1a1;
+    --accent: #1a1a1a;
+    --accent-foreground: #ededed;
+    --border: #262626;
+    --input: #333;
     --ring: oklch(0.65 0.18 260);
     --destructive: oklch(0.704 0.191 22.216);
     --success: oklch(0.72 0.16 150);
     --warning: oklch(0.8 0.15 80);
     --info: oklch(0.7 0.14 250);
-    --sidebar: oklch(0.175 0 0);
-    --sidebar-foreground: oklch(0.985 0 0);
-    --sidebar-primary: oklch(0.65 0.18 260);
-    --sidebar-primary-foreground: oklch(0.985 0 0);
-    --sidebar-accent: oklch(0.269 0 0);
-    --sidebar-accent-foreground: oklch(0.985 0 0);
-    --sidebar-border: oklch(1 0 0 / 12%);
+    --sidebar: #050505;
+    --sidebar-foreground: #ededed;
+    --sidebar-primary: #ededed;
+    --sidebar-primary-foreground: #000;
+    --sidebar-accent: #171717;
+    --sidebar-accent-foreground: #ededed;
+    --sidebar-border: #262626;
     --sidebar-ring: oklch(0.65 0.18 260);
+  }
+}
+
+@layer base {
+  :root {
+    color-scheme: light;
+    scroll-behavior: smooth;
+  }
+
+  html[data-theme="dark"] {
+    color-scheme: dark;
+  }
+
+  html[data-theme="system"] {
+    color-scheme: light;
+  }
+
+  html[data-theme="white"] {
+    color-scheme: light;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    html[data-theme="system"] {
+      color-scheme: dark;
+    }
+  }
+
+  ::selection {
+    background: var(--foreground);
+    color: var(--background);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 2px;
+  }
+
+  body {
+    font-feature-settings: "ss01" on;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  :where(td, th, code, pre, time, [data-numeric]) {
+    font-variant-numeric: tabular-nums;
+  }
+
+  [data-slot="card"] {
+    box-shadow: none;
+  }
+
+  #main-content > * {
+    animation: surface-enter 240ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+
+  @keyframes surface-enter {
+    from {
+      opacity: 0;
+      transform: translateY(4px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  button,
+  a,
+  input,
+  select,
+  textarea {
+    transition-property: color, background-color, border-color, opacity, box-shadow, transform;
+    transition-duration: var(--duration-base);
+    transition-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  button:active:not(:disabled) {
+    transform: scale(0.98);
   }
 }
 
@@ -125,12 +205,11 @@
   :root {
     --duration-base: 0ms;
   }
-  *,
-  *::before,
-  *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    scroll-behavior: auto !important;
-    transition-duration: 0.01ms !important;
+  html {
+    scroll-behavior: auto;
+  }
+
+  #main-content > * {
+    animation: none;
   }
 }

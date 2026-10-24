@@ -46,6 +46,16 @@ afterEach(() => {
 });
 
 describe("protected routing", () => {
+  it("applies the selected theme and language on the login route", async () => {
+    preferencesStore.getState().setTheme("dark");
+    preferencesStore.getState().setLanguage("ru");
+    const { host } = mount("/login");
+    await settle();
+    expect(document.documentElement.dataset.theme).toBe("dark");
+    expect(document.documentElement.lang).toBe("ru");
+    expect(host.textContent).toContain("Подключение к серверу CLI Proxy API");
+  });
+
   it("redirects unauthenticated users to login and keeps only a safe internal path", async () => {
     const { host, router } = mount("/config?secret=no#ignored");
     await settle();

@@ -6,6 +6,7 @@ import { AppShell } from "../../../src/components/shell/AppShell";
 import { Header } from "../../../src/components/shell/Header";
 import { preferencesStore } from "../../../src/stores/preferences";
 import { useUiStore } from "../../../src/stores/ui";
+import { sessionStore } from "../../../src/stores/session";
 
 let root: Root | undefined;
 function renderShell() {
@@ -30,6 +31,7 @@ afterEach(() => {
   preferencesStore.getState().setLanguage(null);
   preferencesStore.getState().setTheme("system");
   useUiStore.getState().reset();
+  sessionStore.getState().disconnect();
 });
 
 describe("application shell", () => {
@@ -111,6 +113,30 @@ describe("application shell", () => {
     const host = renderShell();
     expect(host.textContent).not.toContain("managementKey");
     expect(host.innerHTML).not.toContain("secret");
+  });
+
+  it("distinguishes connected and demo sessions without rendering connection details", () => {
+    sessionStore.setState({
+      isAuthenticated: true,
+      isDemo: false,
+      apiBase: "https://private.invalid",
+    });
+    const host = document.createElement("div");
+    document.body.append(host);
+    root = createRoot(host);
+    act(() =>
+      root?.render(
+        <MemoryRouter>
+          <Header />
+        </MemoryRouter>,
+      ),
+    );
+    expect(host.textContent).toContain("Connected session");
+    expect(host.textContent).not.toContain("private.invalid");
+
+    act(() => sessionStore.setState({ isDemo: true, apiBase: null, managementKey: null }));
+    expect(host.textContent).toContain("Interactive demo");
+    expect(host.textContent).not.toContain("managementKey");
   });
 
   it("keeps the desktop sidebar control out of the mobile header and exposes the mobile trigger", () => {

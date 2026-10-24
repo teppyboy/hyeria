@@ -4,6 +4,13 @@ import { createPreferencesStore } from "../../src/stores/preferences";
 beforeEach(() => localStorage.clear());
 
 describe("preferences store", () => {
+  it("defaults to dark theme while preserving explicit theme preferences", () => {
+    const store = createPreferencesStore(["en"]);
+    expect(store.getState().theme).toBe("dark");
+    store.getState().setTheme("white");
+    expect(store.getState().theme).toBe("white");
+  });
+
   it("detects browser language and persists only explicit non-sensitive preferences", () => {
     const store = createPreferencesStore(["zh-Hant-HK"]);
     expect(store.getState().language).toBe("zh-TW");

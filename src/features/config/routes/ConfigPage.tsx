@@ -87,6 +87,7 @@ export function ConfigPage() {
         <CardHeader>
           <CardTitle>config.yaml</CardTitle>
           <CardDescription>{t("config.description")}</CardDescription>
+          <p className="text-sm text-muted-foreground">{t("config.safety")}</p>
         </CardHeader>
         <CardContent className="space-y-3">
           {yaml.isPending && (

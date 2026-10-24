@@ -1,5 +1,4 @@
-import { useEffect } from "react";
-import type { ReactNode } from "react";
+import { useEffect, type ReactNode } from "react";
 import { usePreferencesStore } from "@/stores/preferences";
 import { Header } from "@/components/shell/Header";
 import { Sidebar } from "@/components/shell/Sidebar";
@@ -14,17 +13,12 @@ import { DemoBanner } from "@/features/demo/DemoBanner";
 
 export function AppShell({ children }: { children: ReactNode }) {
   const language = usePreferencesStore((state) => state.language);
-  const theme = usePreferencesStore((state) => state.theme);
   const sidebarOpen = useUiStore((state) => state.sidebarOpen);
   const legalOpen = useUiStore((state) => state.legalOpen);
   const revision = useSessionStore((state) => state.connectionRevision);
   const isDemo = useSessionStore((state) => state.isDemo);
   const t = (key: string) => translate(language, key);
 
-  useEffect(() => {
-    document.documentElement.dataset.theme = theme;
-    document.documentElement.lang = language;
-  }, [theme, language]);
   useEffect(() => {
     useUiStore.getState().reset();
   }, [revision]);
