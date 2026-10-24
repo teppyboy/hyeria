@@ -237,7 +237,7 @@
   "analytics.loading": "正在載入即時使用快照…",
   "analytics.error": "此伺服器上的即時使用快照無法使用。",
   "analytics.empty": "未回傳即時使用快照。",
-  "analytics.liveStatus": "這不是持久歷史記錄，伺服器重新啟動後可能重設。",
+  "analytics.liveStatus": "即時記憶體快照；不是持久歷史記錄，伺服器重新啟動後可能重設。",
   "analytics.observed": "觀測時間",
   "analytics.refresh": "重新整理快照",
   "logs.viewerTitle": "應用程式記錄",

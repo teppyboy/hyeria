@@ -64,6 +64,19 @@ describe("analytics workspace", () => {
     expect(actions[0]?.textContent).toBe("Обновить снимок");
   });
 
+  it("preserves live in-memory meaning in the Traditional Chinese status", async () => {
+    preferencesStore.getState().setLanguage("zh-TW");
+    const host = await mountAnalytics(() => json({ success: 3 }));
+    await vi.waitFor(() =>
+      expect(host.querySelector("[data-slot='analytics-scope']")).not.toBeNull(),
+    );
+
+    const status = host.querySelector("[data-slot='analytics-scope']");
+    expect(status?.textContent).toContain("即時記憶體快照");
+    expect(status?.textContent).toContain("持久歷史記錄");
+    expect(status?.textContent).toContain("重新啟動後可能重設");
+  });
+
   it("uses a loading status region while the snapshot is pending", async () => {
     const host = await mountAnalytics(() => new Promise<Response>(() => {}));
     await vi.waitFor(() =>
