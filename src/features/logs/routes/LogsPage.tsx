@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Skeleton } from "@/components/ui/skeleton";
 import { ActionGroup } from "@/components/workspace/ActionGroup";
 import { WorkspaceHeader } from "@/components/workspace/WorkspaceHeader";
 import { usePreferencesStore } from "@/stores/preferences";
@@ -104,7 +103,7 @@ export function LogsPage() {
         />
       </section>
       {(logs.isFetching || errorLogs.isFetching) && !logs.isPending && !errorLogs.isPending && (
-        <Skeleton className="h-1 w-full" />
+        <div className="h-1 w-full animate-pulse rounded bg-muted" aria-hidden="true" />
       )}
     </section>
   );

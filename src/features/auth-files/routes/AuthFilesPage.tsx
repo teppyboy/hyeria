@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Skeleton } from "@/components/ui/skeleton";
 import { ActionGroup } from "@/components/workspace/ActionGroup";
 import { WorkspaceHeader } from "@/components/workspace/WorkspaceHeader";
 import { WorkspaceState } from "@/components/workspace/WorkspaceState";
@@ -119,13 +118,8 @@ export function AuthFilesPage() {
         <h2 id="auth-files-list" className="text-base font-medium">
           {t("authFiles.files")}
         </h2>
-        {files.isPending && (
-          <div className="space-y-2">
-            <p className="text-sm text-muted-foreground">{t("authFiles.loading")}</p>
-            <Skeleton className="h-32 w-full" />
-          </div>
-        )}
-        {files.isError && <p role="alert">{t("authFiles.loadError")}</p>}
+        {files.isPending && <WorkspaceState kind="loading" title={t("authFiles.loading")} />}
+        {files.isError && <WorkspaceState kind="error" title={t("authFiles.loadError")} />}
         {files.isSuccess && files.data.length === 0 && (
           <WorkspaceState kind="empty" title={t("authFiles.empty")} />
         )}

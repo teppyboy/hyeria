@@ -1,7 +1,7 @@
 import { useMemo } from "react";
-import { Skeleton } from "@/components/ui/skeleton";
 import { usePreferencesStore } from "@/stores/preferences";
 import { translate } from "@/lib/i18n";
+import { WorkspaceState } from "@/components/workspace/WorkspaceState";
 import type { LogPageView } from "../api";
 
 interface LogViewerProps {
@@ -29,9 +29,9 @@ export function LogViewer({
       .filter((line) => !normalizedSearch || line.toLowerCase().includes(normalizedSearch));
   }, [batches, search, showManagement]);
 
-  if (isPending) return <Skeleton className="h-64 w-full" />;
-  if (isError) return <p role="alert">{t("logs.loadError")}</p>;
-  if (lines.length === 0) return <p className="text-muted-foreground">{t("logs.empty")}</p>;
+  if (isPending) return <WorkspaceState kind="loading" title={t("logs.loadingMore")} />;
+  if (isError) return <WorkspaceState kind="error" title={t("logs.loadError")} />;
+  if (lines.length === 0) return <WorkspaceState kind="empty" title={t("logs.empty")} />;
   return (
     <div data-slot="log-viewer">
       <pre className="max-h-[32rem] overflow-auto rounded-md border bg-muted/30 p-3 text-xs leading-5">

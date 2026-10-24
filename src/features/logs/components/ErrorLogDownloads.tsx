@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { Skeleton } from "@/components/ui/skeleton";
+import { WorkspaceState } from "@/components/workspace/WorkspaceState";
 import { usePreferencesStore } from "@/stores/preferences";
 import { translate } from "@/lib/i18n";
 import type { ErrorLogFileView } from "../api";
@@ -23,10 +23,10 @@ export function ErrorLogDownloads({
   const t = (key: string) => translate(language, key);
   return (
     <div className="space-y-2">
-      {isPending && <Skeleton className="h-10 w-full" />}
-      {isError && <p role="alert">{t("logs.errorFilesError")}</p>}
+      {isPending && <WorkspaceState kind="loading" title={t("dashboard.channelLoading")} />}
+      {isError && <WorkspaceState kind="error" title={t("logs.errorFilesError")} />}
       {!isPending && !isError && files?.length === 0 && (
-        <p className="text-muted-foreground">{t("logs.errorFilesEmpty")}</p>
+        <WorkspaceState kind="empty" title={t("logs.errorFilesEmpty")} />
       )}
       {files?.map((file) => (
         <div

@@ -5,6 +5,7 @@ import { createMemoryRouter, RouterProvider } from "react-router";
 import { Providers } from "../../../src/app/providers";
 import { appRoutes } from "../../../src/app/router";
 import { sessionStore } from "../../../src/stores/session";
+import { preferencesStore } from "../../../src/stores/preferences";
 
 let root: Root | undefined;
 
@@ -14,6 +15,7 @@ afterEach(() => {
   document.body.innerHTML = "";
   vi.unstubAllGlobals();
   sessionStore.getState().disconnect();
+  preferencesStore.getState().setLanguage(null);
 });
 
 function json(value: unknown) {
@@ -48,18 +50,18 @@ async function mountAnalytics(usage: () => Response | Promise<Response>) {
 }
 
 describe("analytics workspace", () => {
-  it("gives the live snapshot one workspace header, a live status region, and a single refresh action", async () => {
+  it("localizes the live snapshot workspace and keeps its status framing", async () => {
+    preferencesStore.getState().setLanguage("ru");
     const host = await mountAnalytics(() => json({ success: 3 }));
-    await vi.waitFor(() => expect(host.textContent).toContain("Live in-memory buckets"));
+    await vi.waitFor(() => expect(host.textContent).toContain("Аналитика"));
 
     expect(host.querySelectorAll("[data-slot='workspace-header']")).toHaveLength(1);
-    expect(host.querySelector("[data-slot='workspace-header'] h1")?.textContent).toBe("Analytics");
+    expect(host.querySelector("[data-slot='workspace-header'] h1")?.textContent).toBe("Аналитика");
     const status = host.querySelector("[data-slot='analytics-scope']");
-    expect(status?.textContent).toContain("Live");
-    expect(status?.textContent).toContain("not durable");
+    expect(status?.textContent).toContain("не история");
     const actions = host.querySelectorAll("[data-slot='workspace-actions'] button");
     expect(actions).toHaveLength(1);
-    expect(actions[0]?.textContent).toBe("Refresh snapshot");
+    expect(actions[0]?.textContent).toBe("Обновить снимок");
   });
 
   it("uses a loading status region while the snapshot is pending", async () => {
@@ -70,6 +72,10 @@ describe("analytics workspace", () => {
       ).not.toBeNull(),
     );
     expect(host.querySelector("[data-slot='workspace-header']")).not.toBeNull();
+    expect(host.querySelector("[data-slot='analytics-scope']")?.textContent).toContain("Live");
+    expect(host.querySelector("[data-slot='workspace-actions'] button")?.textContent).toBe(
+      "Refresh snapshot",
+    );
     expect(
       host.querySelector("[data-slot='workspace-state'][data-kind='loading']")?.textContent,
     ).toContain("Loading live usage buckets");
@@ -85,6 +91,10 @@ describe("analytics workspace", () => {
       { timeout: 4000 },
     );
     expect(host.querySelector("[data-slot='workspace-header']")).not.toBeNull();
+    expect(host.querySelector("[data-slot='analytics-scope']")?.textContent).toContain("Live");
+    expect(host.querySelector("[data-slot='workspace-actions'] button")?.textContent).toBe(
+      "Refresh snapshot",
+    );
     expect(
       host.querySelector("[data-slot='workspace-state'][data-kind='error']")?.textContent,
     ).toContain("unavailable");

@@ -69,6 +69,7 @@ describe("system page", () => {
         timeout: 4000,
       },
     );
+    expect(host.querySelector("[data-slot='workspace-state'][data-kind='error']")).not.toBeNull();
     expect(host.textContent).not.toContain("No candidate channels yet.");
   });
 
@@ -135,6 +136,9 @@ describe("system page", () => {
 
     expect(host.querySelectorAll("[data-slot='workspace-header']")).toHaveLength(1);
     expect(host.querySelector("h1")?.textContent).toBe("System");
+    expect(host.querySelector("[data-slot='workspace-header'] p")?.textContent).toBe(
+      "Compare this browser session with the server and manage remembered access.",
+    );
     expect(regionNamed(host, "Latest version").textContent).toContain("v1.2.3");
     expect(regionNamed(host, "Model channels").textContent).toContain("Models: 2");
     const session = regionNamed(host, "This browser");

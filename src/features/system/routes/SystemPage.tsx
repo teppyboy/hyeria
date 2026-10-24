@@ -1,8 +1,9 @@
 import { ActionGroup } from "@/components/workspace/ActionGroup";
 import { StatusCell } from "@/components/workspace/StatusCell";
-import { WorkspaceHeader } from "@/components/workspace/WorkspaceHeader";
-import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
+import { WorkspaceHeader } from "@/components/workspace/WorkspaceHeader";
+import { WorkspaceState } from "@/components/workspace/WorkspaceState";
+import { Button } from "@/components/ui/button";
 import { useSystemQueries } from "@/features/system/queries";
 import { compareVersions } from "@/lib/feature-support/capabilities";
 import { useSessionStore } from "@/stores/session";
@@ -21,7 +22,7 @@ export function SystemPage() {
 
   return (
     <section className="mx-auto grid max-w-5xl gap-6">
-      <WorkspaceHeader title={t("nav.system")} />
+      <WorkspaceHeader title={t("nav.system")} description={t("system.description")} />
 
       <section aria-labelledby="system-latest" className="grid gap-3">
         <div>
@@ -30,8 +31,12 @@ export function SystemPage() {
           </h2>
           <p className="text-sm text-muted-foreground">{t("system.latestVersionDescription")}</p>
         </div>
-        {latestVersion.isPending && <Skeleton className="h-10 w-full" />}
-        {latestVersion.isError && <p role="alert">{t("system.latestVersionError")}</p>}
+        {latestVersion.isPending && (
+          <WorkspaceState kind="loading" title={t("dashboard.channelLoading")} />
+        )}
+        {latestVersion.isError && (
+          <WorkspaceState kind="error" title={t("system.latestVersionError")} />
+        )}
         {latestVersion.isSuccess && (
           <div className="grid gap-4 border-y py-4 sm:grid-cols-2">
             <StatusCell label={t("system.latest")} value={latestVersion.data} />
@@ -53,13 +58,11 @@ export function SystemPage() {
           <p className="text-sm text-muted-foreground">{t("system.modelChannelsDescription")}</p>
         </div>
         {credentials.isPending ? (
-          <p className="text-sm text-muted-foreground">{t("dashboard.channelLoading")}</p>
+          <WorkspaceState kind="loading" title={t("dashboard.channelLoading")} />
         ) : credentials.isError ? (
-          <p role="alert" className="text-sm text-muted-foreground">
-            {t("dashboard.credentialsError")}
-          </p>
+          <WorkspaceState kind="error" title={t("dashboard.credentialsError")} />
         ) : channels.length === 0 ? (
-          <p className="text-sm text-muted-foreground">{t("system.noChannels")}</p>
+          <WorkspaceState kind="empty" title={t("system.noChannels")} />
         ) : (
           <ul className="divide-y border-y">
             {channels.map((channel, index) => {

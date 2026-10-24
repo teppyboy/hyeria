@@ -46,7 +46,8 @@ describe("analytics page", () => {
         </Providers>,
       ),
     );
-    await vi.waitFor(() => expect(host.textContent).toContain("Live in-memory buckets"));
+    await vi.waitFor(() => expect(host.textContent).toContain("Analytics"));
+    expect(host.textContent).toContain("Live in-memory buckets");
     expect(host.textContent).not.toContain("[TEST-CREDENTIAL-MARKER]");
     expect(paths.some((path) => path.endsWith("/observability/usage/queue"))).toBe(false);
   });

@@ -1,5 +1,4 @@
 import { Link } from "react-router";
-import { Skeleton } from "@/components/ui/skeleton";
 import { WorkspaceHeader } from "@/components/workspace/WorkspaceHeader";
 import { WorkspaceState } from "@/components/workspace/WorkspaceState";
 import { ProviderTable } from "@/features/providers/components/ProviderTable";
@@ -20,13 +19,8 @@ export function ProvidersPage() {
         <h2 id="providers-groups" className="text-base font-medium">
           {t("providers.groups")}
         </h2>
-        {groups.isPending && (
-          <div className="space-y-2">
-            <p className="text-sm text-muted-foreground">{t("providers.loading")}</p>
-            <Skeleton className="h-32 w-full" />
-          </div>
-        )}
-        {groups.isError && <p role="alert">{t("providers.loadError")}</p>}
+        {groups.isPending && <WorkspaceState kind="loading" title={t("providers.loading")} />}
+        {groups.isError && <WorkspaceState kind="error" title={t("providers.loadError")} />}
         {groups.isSuccess && groups.data.length === 0 && (
           <WorkspaceState kind="empty" title={t("providers.empty")} />
         )}

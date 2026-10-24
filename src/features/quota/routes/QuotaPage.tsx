@@ -1,7 +1,7 @@
 import { ActionGroup } from "@/components/workspace/ActionGroup";
 import { WorkspaceHeader } from "@/components/workspace/WorkspaceHeader";
+import { WorkspaceState } from "@/components/workspace/WorkspaceState";
 import { Button } from "@/components/ui/button";
-import { Skeleton } from "@/components/ui/skeleton";
 import { usePreferencesStore } from "@/stores/preferences";
 import { useUiStore } from "@/stores/ui";
 import { translate } from "@/lib/i18n";
@@ -32,10 +32,12 @@ export function QuotaPage() {
         <h2 id="quota-cooldown" className="text-base font-medium">
           {t("quota.cooldown")}
         </h2>
-        {credentials.isPending && <Skeleton className="h-12 w-full" />}
-        {credentials.isError && <p role="alert">{t("quota.credentialsError")}</p>}
+        {credentials.isPending && (
+          <WorkspaceState kind="loading" title={t("dashboard.channelLoading")} />
+        )}
+        {credentials.isError && <WorkspaceState kind="error" title={t("quota.credentialsError")} />}
         {credentials.isSuccess && credentials.data.length === 0 && (
-          <p className="text-sm text-muted-foreground">{t("quota.empty")}</p>
+          <WorkspaceState kind="empty" title={t("quota.empty")} />
         )}
         {credentials.isSuccess && credentials.data.length > 0 && (
           <ul className="divide-y border-y">
