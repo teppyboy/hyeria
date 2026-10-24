@@ -67,6 +67,7 @@
   "legal.logo": "Product logo pending; this text mark is temporary.",
   "common.close": "Close",
   "common.pageNotFound": "Page not found",
+  "dashboard.operationsDescription": "Server facts, credential readiness, and candidate model channels for this session.",
   "dashboard.server": "Server",
   "dashboard.serverDescription": "Version and capabilities reported by the server.",
   "dashboard.version": "Version",

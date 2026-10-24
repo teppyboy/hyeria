@@ -67,6 +67,7 @@
   "legal.logo": "Логотип продукта будет добавлен позднее; текстовый знак временный.",
   "common.close": "Закрыть",
   "common.pageNotFound": "Страница не найдена",
+  "dashboard.operationsDescription": "Сведения о сервере, готовность учётных данных и возможные каналы моделей для этого сеанса.",
   "dashboard.server": "Сервер",
   "dashboard.serverDescription": "Версия и возможности, которые сообщает сервер.",
   "dashboard.version": "Версия",

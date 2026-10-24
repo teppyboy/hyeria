@@ -67,6 +67,7 @@
   "legal.logo": "產品標誌待提供；目前文字標記為暫用。",
   "common.close": "關閉",
   "common.pageNotFound": "找不到頁面",
+  "dashboard.operationsDescription": "本次工作階段的伺服器資訊、憑證就緒狀態與候選模型通道。",
   "dashboard.server": "伺服器",
   "dashboard.serverDescription": "伺服器回報的版本與功能。",
   "dashboard.version": "版本",

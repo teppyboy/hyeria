@@ -67,6 +67,7 @@
   "legal.logo": "产品标志待定；当前文字标识为临时版本。",
   "common.close": "关闭",
   "common.pageNotFound": "找不到页面",
+  "dashboard.operationsDescription": "本次会话的服务器信息、凭证就绪状态和候选模型通道。",
   "dashboard.server": "服务器",
   "dashboard.serverDescription": "服务器报告的版本和功能。",
   "dashboard.version": "版本",
