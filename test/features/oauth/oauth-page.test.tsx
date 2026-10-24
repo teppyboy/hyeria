@@ -66,14 +66,15 @@ describe("OAuth page", () => {
       return response({});
     });
     vi.stubGlobal("fetch", fetchMock);
+    const popup = {
+      location: { replace: vi.fn() },
+      close: vi.fn(),
+      document: { title: "", body: { textContent: "" } },
+      opener: null,
+    };
     vi.stubGlobal(
       "open",
-      vi.fn(() => ({
-        location: { replace: vi.fn() },
-        close: vi.fn(),
-        document: { title: "", body: { textContent: "" } },
-        opener: null,
-      })),
+      vi.fn(() => popup),
     );
 
     const { host, router } = mountRoute("/oauth");
@@ -89,6 +90,8 @@ describe("OAuth page", () => {
     );
     expect(start).not.toBeUndefined();
     await act(async () => start?.click());
+    expect(popup.document.title).toBe("OAuth sign-in");
+    expect(popup.document.body.textContent).toBe("Waiting for authorization…");
     await vi.waitFor(() => expect(host.textContent).toContain("OAuth completed"));
     expect(fetchMock.mock.calls.map(([input]) => new URL(input).pathname)).toEqual([
       "/v8/management/oauth/auth-url",

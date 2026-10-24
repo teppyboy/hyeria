@@ -146,8 +146,8 @@ export function OAuthPage() {
     popupRef.current = window.open("about:blank", "_blank");
     if (popupRef.current !== null) {
       popupRef.current.opener = null;
-      popupRef.current.document.title = "OAuth sign-in";
-      popupRef.current.document.body.textContent = "Waiting for authorization…";
+      popupRef.current.document.title = t("oauth.popupTitle");
+      popupRef.current.document.body.textContent = t("oauth.popupWaiting");
     }
     dispatch({ type: "start", providerId: provider });
     try {

@@ -24,18 +24,18 @@ export function PluginsPage() {
         <WorkspaceState kind="loading" title={t("plugins.loading")} />
       </section>
     );
-  if (!plugins.data && plugins.fetchStatus === "idle")
-    return (
-      <section className="mx-auto grid max-w-5xl gap-6">
-        {header}
-        <WorkspaceState kind="unavailable" title={t("plugins.unavailable")} />
-      </section>
-    );
   if (plugins.isError)
     return (
       <section className="mx-auto grid max-w-5xl gap-6">
         {header}
         <WorkspaceState kind="error" title={t("plugins.loadError")} />
+      </section>
+    );
+  if (!plugins.data && plugins.fetchStatus === "idle")
+    return (
+      <section className="mx-auto grid max-w-5xl gap-6">
+        {header}
+        <WorkspaceState kind="unavailable" title={t("plugins.unavailable")} />
       </section>
     );
   if (!plugins.data)

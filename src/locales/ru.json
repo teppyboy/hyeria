@@ -48,6 +48,8 @@
   "plugins.installError": "Не удалось установить плагин.",
   "plugins.restartStatus": "Для установки требуется перезапуск сервера.",
   "oauth.state": "Состояние авторизации",
+  "oauth.popupTitle": "Вход через OAuth",
+  "oauth.popupWaiting": "Ожидание авторизации…",
   "nav.system": "Система",
   "nav.unavailable": "Эта страница пока недоступна.",
   "nav.pluginUnsupported": "Этот сервер не поддерживает плагины.",

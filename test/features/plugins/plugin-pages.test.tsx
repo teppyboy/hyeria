@@ -24,7 +24,10 @@ function json(value: unknown) {
 async function mount(path: string, responses: (url: URL) => unknown) {
   vi.stubGlobal(
     "fetch",
-    vi.fn(async (input: URL) => json(responses(new URL(input)))),
+    vi.fn(async (input: URL) => {
+      const result = responses(new URL(input));
+      return result instanceof Response ? result : json(result);
+    }),
   );
   await sessionStore
     .getState()
@@ -44,6 +47,20 @@ async function mount(path: string, responses: (url: URL) => unknown) {
 }
 
 describe("plugin management pages", () => {
+  it("shows the localized error state when plugin discovery fails", async () => {
+    const host = await mount("/plugins", (url) =>
+      url.pathname.endsWith("/plugins")
+        ? new Response("unavailable", { status: 503 })
+        : { "config-version": 8 },
+    );
+    await vi.waitFor(() => expect(host.querySelector('[data-kind="error"]')).not.toBeNull(), {
+      timeout: 4000,
+    });
+    expect(host.querySelector('[data-kind="error"]')?.textContent).toBe(
+      "Plugin information is unavailable.",
+    );
+  });
+
   it("renders identifiers but never interprets menu HTML", async () => {
     const host = await mount("/plugins", (url) =>
       url.pathname.endsWith("/plugins")

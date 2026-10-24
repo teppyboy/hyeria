@@ -48,6 +48,8 @@
   "plugins.installError": "插件安装失败。",
   "plugins.restartStatus": "安装需要重启后端。",
   "oauth.state": "授权状态",
+  "oauth.popupTitle": "OAuth 登录",
+  "oauth.popupWaiting": "正在等待授权…",
   "nav.system": "系统",
   "nav.unavailable": "此页面暂不可用。",
   "nav.pluginUnsupported": "此服务器不支持插件。",

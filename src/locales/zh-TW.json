@@ -48,6 +48,8 @@
   "plugins.installError": "外掛程式安裝失敗。",
   "plugins.restartStatus": "安裝需要重新啟動後端。",
   "oauth.state": "授權狀態",
+  "oauth.popupTitle": "OAuth 登入",
+  "oauth.popupWaiting": "正在等待授權…",
   "nav.system": "系統",
   "nav.unavailable": "此頁面目前尚無法使用。",
   "nav.pluginUnsupported": "此伺服器不支援外掛程式。",

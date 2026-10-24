@@ -48,6 +48,8 @@
   "plugins.installError": "Plugin installation failed.",
   "plugins.restartStatus": "Installation requires a backend restart.",
   "oauth.state": "Authorization state",
+  "oauth.popupTitle": "OAuth sign-in",
+  "oauth.popupWaiting": "Waiting for authorization…",
   "nav.system": "System",
   "nav.unavailable": "This page is not available yet.",
   "nav.pluginUnsupported": "Plugins are not supported by this server.",
