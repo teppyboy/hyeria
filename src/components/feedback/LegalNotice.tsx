@@ -7,9 +7,11 @@ import {
 } from "@/components/ui/dialog";
 import { usePreferencesStore } from "@/stores/preferences";
 import { translate } from "@/lib/i18n";
+import packageJson from "../../../package.json";
 
-/** Canonical source for AGPLv3 section 13; shown in the notice so deployed users can reach it. */
+/** Canonical Hyeria repository linked from the About notice. */
 export const SOURCE_URL = "https://github.com/teppyboy/hyeria";
+export const APP_VERSION = packageJson.version;
 
 export function LegalNotice({
   open,
@@ -39,47 +41,28 @@ export function LegalNotice({
               {t("legal.sectionIdentity")}
             </h2>
             <p>{t("legal.copyright")}</p>
+            <p className="mt-2">
+              {t("legal.version")}: {APP_VERSION}
+            </p>
           </section>
           <section aria-labelledby="legal-license">
             <h2 id="legal-license" className="mb-1 text-sm font-semibold">
               {t("legal.sectionLicense")}
             </h2>
             <p>{t("legal.license")}</p>
-            <p className="mt-2">
-              {t("legal.source")}{" "}
-              <a
-                href={SOURCE_URL}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="break-words underline underline-offset-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-              >
-                {t("legal.sourceLink")}
-              </a>
-            </p>
           </section>
-          <section aria-labelledby="legal-network">
-            <h2 id="legal-network" className="mb-1 text-sm font-semibold">
-              {t("legal.sectionNetwork")}
+          <section aria-labelledby="legal-repository">
+            <h2 id="legal-repository" className="mb-1 text-sm font-semibold">
+              {t("legal.sectionRepository")}
             </h2>
-            <p>{t("legal.network")}</p>
-          </section>
-          <section aria-labelledby="legal-build">
-            <h2 id="legal-build" className="mb-1 text-sm font-semibold">
-              {t("legal.sectionBuild")}
-            </h2>
-            <p>{t("legal.build")}</p>
-          </section>
-          <section aria-labelledby="legal-warranty">
-            <h2 id="legal-warranty" className="mb-1 text-sm font-semibold">
-              {t("legal.sectionWarranty")}
-            </h2>
-            <p>{t("legal.warranty")}</p>
-          </section>
-          <section aria-labelledby="legal-branding">
-            <h2 id="legal-branding" className="mb-1 text-sm font-semibold">
-              {t("legal.sectionBranding")}
-            </h2>
-            <p>{t("legal.logo")}</p>
+            <a
+              href={SOURCE_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="break-words underline underline-offset-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            >
+              {t("legal.sourceLink")}
+            </a>
           </section>
         </div>
       </DialogContent>

@@ -4,7 +4,7 @@ import { createRoot, type Root } from "react-dom/client";
 import { NotificationProvider } from "../../../src/components/feedback/NotificationProvider";
 import { ErrorBoundary } from "../../../src/components/feedback/ErrorBoundary";
 import { ConfirmDialog } from "../../../src/components/feedback/ConfirmDialog";
-import { LegalNotice, SOURCE_URL } from "../../../src/components/feedback/LegalNotice";
+import { APP_VERSION, LegalNotice, SOURCE_URL } from "../../../src/components/feedback/LegalNotice";
 import { useUiStore } from "../../../src/stores/ui";
 import { preferencesStore } from "../../../src/stores/preferences";
 
@@ -62,15 +62,21 @@ describe("feedback components", () => {
     expect(host.textContent).toContain("Повторить");
   });
 
-  it("renders the About notice as localized, scrollable sections with labeled source link", () => {
+  it("renders a concise About notice with retained project details and repository link", () => {
     const host = mount(<LegalNotice open onOpenChange={() => undefined} />);
     const dialog = document.body.querySelector('[role="dialog"]');
     expect(dialog).not.toBeNull();
     expect(dialog?.querySelector("section h2")?.textContent).toBe("Independent project");
-    expect(dialog?.querySelectorAll("section")).toHaveLength(6);
-    expect(dialog?.textContent).toContain("Build from source");
-    expect(dialog?.textContent).not.toContain(SOURCE_URL);
-    expect(dialog?.querySelector(`a[href="${SOURCE_URL}"]`)?.textContent).toBe("View source code");
+    expect(dialog?.querySelectorAll("section")).toHaveLength(3);
+    expect(dialog?.textContent).toContain("Copyright © Hyeria contributors.");
+    expect(dialog?.textContent).toContain("AGPLv3");
+    expect(dialog?.textContent).toContain(`Version: ${APP_VERSION}`);
+    expect(dialog?.textContent).not.toContain("Corresponding Source");
+    expect(dialog?.textContent).not.toContain("Network use");
+    expect(dialog?.textContent).not.toContain("Build from source");
+    expect(dialog?.textContent).not.toContain("Warranty");
+    expect(dialog?.textContent).not.toContain("Branding status");
+    expect(dialog?.querySelector(`a[href="${SOURCE_URL}"]`)?.textContent).toBe("View repository");
     expect(dialog?.querySelector("button span.sr-only")?.textContent).toBe("Close");
     expect(dialog?.querySelector('[data-legal-scroll="true"]')?.className).toContain(
       "overflow-y-auto",
@@ -84,7 +90,7 @@ describe("feedback components", () => {
     const dialog = document.body.querySelector('[role="dialog"]');
     expect(dialog?.querySelector("section h2")?.textContent).toBe("Независимый проект");
     expect(dialog?.querySelector(`a[href="${SOURCE_URL}"]`)?.textContent).toBe(
-      "Открыть исходный код",
+      "Открыть репозиторий",
     );
   });
 
