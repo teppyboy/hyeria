@@ -27,3 +27,24 @@ Implemented the approved demo bootstrap seam without modifying Task 1-owned API 
 - This branch intentionally does not add or alter `src/lib/api/client.ts` or `src/features/demo/api.ts`; it depends on Task 1's planned `ManagementApiTransport` and `createDemoApi()` exports.
 - Integration updated the session client type to use `ManagementApiTransport` directly.
 - Existing preferences still use local storage as normal application behavior; demo session bootstrap itself does not access remembered-session storage or credentials.
+
+# Task 2 review follow-up — safe view validation
+
+## Scope
+
+Updated the source-preserving configuration patch seam after review. Registered values are now validated against their field kind, select options, and numeric constraints before entering the safe view. Proxy URLs with any authority userinfo marker, including an empty userinfo segment such as `http://@proxy.example`, are hidden from the safe view and rejected for visual edits.
+
+## Changed files
+
+- `src/features/config/editor/patch.ts` — validates safe-view values and detects empty proxy userinfo.
+- `test/features/config/config-editor-patch.test.ts` — adds invalid scalar/enum/numeric and proxy-userinfo regressions.
+
+## Validation
+
+- `pnpm exec vp test test/features/config/config-editor-registry.test.ts test/features/config/config-editor-patch.test.ts test/features/config/config-api.test.ts test/lib/config/yaml.test.ts` — passed, 4 files / 53 tests.
+- `pnpm exec vp check src/features/config/editor/patch.ts test/features/config/config-editor-patch.test.ts` — passed with no warnings, lint errors, or type errors.
+- `git diff --check` — passed.
+
+## Risks / integration notes
+
+- No UI, routes, locales, About, API calls, or push operations were changed.

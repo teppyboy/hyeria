@@ -45,6 +45,42 @@ describe("safe config document patching", () => {
     expect(readSafeConfigView(original)).not.toHaveProperty("oauth.token");
   });
 
+  it("hides registered values that fail their field contract", () => {
+    const invalid = {
+      ...original,
+      management: { "allow-remote": "yes" },
+      routing: { strategy: "unknown", retry: { "request-retry": -1 } },
+      plugins: { configs: { codex: { priority: 1.5 } } },
+    };
+
+    const view = readSafeConfigView(invalid);
+    expect(view["management.allow-remote"]).toBeUndefined();
+    expect(view["routing.strategy"]).toBeUndefined();
+    expect(view["routing.retry.request-retry"]).toBeUndefined();
+    expect(view["plugins.configs.codex.priority"]).toBeUndefined();
+  });
+
+  it("hides proxy URLs with any userinfo authority, including empty userinfo", () => {
+    for (const proxyUrl of [
+      "http://user:password@proxy.example.invalid:8080",
+      "http://user@proxy.example.invalid:8080",
+      "http://@proxy.example.invalid:8080",
+    ]) {
+      const document = { ...original, requests: { "proxy-url": proxyUrl } };
+      expect(readSafeConfigView(document)["requests.proxy-url"]).toBeUndefined();
+      expect(() =>
+        applySafeConfigEdits(original, [{ path: ["requests", "proxy-url"], value: proxyUrl }]),
+      ).toThrow(TypeError);
+    }
+
+    expect(
+      readSafeConfigView({
+        ...original,
+        requests: { "proxy-url": "http://proxy.example.invalid" },
+      })["requests.proxy-url"],
+    ).toBe("http://proxy.example.invalid");
+  });
+
   it("patches nested safe fields without reconstructing the document", () => {
     const draft = applySafeConfigEdits(original, [
       { path: ["management", "allow-remote"], value: true },

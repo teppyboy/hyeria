@@ -2,7 +2,7 @@ import { stringify } from "yaml";
 import { SAFE_CONFIG_FIELDS } from "./registry";
 import type { ConfigEdit, ConfigFieldDefinition, JsonValue, SafeConfigView } from "./types";
 
-const URL_USERINFO = /^[a-z][a-z\d+.-]*:\/\/[^/?#@\s]+@/i;
+const URL_USERINFO = /^[a-z][a-z\d+.-]*:\/\/[^/?#\s]*@/i;
 const hasOwn = (value: Record<string, unknown>, key: string): boolean =>
   Object.prototype.hasOwnProperty.call(value, key);
 
@@ -19,14 +19,14 @@ export function readSafeConfigView(document: Record<string, unknown>): SafeConfi
         const path = field.path.map((segment) => (segment === "<plugin>" ? plugin : segment));
         const value = readAtPath(document, path);
         view[path.join(".")] =
-          isSafeViewValue(value) && !isHiddenFieldValue(field, value) ? value : undefined;
+          isValidFieldValue(field, value) && !isHiddenFieldValue(field, value) ? value : undefined;
       }
       continue;
     }
 
     const value = readAtPath(document, field.path);
     view[field.path.join(".")] =
-      isSafeViewValue(value) && !isHiddenFieldValue(field, value) ? value : undefined;
+      isValidFieldValue(field, value) && !isHiddenFieldValue(field, value) ? value : undefined;
   }
 
   return view;
@@ -163,6 +163,29 @@ function isSafeViewValue(value: unknown): value is string | number | boolean {
     (typeof value === "number" && Number.isFinite(value)) ||
     typeof value === "boolean"
   );
+}
+
+function isValidFieldValue(
+  field: ConfigFieldDefinition,
+  value: unknown,
+): value is string | number | boolean {
+  if (!isSafeViewValue(value)) return false;
+  switch (field.kind) {
+    case "boolean":
+      return typeof value === "boolean";
+    case "text":
+      return typeof value === "string";
+    case "number":
+      return (
+        typeof value === "number" &&
+        Number.isFinite(value) &&
+        (field.integer !== true || Number.isInteger(value)) &&
+        (field.minimum === undefined || value >= field.minimum) &&
+        (field.maximum === undefined || value <= field.maximum)
+      );
+    case "select":
+      return typeof value === "string" && field.options.some((option) => option.value === value);
+  }
 }
 
 function isJsonValue(value: unknown): value is JsonValue {
