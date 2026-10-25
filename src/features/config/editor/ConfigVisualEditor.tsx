@@ -97,7 +97,12 @@ export function ConfigVisualEditor({ text, onChange }: ConfigVisualEditorProps) 
               onChange={(value: JsonValue | undefined) => handleEdit({ path: field.path, value })}
             />
           ))}
-          <PluginConfigEditor document={parsed.value} onEdit={handleEdit} />
+          <PluginConfigEditor
+            document={parsed.value}
+            values={view}
+            errors={errors}
+            onEdit={handleEdit}
+          />
         </div>
       ) : (
         <div className="space-y-3">

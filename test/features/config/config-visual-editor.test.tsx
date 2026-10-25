@@ -114,4 +114,25 @@ describe("config visual editor", () => {
     expect(host.textContent).toContain("Unsupported and sensitive settings remain available");
     expect(host.textContent).not.toContain("client-key-example-1");
   });
+
+  it("shows plugin edit errors and associates them with the plugin control", () => {
+    const opaquePluginYaml = configYaml.replace(
+      "    example-plugin:\n      enabled: true\n      priority: 10",
+      "    example-plugin: opaque",
+    );
+    const host = render(opaquePluginYaml, () => undefined);
+    act(() => sectionButton(host, "Plugins")?.click());
+
+    const pluginSection = host.querySelector('[aria-labelledby="plugin-example-plugin"]');
+    const control = pluginSection?.querySelector<HTMLInputElement>("input[type=checkbox]");
+    expect(control).not.toBeNull();
+    act(() => control?.click());
+
+    expect(pluginSection?.textContent).toContain(
+      "This value is not valid for the selected setting.",
+    );
+    const error = pluginSection?.querySelector('[role="alert"]');
+    expect(error).not.toBeNull();
+    expect(control?.getAttribute("aria-describedby")?.split(" ")).toContain(error?.id);
+  });
 });
