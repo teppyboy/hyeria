@@ -141,6 +141,31 @@ describe("config page", () => {
     expect(host.querySelector("#config-raw-yaml .cm-editor")).not.toBeNull();
   });
 
+  it("feeds visual edits into the YAML draft without dropping unknown settings", async () => {
+    const { host, fetchMock } = await mountPage(() => new Response(configYaml));
+    const allowRemote = host.querySelector<HTMLInputElement>('input[type="checkbox"]');
+    expect(allowRemote?.checked).toBe(false);
+
+    await act(async () => allowRemote?.click());
+    await settle();
+
+    const draft = editorText(host);
+    expect(draft).toContain("allow-remote: true");
+    expect(draft).toContain("client-key-example-1");
+    expect(draft).toContain("turn:turn.example.invalid:3478");
+
+    await act(async () => saveButton(host)?.click());
+    await settle();
+    expect(dialog()).not.toBeNull();
+    expect(dialog()?.textContent).not.toContain("client-key-example-1");
+    expect(fetchMock.mock.calls.some(([, init]) => init?.method === "PUT")).toBe(false);
+
+    await act(async () => confirmButton(dialog())?.click());
+    await settle();
+    const write = fetchMock.mock.calls.find(([, init]) => init?.method === "PUT");
+    expect(write?.[1]?.body).toBe(draft);
+  });
+
   it("shows an alert when the YAML cannot be read", async () => {
     const { host } = await mountPage(() => new Response("{}", { status: 502 }));
     // A 5xx read is retried once after a delay, so the alert appears after the retry settles.

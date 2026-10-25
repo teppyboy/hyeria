@@ -109,7 +109,13 @@ export function ConfigPage() {
                 <CardDescription>{t("config.description")}</CardDescription>
               </CardHeader>
               <CardContent className="space-y-3">
-                <VisualConfigForm text={text} />
+                <VisualConfigForm
+                  text={text}
+                  onChange={(value) => {
+                    setDraft(value);
+                    setSaved(false);
+                  }}
+                />
                 <div id="config-raw-yaml">
                   <YamlEditor
                     value={text}
