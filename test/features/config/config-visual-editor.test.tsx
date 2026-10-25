@@ -3,6 +3,8 @@ import { act } from "react";
 import { createRoot, type Root } from "react-dom/client";
 import { Providers } from "../../../src/app/providers";
 import { ConfigVisualEditor } from "../../../src/features/config/editor/ConfigVisualEditor";
+import { SettingRow } from "../../../src/features/config/editor/SettingRow";
+import { SAFE_CONFIG_FIELDS } from "../../../src/features/config/editor/registry";
 import configYaml from "../../fixtures/v8/config.yaml?raw";
 
 let root: Root | undefined;
@@ -42,6 +44,44 @@ describe("config visual editor", () => {
     act(() => sectionButton(host, "Observability")?.click());
     expect(host.textContent).toContain("Unset; no default is applied.");
     expect(host.textContent).not.toMatch(/access|oauth|client-key|turn\.example|secret/);
+  });
+
+  it("associates every visible control with its description and validation target", () => {
+    const host = render(configYaml, () => undefined);
+    const controls = [...host.querySelectorAll<HTMLElement>("input, select")];
+
+    expect(controls.length).toBeGreaterThan(0);
+    for (const control of controls) {
+      const describedBy = control.getAttribute("aria-describedby")?.split(" ") ?? [];
+      expect(describedBy.length).toBeGreaterThan(0);
+      for (const id of describedBy) expect(host.ownerDocument.getElementById(id)).not.toBeNull();
+    }
+  });
+
+  it("associates validation errors with the control when present", () => {
+    const host = document.createElement("div");
+    document.body.append(host);
+    root = createRoot(host);
+    act(() =>
+      root?.render(
+        <Providers>
+          <SettingRow
+            field={SAFE_CONFIG_FIELDS[0]}
+            value={false}
+            error="Invalid setting"
+            onChange={() => undefined}
+          />
+        </Providers>,
+      ),
+    );
+
+    const control = host.querySelector<HTMLElement>("input");
+    const describedBy = control?.getAttribute("aria-describedby")?.split(" ") ?? [];
+    expect(describedBy).toHaveLength(2);
+    expect(describedBy.map((id) => host.ownerDocument.getElementById(id)?.textContent)).toEqual([
+      "Allow management requests from remote clients.",
+      "Invalid setting",
+    ]);
   });
 
   it("patches a safe value while preserving unknown and secret document data", () => {

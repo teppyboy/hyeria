@@ -7,11 +7,12 @@ interface FieldRendererProps {
   readonly field: ConfigFieldDefinition;
   readonly id: string;
   readonly value: string | number | boolean | undefined;
+  readonly describedBy: string;
   readonly onChange: (value: JsonValue | undefined) => void;
 }
 
 /** Renders only the scalar control kinds represented by the verified registry. */
-export function FieldRenderer({ field, id, value, onChange }: FieldRendererProps) {
+export function FieldRenderer({ field, id, value, describedBy, onChange }: FieldRendererProps) {
   const language = usePreferencesStore((state) => state.language);
   const t = (key: string) => translate(language, key);
 
@@ -21,6 +22,7 @@ export function FieldRenderer({ field, id, value, onChange }: FieldRendererProps
         <input
           id={id}
           type="checkbox"
+          aria-describedby={describedBy}
           className="size-5 min-h-11 min-w-11 cursor-pointer rounded border-input accent-primary"
           checked={value === true}
           onChange={(event) => onChange(event.target.checked)}
@@ -31,6 +33,7 @@ export function FieldRenderer({ field, id, value, onChange }: FieldRendererProps
         <Input
           id={id}
           type="text"
+          aria-describedby={describedBy}
           value={typeof value === "string" ? value : ""}
           placeholder={t("config.field.unsetValue")}
           onChange={(event) => onChange(event.target.value)}
@@ -41,6 +44,7 @@ export function FieldRenderer({ field, id, value, onChange }: FieldRendererProps
         <Input
           id={id}
           type="number"
+          aria-describedby={describedBy}
           min={field.minimum}
           max={field.maximum}
           step={field.integer ? 1 : "any"}
@@ -60,6 +64,7 @@ export function FieldRenderer({ field, id, value, onChange }: FieldRendererProps
       return (
         <select
           id={id}
+          aria-describedby={describedBy}
           className="min-h-11 w-full rounded-md border border-input bg-transparent px-3 py-1 text-base outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 md:text-sm"
           value={typeof value === "string" ? value : ""}
           onChange={(event) => onChange(event.target.value || undefined)}

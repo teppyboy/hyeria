@@ -51,6 +51,7 @@ export function applySafeConfigEdits(
     if (isPluginPath(field.path) && !hasExistingPlugin(draft, edit.path[2])) {
       throw new TypeError(`Config plugin does not exist: ${JSON.stringify(edit.path[2])}.`);
     }
+    assertEditableAncestors(draft, edit.path);
     if (edit.value !== undefined) assertFieldValue(field, edit.value);
     if (edit.value === undefined) deleteAtPath(draft, edit.path);
     else setAtPath(draft, edit.path, cloneValue(edit.value));
@@ -90,6 +91,20 @@ function readAtPath(document: unknown, path: readonly string[]): JsonValue | und
     current = current[segment];
   }
   return current;
+}
+
+function assertEditableAncestors(document: Record<string, unknown>, path: readonly string[]): void {
+  let current: unknown = document;
+  for (let index = 0; index < path.length - 1; index += 1) {
+    const segment = path[index];
+    if (!isRecord(current) || !hasOwn(current, segment)) return;
+    current = current[segment];
+    if (!isRecord(current)) {
+      throw new TypeError(
+        `Config path ancestor is not a mapping: ${JSON.stringify(path.slice(0, index + 1))}.`,
+      );
+    }
+  }
 }
 
 function setAtPath(

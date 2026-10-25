@@ -101,6 +101,30 @@ describe("safe config document patching", () => {
     expect(original.management["allow-remote"]).toBe(false);
   });
 
+  it("rejects edits below existing opaque ancestors without replacing them", () => {
+    const documents = [
+      { ...original, routing: "opaque" },
+      { ...original, routing: { retry: "opaque" } },
+      {
+        ...original,
+        plugins: { ...original.plugins, configs: { codex: "opaque" } },
+      },
+    ];
+    const edits = [
+      { path: ["routing", "strategy"], value: "round-robin" as const },
+      { path: ["routing", "retry", "request-retry"], value: 4 },
+      { path: ["plugins", "configs", "codex", "enabled"], value: true },
+    ];
+
+    for (const [index, document] of documents.entries()) {
+      const before = structuredClone(document);
+      expect(() => applySafeConfigEdits(document, [edits[index]])).toThrow(
+        "Config path ancestor is not a mapping",
+      );
+      expect(document).toEqual(before);
+    }
+  });
+
   it("supports select/text edits and removes only registered fields", () => {
     const draft = applySafeConfigEdits(original, [
       { path: ["requests", "proxy-url"], value: "http://new-proxy.example.invalid" },

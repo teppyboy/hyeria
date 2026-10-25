@@ -35,7 +35,13 @@ export function SettingRow({ field, value, onChange, error, suffix }: SettingRow
           </p>
         )}
       </div>
-      <FieldRenderer field={field} id={id} value={value} onChange={onChange} />
+      <FieldRenderer
+        field={field}
+        id={id}
+        value={value}
+        describedBy={[descriptionId, ...(error ? [errorId] : [])].join(" ")}
+        onChange={onChange}
+      />
     </div>
   );
 }
