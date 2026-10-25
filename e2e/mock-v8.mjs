@@ -5,14 +5,26 @@ const key = process.env.E2E_MANAGEMENT_KEY ?? "e2e-management-key";
 let yaml = `config-version: 8\nserver:\n  host: 0.0.0.0\n  port: 8317\nmanagement:\n  secret-key: E2E_TEST_HASH\n  allow-remote: true\nobservability:\n  logs:\n    logging-to-file: true\n`;
 const server = createServer(async (req, res) => {
   const url = new URL(req.url ?? "/", `http://${req.headers.host}`);
+  const origin = req.headers.origin;
+  const corsOrigin =
+    origin && /^https?:\/\/(?:127\.0\.0\.1|localhost)(?::\d+)?$/.test(origin) ? origin : undefined;
   const send = (status, value, type = "application/json") => {
     res.writeHead(status, {
       "content-type": type,
       "x-cpa-version": "v8.0.4",
       "x-cpa-support-plugin": "true",
+      ...(corsOrigin
+        ? {
+            "access-control-allow-origin": corsOrigin,
+            "access-control-allow-headers": "authorization, content-type",
+            "access-control-allow-methods": "GET, POST, PUT, PATCH, DELETE, OPTIONS",
+            vary: "Origin",
+          }
+        : {}),
     });
     res.end(type === "application/yaml" ? value : JSON.stringify(value));
   };
+  if (req.method === "OPTIONS") return send(204, "");
   if (url.pathname === "/health") return send(200, { ok: true });
   if (!url.pathname.startsWith("/v8/management")) return send(404, { error: "not_found" });
   if (!url.pathname.endsWith("/oauth/callback") && req.headers.authorization !== `Bearer ${key}`) {
