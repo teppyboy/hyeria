@@ -1,0 +1,13 @@
+services:
+  dashboard:
+    build: .
+    ports:
+      - "127.0.0.1:18080:80"
+
+  cpa:
+    image: eceasy/cli-proxy-api:latest
+    command: ["./CLIProxyAPI", "-config", "/CLIProxyAPI/config.yaml"]
+    volumes:
+      - "./docker/cpa/config.yaml:/CLIProxyAPI/config.yaml:rw"
+    ports:
+      - "127.0.0.1:18317:8317"
