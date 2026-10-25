@@ -63,7 +63,7 @@ describe("application shell", () => {
     });
     const dialog = document.body.querySelector('[role="dialog"]');
     expect(dialog?.textContent).toContain("AGPLv3");
-    expect(dialog?.textContent).toContain("without any warranty");
+    expect(dialog?.textContent).not.toContain("without any warranty");
     expect(dialog?.querySelector("a[href='https://github.com/teppyboy/hyeria']")).not.toBeNull();
   });
 
