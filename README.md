@@ -51,7 +51,7 @@ Stop and remove the containers with:
 docker compose down
 ```
 
-There are no named volumes, so container-local configuration and runtime data are discarded. Do not use `docker compose down -v`.
+The sample CPA config is baked into its disposable image; there are no host mounts or named volumes, so configuration edits and runtime data are discarded with the container. Do not use `docker compose down -v`.
 
 ## Interactive demo
 
