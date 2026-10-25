@@ -10,10 +10,11 @@ test("protects routes, connects to v8 and disconnects without persisting the key
   await page.goto("/logs");
   await expect(page).toHaveURL(/\/login/);
   await connect(page, "Logs");
-  await expect(page.getByRole("heading", { name: "Logs" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Logs", exact: true })).toBeVisible();
   await expect(page.getByRole("searchbox", { name: "Search logs" })).toBeVisible();
   await expect(page).not.toHaveURL(/e2e-management-key/);
-  await page.getByRole("button", { name: "Disconnect" }).click();
+  await page.getByRole("button", { name: "User" }).click();
+  await page.getByRole("menuitem", { name: "Disconnect" }).click();
   await page.getByRole("dialog").getByRole("button", { name: "Disconnect" }).click();
   await expect(page.getByRole("textbox", { name: "Management key" })).toBeVisible();
   expect(JSON.stringify(await page.evaluate(() => localStorage))).not.toContain(managementKey);
@@ -23,9 +24,9 @@ test("renders dashboard and navigates to config and plugins", async ({ page }) =
   await connect(page);
   await expect(page.getByRole("heading", { name: "Dashboard" })).toBeVisible();
   await page.getByRole("link", { name: "Configuration" }).click();
-  await expect(page.getByRole("heading", { name: "Config" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Config", exact: true })).toBeVisible();
   await page.getByRole("link", { name: "Plugins" }).click();
-  await expect(page.getByRole("heading", { name: "Plugins" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Plugins", exact: true })).toBeVisible();
 });
 
 async function connect(page: import("@playwright/test").Page, landingHeading = "Dashboard") {
@@ -33,5 +34,5 @@ async function connect(page: import("@playwright/test").Page, landingHeading = "
   await page.getByLabel("API address").fill(apiBase);
   await page.getByRole("textbox", { name: "Management key" }).fill(managementKey);
   await page.getByRole("button", { name: "Connect" }).click();
-  await expect(page.getByRole("heading", { name: landingHeading })).toBeVisible();
+  await expect(page.getByRole("heading", { name: landingHeading, exact: true })).toBeVisible();
 }
