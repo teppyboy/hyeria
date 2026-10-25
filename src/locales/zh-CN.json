@@ -60,6 +60,7 @@
   "shell.toggleNavigation": "打开导航",
   "shell.theme": "主题",
   "shell.language": "语言",
+  "shell.user": "用户",
   "shell.about": "关于 Hyeria",
   "shell.disconnect": "断开连接",
   "shell.disconnectTitle": "要断开此服务器吗？",

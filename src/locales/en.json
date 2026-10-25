@@ -60,6 +60,7 @@
   "shell.toggleNavigation": "Open navigation",
   "shell.theme": "Theme",
   "shell.language": "Language",
+  "shell.user": "User",
   "shell.about": "About Hyeria",
   "shell.disconnect": "Disconnect",
   "shell.disconnectTitle": "Disconnect from this server?",

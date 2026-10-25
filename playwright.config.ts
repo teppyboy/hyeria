@@ -30,7 +30,7 @@ export default defineConfig({
     },
     {
       name: "management-hash",
-      testMatch: /management\.spec\.ts|config\.spec\.ts|workflows\.spec\.ts/,
+      testMatch: /management\.spec\.ts|shell\.spec\.ts|config\.spec\.ts|workflows\.spec\.ts/,
       use: { ...devices["Desktop Chrome"], baseURL: managementBaseURL },
     },
   ],

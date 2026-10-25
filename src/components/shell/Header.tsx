@@ -1,6 +1,19 @@
 import { Link, useNavigate } from "react-router";
-import { Info, Languages, LogOut, PanelLeft, Palette } from "lucide-react";
+import { Info, Languages, LogOut, PanelLeft, Palette, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuRadioGroup,
+  DropdownMenuRadioItem,
+  DropdownMenuSeparator,
+  DropdownMenuSub,
+  DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { preferencesStore, usePreferencesStore, type Theme } from "@/stores/preferences";
 import { useUiStore, type ConfirmRequest } from "@/stores/ui";
 import { useSessionStore } from "@/stores/session";
@@ -55,73 +68,95 @@ export function Header() {
             data-slot="connection-status"
             data-session-mode={isDemo ? "demo" : "connected"}
             role="status"
-            className="min-h-11 max-w-11 truncate rounded-md border px-1 py-1 text-xs text-muted-foreground sm:max-w-36 sm:px-2"
+            className="min-h-11 max-w-36 truncate rounded-md border px-2 py-1 text-xs text-muted-foreground"
           >
             {isDemo ? t("shell.connectionDemo") : t("shell.connectionConnected")}
           </span>
         )}
-        <label className="sr-only" htmlFor="language">
-          {t("shell.language")}
-        </label>
-        <Languages className="hidden size-4 sm:block" />
-        <select
-          id="language"
-          aria-label={t("shell.language")}
-          className="min-h-11 w-12 rounded-md border bg-background px-0 text-sm sm:w-auto sm:px-2"
-          value={language}
-          onChange={(event) => setLanguage(event.target.value as typeof language)}
-        >
-          {languages.map(([value, label]) => (
-            <option key={value} value={value}>
-              {label}
-            </option>
-          ))}
-        </select>
-        <label className="sr-only" htmlFor="theme">
-          {t("shell.theme")}
-        </label>
-        <Palette className="hidden size-4 sm:block" />
-        <select
-          id="theme"
-          aria-label={t("shell.theme")}
-          className="min-h-11 w-12 rounded-md border bg-background px-0 text-sm sm:w-auto sm:px-2"
-          value={theme}
-          onChange={(event) => setTheme(event.target.value as Theme)}
-        >
-          {themes.map((value) => (
-            <option key={value} value={value}>
-              {t(`theme.${value}`)}
-            </option>
-          ))}
-        </select>
-        <Button
-          variant="ghost"
-          size="icon"
-          aria-label={t("shell.about")}
-          onClick={() => setLegalOpen(true)}
-        >
-          <Info />
-        </Button>
-        <Button
-          variant="ghost"
-          size="icon"
-          aria-label={t("shell.disconnect")}
-          onClick={async () => {
-            if (
-              await confirm({
-                title: t("shell.disconnectTitle"),
-                description: t("shell.disconnectDescription"),
-                confirmLabel: t("shell.confirm"),
-                destructive: true,
-              })
-            ) {
-              disconnect();
-              void navigate("/login");
-            }
-          }}
-        >
-          <LogOut />
-        </Button>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button
+              variant="ghost"
+              className="min-h-11 gap-2 px-2"
+              aria-label={t("shell.user")}
+              title={t("shell.user")}
+            >
+              <User aria-hidden="true" />
+              <span className="hidden sm:inline">{t("shell.user")}</span>
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="w-56">
+            <DropdownMenuLabel>{t("shell.user")}</DropdownMenuLabel>
+            {isAuthenticated && (
+              <DropdownMenuLabel className="pt-0 text-xs font-normal text-muted-foreground">
+                {isDemo ? t("shell.connectionDemo") : t("shell.connectionConnected")}
+              </DropdownMenuLabel>
+            )}
+            <DropdownMenuSeparator />
+            <DropdownMenuSub>
+              <DropdownMenuSubTrigger>
+                <Languages aria-hidden="true" />
+                {t("shell.language")}
+              </DropdownMenuSubTrigger>
+              <DropdownMenuSubContent>
+                <DropdownMenuRadioGroup
+                  value={language}
+                  onValueChange={(value) => setLanguage(value as typeof language)}
+                >
+                  {languages.map(([value, label]) => (
+                    <DropdownMenuRadioItem key={value} value={value}>
+                      {label}
+                    </DropdownMenuRadioItem>
+                  ))}
+                </DropdownMenuRadioGroup>
+              </DropdownMenuSubContent>
+            </DropdownMenuSub>
+            <DropdownMenuSub>
+              <DropdownMenuSubTrigger>
+                <Palette aria-hidden="true" />
+                {t("shell.theme")}
+              </DropdownMenuSubTrigger>
+              <DropdownMenuSubContent>
+                <DropdownMenuRadioGroup
+                  value={theme}
+                  onValueChange={(value) => setTheme(value as Theme)}
+                >
+                  {themes.map((value) => (
+                    <DropdownMenuRadioItem key={value} value={value}>
+                      {t(`theme.${value}`)}
+                    </DropdownMenuRadioItem>
+                  ))}
+                </DropdownMenuRadioGroup>
+              </DropdownMenuSubContent>
+            </DropdownMenuSub>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem onSelect={() => setLegalOpen(true)}>
+              <Info aria-hidden="true" />
+              {t("shell.about")}
+            </DropdownMenuItem>
+            {isAuthenticated && (
+              <DropdownMenuItem
+                variant="destructive"
+                onSelect={async () => {
+                  if (
+                    await confirm({
+                      title: t("shell.disconnectTitle"),
+                      description: t("shell.disconnectDescription"),
+                      confirmLabel: t("shell.confirm"),
+                      destructive: true,
+                    })
+                  ) {
+                    disconnect();
+                    void navigate("/login");
+                  }
+                }}
+              >
+                <LogOut aria-hidden="true" />
+                {t("shell.disconnect")}
+              </DropdownMenuItem>
+            )}
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
     </header>
   );

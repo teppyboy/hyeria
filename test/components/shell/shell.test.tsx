@@ -37,25 +37,57 @@ afterEach(() => {
 });
 
 describe("application shell", () => {
-  it("renders landmarks, navigation, theme/language controls and legal access", () => {
+  it("renders landmarks, the user account control, and legal access", () => {
     const host = renderShell();
     expect(host.querySelector("nav[aria-label='Main navigation']")).not.toBeNull();
     expect(host.querySelector("main#main-content h1")?.textContent).toBe("Protected content");
-    expect(host.querySelector("#language")).not.toBeNull();
-    expect(host.querySelector("#theme")).not.toBeNull();
+    expect(host.querySelector("button[aria-label='User']")).not.toBeNull();
+    expect(host.querySelector("#language")).toBeNull();
+    expect(host.querySelector("#theme")).toBeNull();
     expect(host.querySelector("a[href='#main-content']")).not.toBeNull();
   });
 
-  it("opens the legal notice from the header with the canonical source link", () => {
+  it("opens the legal notice from the header with the canonical source link", async () => {
     renderShell();
-    const about = document.querySelector<HTMLButtonElement>(
-      "header button[aria-label='About Hyeria']",
-    );
-    act(() => about?.click());
+    const user = document.querySelector<HTMLButtonElement>("header button[aria-label='User']");
+    await act(async () => {
+      user?.dispatchEvent(new MouseEvent("pointerdown", { bubbles: true, button: 0 }));
+      await new Promise((resolve) => setTimeout(resolve, 0));
+    });
+    const about = Array.from(
+      document.body.querySelectorAll<HTMLElement>('[data-slot="dropdown-menu-item"]'),
+    ).find((item) => item.textContent?.includes("About Hyeria"));
+    await act(async () => {
+      about?.click();
+      await new Promise((resolve) => setTimeout(resolve, 0));
+    });
     const dialog = document.body.querySelector('[role="dialog"]');
     expect(dialog?.textContent).toContain("AGPLv3");
     expect(dialog?.textContent).toContain("without any warranty");
     expect(dialog?.querySelector("a[href='https://github.com/teppyboy/hyeria']")).not.toBeNull();
+  });
+
+  it("groups language, theme, about, and authenticated disconnect under User", async () => {
+    const host = renderShell();
+    const user = host.querySelector<HTMLButtonElement>("button[aria-label='User']");
+    await act(async () => {
+      user?.dispatchEvent(new MouseEvent("pointerdown", { bubbles: true, button: 0 }));
+      await new Promise((resolve) => setTimeout(resolve, 0));
+    });
+    expect(document.body.textContent).toContain("Language");
+    expect(document.body.textContent).toContain("Theme");
+    expect(document.body.textContent).toContain("About Hyeria");
+    expect(document.body.textContent).not.toContain("Disconnect");
+
+    act(() => sessionStore.setState({ isAuthenticated: true, isDemo: false }));
+    await act(async () => {
+      document.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape", bubbles: true }));
+      await new Promise((resolve) => setTimeout(resolve, 0));
+      user?.dispatchEvent(new MouseEvent("pointerdown", { bubbles: true, button: 0 }));
+      await new Promise((resolve) => setTimeout(resolve, 0));
+    });
+    expect(document.body.textContent).toContain("Disconnect");
+    expect(document.body.textContent).toContain("Connected session");
   });
 
   it("toggles the sidebar from its keyboard-accessible button", () => {
@@ -178,16 +210,7 @@ describe("application shell", () => {
 
   it("keeps shell controls at the minimum touch target", () => {
     const host = renderShell();
-    expect(host.querySelector("#language")?.className).toContain("min-h-11");
-    expect(host.querySelector("#language")?.className).toContain("w-12");
-    expect(host.querySelector("#language")?.className).toContain("sm:w-auto");
-    expect(host.querySelector("#theme")?.className).toContain("min-h-11");
-    expect(host.querySelector("#theme")?.className).toContain("w-12");
-    expect(host.querySelector("#theme")?.className).toContain("sm:w-auto");
-    expect(host.querySelector("button[aria-label='About Hyeria']")?.className).toContain(
-      "min-h-11",
-    );
-    expect(host.querySelector("button[aria-label='Disconnect']")?.className).toContain("min-h-11");
+    expect(host.querySelector("button[aria-label='User']")?.className).toContain("min-h-11");
     expect(host.querySelector("button[aria-label='Open navigation']")?.className).toContain(
       "min-h-11",
     );
