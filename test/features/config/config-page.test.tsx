@@ -134,10 +134,10 @@ describe("config page", () => {
     expect(editorText(host)).toBe(configYaml);
   });
 
-  it("shows the read-only visual summary above the raw YAML editor", async () => {
+  it("shows the safe visual editor above the raw YAML editor", async () => {
     const { host } = await mountPage(() => new Response(configYaml));
-    const summary = [...host.querySelectorAll("li")].map((item) => item.textContent);
-    expect(summary).toEqual(["management", "requests", "routing", "plugins"]);
+    expect(host.querySelector('[data-testid="config-visual-editor"]')).not.toBeNull();
+    expect(host.querySelectorAll('[role="tab"]')).toHaveLength(6);
     expect(host.querySelector("#config-raw-yaml .cm-editor")).not.toBeNull();
   });
 

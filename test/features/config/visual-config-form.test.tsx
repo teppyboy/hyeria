@@ -20,7 +20,7 @@ function render(text: string) {
   act(() =>
     root?.render(
       <Providers>
-        <VisualConfigForm text={text} />
+        <VisualConfigForm text={text} onChange={() => undefined} />
       </Providers>,
     ),
   );
@@ -28,34 +28,40 @@ function render(text: string) {
 }
 
 describe("visual config form", () => {
-  it("lists only known non-secret top-level sections present in the document", () => {
+  it("keeps the existing route-compatible optional callback while rendering the controlled editor", () => {
     const host = render(configYaml);
-    const items = [...host.querySelectorAll("li")].map((item) => item.textContent);
 
-    expect(items).toEqual(["management", "requests", "routing", "plugins"]);
+    expect(host.querySelector('[data-testid="config-visual-editor"]')).not.toBeNull();
+    expect([...host.querySelectorAll("[role=tab]")].map((tab) => tab.textContent)).toEqual([
+      "General",
+      "Requests",
+      "Routing",
+      "Observability",
+      "Plugins",
+      "Advanced YAML",
+    ]);
   });
 
-  it("never renders section values or secret-bearing section names", () => {
+  it("never renders secret values or secret-bearing section names", () => {
     const host = render(configYaml);
 
-    expect(host.textContent).not.toMatch(/example|turn\.|client-key|round-robin|access|oauth/);
+    expect(host.textContent).not.toMatch(/client-key|turn\.example|oauth|management-key/);
   });
 
-  it("states that visual editing is unavailable and links to the raw YAML", () => {
+  it("keeps the raw YAML fallback prominent", () => {
     const host = render(configYaml);
-
-    expect(host.textContent).toContain(
-      "Visual editing is not available yet. This is a read-only summary of non-secret sections; edit the raw YAML instead.",
+    const rawLinks = [...host.querySelectorAll("button")].filter(
+      (button) => button.textContent === "Go to the raw YAML editor",
     );
-    const rawLink = host.querySelector("a");
-    expect(rawLink?.getAttribute("href")).toBe("#config-raw-yaml");
-    expect(rawLink?.className).toContain("min-h-11");
+
+    expect(rawLinks.length).toBeGreaterThan(0);
+    expect(rawLinks[0]?.className).toContain("min-h-11");
   });
 
-  it("shows only the unavailable copy when the draft is not a parseable mapping", () => {
+  it("keeps raw fallback available while YAML is invalid", () => {
     const host = render("port: [");
 
-    expect(host.querySelectorAll("li")).toHaveLength(0);
-    expect(host.textContent).toContain("Visual editing is not available yet.");
+    expect(host.textContent).toContain("Visual editing is unavailable while the YAML is invalid.");
+    expect(host.textContent).toContain("Go to the raw YAML editor");
   });
 });
