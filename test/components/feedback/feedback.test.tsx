@@ -4,6 +4,7 @@ import { createRoot, type Root } from "react-dom/client";
 import { NotificationProvider } from "../../../src/components/feedback/NotificationProvider";
 import { ErrorBoundary } from "../../../src/components/feedback/ErrorBoundary";
 import { ConfirmDialog } from "../../../src/components/feedback/ConfirmDialog";
+import { LegalNotice, SOURCE_URL } from "../../../src/components/feedback/LegalNotice";
 import { useUiStore } from "../../../src/stores/ui";
 import { preferencesStore } from "../../../src/stores/preferences";
 
@@ -59,6 +60,32 @@ describe("feedback components", () => {
     );
     expect(host.querySelector('[role="alert"]')?.textContent).toContain("Произошла ошибка.");
     expect(host.textContent).toContain("Повторить");
+  });
+
+  it("renders the About notice as localized, scrollable sections with labeled source link", () => {
+    const host = mount(<LegalNotice open onOpenChange={() => undefined} />);
+    const dialog = document.body.querySelector('[role="dialog"]');
+    expect(dialog).not.toBeNull();
+    expect(dialog?.querySelector("section h2")?.textContent).toBe("Independent project");
+    expect(dialog?.querySelectorAll("section")).toHaveLength(6);
+    expect(dialog?.textContent).toContain("Build from source");
+    expect(dialog?.textContent).not.toContain(SOURCE_URL);
+    expect(dialog?.querySelector(`a[href="${SOURCE_URL}"]`)?.textContent).toBe("View source code");
+    expect(dialog?.querySelector("button span.sr-only")?.textContent).toBe("Close");
+    expect(dialog?.querySelector('[data-legal-scroll="true"]')?.className).toContain(
+      "overflow-y-auto",
+    );
+    expect(host).toBeTruthy();
+  });
+
+  it("localizes About section labels", () => {
+    preferencesStore.getState().setLanguage("ru");
+    mount(<LegalNotice open onOpenChange={() => undefined} />);
+    const dialog = document.body.querySelector('[role="dialog"]');
+    expect(dialog?.querySelector("section h2")?.textContent).toBe("Независимый проект");
+    expect(dialog?.querySelector(`a[href="${SOURCE_URL}"]`)?.textContent).toBe(
+      "Открыть исходный код",
+    );
   });
 
   it("resolves confirmation based on the user's choice", async () => {
