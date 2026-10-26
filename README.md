@@ -35,6 +35,24 @@ vp preview                 # preview a build
 3. `vp build` for the static site in `dist/`, `vp run build:management` for the single-file `dist-management/management.html` artifact, or `DEMO_BASE=/hyeria/ vp run build:demo` for the Pages demo.
 4. Run `vp run smoke:management`, `vp run check:sensitive`, `vp run check:demo`, and `vp run check:licenses` before distribution.
 
+## Disposable Docker deployment
+
+Start a loopback-only dashboard and CLI Proxy API v8 instance for disposable local testing:
+
+```bash
+docker compose up --build -d
+```
+
+Open the dashboard at `http://localhost:18080`, then connect it to `http://localhost:18317` with **Management key: `1`**. The sample CPA instance uses **Client key: `1`**. These credentials are intentionally weak; this sample is for loopback-only disposable testing and must not be exposed to an untrusted network.
+
+Stop and remove the containers with:
+
+```bash
+docker compose down
+```
+
+The sample CPA config is baked into its disposable image; there are no host mounts or named volumes, so configuration edits and runtime data are discarded with the container. Do not use `docker compose down -v`.
+
 ## Interactive demo
 
 The demo is published at `https://<owner>.github.io/<repository>/` and uses the repository name as its project path. It is a demo-only in-memory session: dashboard data and management actions are synthetic, while configuration, log, and auth-file changes are simulated. Nothing is sent to a backend, no visitor credentials are requested, and all changes reset when the page is reloaded. The demo build is separate from the normal static and management builds.

@@ -1,0 +1,10 @@
+services:
+  dashboard:
+    build: .
+    ports:
+      - "127.0.0.1:18080:80"
+
+  cpa:
+    build: docker/cpa
+    ports:
+      - "127.0.0.1:18317:8317"

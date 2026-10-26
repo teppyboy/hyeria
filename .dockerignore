@@ -1,0 +1,43 @@
+# Source control and local tooling
+.git
+.github
+.impeccable
+.superpowers
+.vscode
+.idea
+
+# Dependencies and generated output
+node_modules
+dist
+dist-ssr
+dist-management
+dist-demo
+coverage
+test-results
+playwright-report
+
+# Local secrets and machine-specific files
+.env
+.env.*
+*.local
+*.log
+
+# Non-dashboard inputs
+.DS_Store
+docs
+e2e
+test
+scripts
+docker
+README.md
+DESIGN.md
+PRODUCT.md
+LICENSE
+NOTICE
+*report.md
+
+# Archives and other build-context artifacts
+*.tgz
+*.zip
+*.tar
+*.tar.gz

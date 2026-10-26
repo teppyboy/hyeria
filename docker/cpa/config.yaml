@@ -1,0 +1,8 @@
+config-version: 8
+server:
+  port: 8317
+management:
+  allow-remote: true
+  secret-key: "1"
+access:
+  api-keys: ["1"]
