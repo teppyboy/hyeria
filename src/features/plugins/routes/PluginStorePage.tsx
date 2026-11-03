@@ -60,8 +60,12 @@ export function PluginStorePage() {
                 <CardTitle>{id}</CardTitle>
               </CardHeader>
               <CardContent className="flex flex-wrap items-center gap-3">
-                <span>{t("plugins.installSource")}: {plugin.source_id ?? t("plugins.sourceUnknown")}</span>
-                <span>{t("plugins.installVersion")}: {plugin.version ?? t("plugins.versionUnknown")}</span>
+                <span>
+                  {t("plugins.installSource")}: {plugin.source_id ?? t("plugins.sourceUnknown")}
+                </span>
+                <span>
+                  {t("plugins.installVersion")}: {plugin.version ?? t("plugins.versionUnknown")}
+                </span>
                 <p>{t("plugins.executableWarning")}</p>
                 <p>{t("plugins.installRestart")}</p>
                 {plugin.update_available && <span>{t("plugins.updateUnavailable")}</span>}

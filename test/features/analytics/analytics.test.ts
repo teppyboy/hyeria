@@ -28,6 +28,17 @@ describe("live analytics", () => {
     expect(JSON.stringify(snapshot.data)).toContain("today");
   });
 
+  it("maps an observed object to readable rows without inventing metrics", () => {
+    const view = toAnalyticsViewModel({
+      source: "api-key-buckets",
+      scope: "live",
+      observedAt: 1,
+      data: { codex: { success: 1, failure: 0 } },
+      note: "Live bucket",
+    });
+    expect(view.rows).toEqual([{ label: "codex", value: '{"success":1,"failure":0}' }]);
+  });
+
   it("shows empty live data without implying historical zero usage", () => {
     const view = toAnalyticsViewModel({
       source: "api-key-buckets",
@@ -39,5 +50,6 @@ describe("live analytics", () => {
     expect(view.empty).toBe(true);
     expect(view.scope).toBe("live");
     expect(view.coverageNote).toContain("Live");
+    expect(view.rows).toEqual([]);
   });
 });

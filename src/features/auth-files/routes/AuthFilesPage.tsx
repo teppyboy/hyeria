@@ -123,7 +123,11 @@ export function AuthFilesPage() {
           <WorkspaceState
             kind="error"
             title={t("authFiles.loadError")}
-            action={<Button variant="outline" onClick={() => void files.refetch()}>{t("feedback.retry")}</Button>}
+            action={
+              <Button variant="outline" onClick={() => void files.refetch()}>
+                {t("feedback.retry")}
+              </Button>
+            }
           />
         )}
         {files.isSuccess && files.data.length === 0 && (

@@ -101,7 +101,11 @@ export function ConfigPage() {
         <WorkspaceState
           kind="error"
           title={t("config.loadError")}
-          action={<Button variant="outline" onClick={() => void yaml.refetch()}>{t("feedback.retry")}</Button>}
+          action={
+            <Button variant="outline" onClick={() => void yaml.refetch()}>
+              {t("feedback.retry")}
+            </Button>
+          }
         />
       )}
       {yaml.isSuccess && (

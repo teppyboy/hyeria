@@ -39,7 +39,11 @@ export function QuotaPage() {
           <WorkspaceState
             kind="error"
             title={t("quota.credentialsError")}
-            action={<Button variant="outline" onClick={() => void credentials.refetch()}>{t("feedback.retry")}</Button>}
+            action={
+              <Button variant="outline" onClick={() => void credentials.refetch()}>
+                {t("feedback.retry")}
+              </Button>
+            }
           />
         )}
         {credentials.isSuccess && credentials.data.length === 0 && (
