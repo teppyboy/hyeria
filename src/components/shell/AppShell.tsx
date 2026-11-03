@@ -10,6 +10,8 @@ import { ErrorBoundary } from "@/components/feedback/ErrorBoundary";
 import { LegalNotice } from "@/components/feedback/LegalNotice";
 import { translate } from "@/lib/i18n";
 import { DemoBanner } from "@/features/demo/DemoBanner";
+import { Button } from "@/components/ui/button";
+import { PanelLeft } from "lucide-react";
 
 export function AppShell({ children }: { children: ReactNode }) {
   const language = usePreferencesStore((state) => state.language);
@@ -36,10 +38,19 @@ export function AppShell({ children }: { children: ReactNode }) {
         <aside
           id="app-navigation"
           data-collapsed={!sidebarOpen ? "true" : "false"}
-          data-hover-expand="true"
           data-slot="app-sidebar"
           className={`sidebar-rail hidden shrink-0 border-r bg-sidebar p-3 ${sidebarOpen ? "sidebar-expanded md:block" : "sidebar-collapsed md:block"}`}
         >
+          <Button
+            variant="ghost"
+            size="icon"
+            aria-label={t("shell.toggleSidebar")}
+            aria-expanded={sidebarOpen}
+            onClick={() => useUiStore.getState().toggleSidebar()}
+            className="mb-2"
+          >
+            <PanelLeft aria-hidden="true" />
+          </Button>
           <Sidebar />
         </aside>
         <main id="main-content" tabIndex={-1} className="min-w-0 flex-1 p-4 md:p-6">
