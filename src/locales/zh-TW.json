@@ -43,7 +43,7 @@
   "plugins.executableWarning": "安裝外掛程式可能會在後端安裝可執行程式碼；請只確認可信任的來源。",
   "plugins.updateUnavailable": "有可用更新（沒有經驗證的更新操作）",
   "plugins.install": "安裝",
-  "plugins.installWarning": "外掛程式可能會在後端安裝可執行程式碼。",
+  "plugins.installWarning": "此操作會在後端安裝可執行程式碼。僅在信任此外掛程式來源時安裝。",
   "plugins.sourceErrors": "部分外掛程式來源回報錯誤。",
   "plugins.installError": "外掛程式安裝失敗。",
   "plugins.restartStatus": "安裝需要重新啟動後端。",
@@ -338,5 +338,17 @@
   "logs.errorFilesDescription": "使用安全檔名下載伺服器產生的要求錯誤記錄。",
   "logs.errorFilesError": "無法載入要求錯誤檔案清單。",
   "logs.errorFilesEmpty": "沒有可用的要求錯誤檔案。",
-  "logs.download": "下載"
+  "logs.download": "下載",
+  "plugins.installSource": "來源",
+  "plugins.sourceUnknown": "來源未知",
+  "plugins.installVersion": "版本",
+  "plugins.installTarget": "目標：",
+  "plugins.installBackend": "目前連線的後端。",
+  "plugins.installRestart": "變更生效前，後端可能需要重新啟動。",
+  "plugins.installConfirm": "安裝外掛程式",
+  "system.forgetSessionTitle": "忘記已記住的工作階段？",
+  "system.forgetSessionDescription": "這只會從此瀏覽器移除已儲存的管理金鑰，不會中斷目前工作階段或連線至伺服器；下次連線時需要重新輸入金鑰。",
+  "plugins.storeRetry": "無法從外掛程式來源載入目錄。重試以再次要求目錄。",
+  "providers.retryDescription": "重試從目前連線的伺服器載入提供者群組。",
+  "system.retryDescription": "重試從目前連線的伺服器載入此系統資訊。"
 }

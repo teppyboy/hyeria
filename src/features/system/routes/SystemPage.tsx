@@ -9,6 +9,7 @@ import { compareVersions } from "@/lib/feature-support/capabilities";
 import { useSessionStore } from "@/stores/session";
 import { usePreferencesStore } from "@/stores/preferences";
 import { translate } from "@/lib/i18n";
+import { useUiStore } from "@/stores/ui";
 
 export function SystemPage() {
   const language = usePreferencesStore((state) => state.language);
@@ -35,7 +36,16 @@ export function SystemPage() {
           <WorkspaceState kind="loading" title={t("dashboard.channelLoading")} />
         )}
         {latestVersion.isError && (
-          <WorkspaceState kind="error" title={t("system.latestVersionError")} />
+          <WorkspaceState
+            kind="error"
+            title={t("system.latestVersionError")}
+            description={t("system.retryDescription")}
+            action={
+              <Button variant="outline" onClick={() => void latestVersion.refetch()}>
+                {t("feedback.retry")}
+              </Button>
+            }
+          />
         )}
         {latestVersion.isSuccess && (
           <div className="grid gap-4 border-y py-4 sm:grid-cols-2">
@@ -60,7 +70,16 @@ export function SystemPage() {
         {credentials.isPending ? (
           <WorkspaceState kind="loading" title={t("dashboard.channelLoading")} />
         ) : credentials.isError ? (
-          <WorkspaceState kind="error" title={t("dashboard.credentialsError")} />
+          <WorkspaceState
+            kind="error"
+            title={t("dashboard.credentialsError")}
+            description={t("system.retryDescription")}
+            action={
+              <Button variant="outline" onClick={() => void credentials.refetch()}>
+                {t("feedback.retry")}
+              </Button>
+            }
+          />
         ) : channels.length === 0 ? (
           <WorkspaceState kind="empty" title={t("system.noChannels")} />
         ) : (
@@ -71,7 +90,14 @@ export function SystemPage() {
                 <li key={channel} className="flex justify-between gap-2 py-3 text-sm">
                   <span className="font-mono">{channel}</span>
                   {query?.isPending && <Skeleton className="h-4 w-24" />}
-                  {query?.isError && <span>{t("system.channelError")}</span>}
+                  {query?.isError && (
+                    <span className="flex items-center gap-2">
+                      {t("system.channelError")}
+                      <Button variant="outline" onClick={() => void query.refetch()}>
+                        {t("feedback.retry")}
+                      </Button>
+                    </span>
+                  )}
                   {query?.isSuccess && (
                     <span className="font-mono">
                       {t("system.channelCount")}: {query.data}
@@ -95,7 +121,19 @@ export function SystemPage() {
           <Button
             variant="outline"
             disabled={forgetRememberedSession.isPending}
-            onClick={() => forgetRememberedSession.mutate()}
+            onClick={() => {
+              void useUiStore
+                .getState()
+                .requestConfirm({
+                  title: t("system.forgetSessionTitle"),
+                  description: t("system.forgetSessionDescription"),
+                  confirmLabel: t("system.forgetSession"),
+                  destructive: true,
+                })
+                .then((confirmed) => {
+                  if (confirmed) forgetRememberedSession.mutate();
+                });
+            }}
           >
             {t("system.forgetSession")}
           </Button>

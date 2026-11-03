@@ -7,6 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { pluginIdSchema } from "../schemas";
 import { translate } from "@/lib/i18n";
 import { usePreferencesStore } from "@/stores/preferences";
+import { useUiStore } from "@/stores/ui";
 
 export function PluginStorePage() {
   const language = usePreferencesStore((state) => state.language);
@@ -27,7 +28,16 @@ export function PluginStorePage() {
     return (
       <section className="mx-auto grid max-w-5xl gap-6">
         {header}
-        <WorkspaceState kind="error" title={t("plugins.storeError")} />
+        <WorkspaceState
+          kind="error"
+          title={t("plugins.storeError")}
+          description={t("plugins.storeRetry")}
+          action={
+            <Button type="button" variant="outline" onClick={() => void store.refetch()}>
+              {t("feedback.retry")}
+            </Button>
+          }
+        />
       </section>
     );
   return (
@@ -50,25 +60,32 @@ export function PluginStorePage() {
                 <CardTitle>{id}</CardTitle>
               </CardHeader>
               <CardContent className="flex flex-wrap items-center gap-3">
-                <span>{plugin.version ?? t("plugins.versionUnknown")}</span>
+                <span>{t("plugins.installSource")}: {plugin.source_id ?? t("plugins.sourceUnknown")}</span>
+                <span>{t("plugins.installVersion")}: {plugin.version ?? t("plugins.versionUnknown")}</span>
                 <p>{t("plugins.executableWarning")}</p>
+                <p>{t("plugins.installRestart")}</p>
                 {plugin.update_available && <span>{t("plugins.updateUnavailable")}</span>}
                 <ActionGroup>
                   <Button
                     disabled={!safeId || mutations.install.isPending}
                     onClick={() => {
                       if (!safeId) return;
-                      if (
-                        window.confirm(
-                          `${t("plugins.install")} ${id}? ${t("plugins.installWarning")}`,
-                        )
-                      ) {
-                        mutations.install.mutate({
-                          id,
-                          source: plugin.source_id,
-                          version: plugin.version,
+                      void useUiStore
+                        .getState()
+                        .requestConfirm({
+                          title: `${t("plugins.install")} ${id}?`,
+                          description: `${t("plugins.installWarning")} ${t("plugins.installSource")}: ${plugin.source_id ?? t("plugins.sourceUnknown")}. ${t("plugins.installVersion")}: ${plugin.version ?? t("plugins.versionUnknown")}. ${t("plugins.installTarget")} ${t("plugins.installBackend")}. ${t("plugins.installRestart")}`,
+                          confirmLabel: t("plugins.installConfirm"),
+                          destructive: true,
+                        })
+                        .then((confirmed) => {
+                          if (confirmed)
+                            mutations.install.mutate({
+                              id,
+                              source: plugin.source_id,
+                              version: plugin.version,
+                            });
                         });
-                      }
                     }}
                   >
                     {t("plugins.install")}

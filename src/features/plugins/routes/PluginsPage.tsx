@@ -28,7 +28,15 @@ export function PluginsPage() {
     return (
       <section className="mx-auto grid max-w-5xl gap-6">
         {header}
-        <WorkspaceState kind="error" title={t("plugins.loadError")} />
+        <WorkspaceState
+          kind="error"
+          title={t("plugins.loadError")}
+          action={
+            <Button variant="outline" onClick={() => void plugins.refetch()}>
+              {t("feedback.retry")}
+            </Button>
+          }
+        />
       </section>
     );
   if (!plugins.data && plugins.fetchStatus === "idle")
