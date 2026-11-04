@@ -109,11 +109,12 @@ describe("providers page", () => {
     // The query retries once on a 5xx, so the alert appears after the retry delay.
     await vi.waitFor(
       () =>
-        expect(host.querySelector("[role='alert']")?.textContent).toBe(
+        expect(host.querySelector("[role='alert']")?.textContent).toContain(
           "Provider groups could not be loaded.",
         ),
       { timeout: 4000 },
     );
+    expect(host.querySelector("[role='alert'] button")?.textContent).toBe("Try again");
     expect(host.textContent).not.toContain("internal detail");
   });
 

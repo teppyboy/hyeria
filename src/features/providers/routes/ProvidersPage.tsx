@@ -5,6 +5,7 @@ import { ProviderTable } from "@/features/providers/components/ProviderTable";
 import { useProviderGroupsQuery } from "@/features/providers/queries";
 import { translate } from "@/lib/i18n";
 import { usePreferencesStore } from "@/stores/preferences";
+import { Button } from "@/components/ui/button";
 
 export function ProvidersPage() {
   const language = usePreferencesStore((state) => state.language);
@@ -20,7 +21,18 @@ export function ProvidersPage() {
           {t("providers.groups")}
         </h2>
         {groups.isPending && <WorkspaceState kind="loading" title={t("providers.loading")} />}
-        {groups.isError && <WorkspaceState kind="error" title={t("providers.loadError")} />}
+        {groups.isError && (
+          <WorkspaceState
+            kind="error"
+            title={t("providers.loadError")}
+            description={t("providers.retryDescription")}
+            action={
+              <Button variant="outline" onClick={() => void groups.refetch()}>
+                {t("feedback.retry")}
+              </Button>
+            }
+          />
+        )}
         {groups.isSuccess && groups.data.length === 0 && (
           <WorkspaceState kind="empty" title={t("providers.empty")} />
         )}

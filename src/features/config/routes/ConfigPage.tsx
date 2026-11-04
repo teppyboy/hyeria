@@ -97,7 +97,17 @@ export function ConfigPage() {
           description={<Skeleton className="mt-3 h-64 w-full" />}
         />
       )}
-      {yaml.isError && <WorkspaceState kind="error" title={t("config.loadError")} />}
+      {yaml.isError && (
+        <WorkspaceState
+          kind="error"
+          title={t("config.loadError")}
+          action={
+            <Button variant="outline" onClick={() => void yaml.refetch()}>
+              {t("feedback.retry")}
+            </Button>
+          }
+        />
+      )}
       {yaml.isSuccess && (
         <>
           <section aria-labelledby="config-editor" className="grid gap-3">

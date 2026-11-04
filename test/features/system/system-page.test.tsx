@@ -1,5 +1,7 @@
 import { afterEach, describe, expect, it, vi } from "vite-plus/test";
 import { act } from "react";
+import { createMemoryRouter, RouterProvider } from "react-router";
+import { appRoutes } from "../../../src/app/router";
 import { createRoot, type Root } from "react-dom/client";
 import { Providers } from "../../../src/app/providers";
 import { SystemPage } from "../../../src/features/system/routes/SystemPage";
@@ -104,6 +106,43 @@ describe("system page", () => {
     expect(host.textContent).toContain("codex");
     expect(host.textContent).toContain("Models: 2");
     expect(host.textContent).not.toContain("user@example.invalid");
+  });
+
+  it("confirms browser-only remembered-session removal before clearing it", async () => {
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async (input: URL) => {
+        const path = new URL(input).pathname.replace("/v8/management", "");
+        if (path === "/config") return new Response(JSON.stringify(config));
+        if (path === "/credentials") return new Response(JSON.stringify(credentials));
+        if (path === "/server/latest-version") return new Response(JSON.stringify(latest));
+        if (path.startsWith("/routing/model-definitions/"))
+          return new Response(JSON.stringify(models));
+        return new Response("{}", { status: 404 });
+      }),
+    );
+    await sessionStore
+      .getState()
+      .connect({ apiBase: API_BASE, managementKey: "mk", remember: true });
+    const host = document.createElement("div");
+    document.body.append(host);
+    root = createRoot(host);
+    const router = createMemoryRouter(appRoutes, { initialEntries: ["/system"] });
+    act(() =>
+      root?.render(
+        <Providers>
+          <RouterProvider router={router} />
+        </Providers>,
+      ),
+    );
+    await settle();
+    const button = [...host.querySelectorAll("button")].find(
+      (item) => item.textContent === "Forget remembered session",
+    );
+    await act(async () => button?.click());
+    const dialog = document.body.querySelector('[role="dialog"]');
+    expect(dialog?.textContent).toContain("from this browser only");
+    expect(dialog?.textContent).toContain("does not disconnect the current session");
   });
 
   it("uses one workspace header and separates version, channel, and browser-session regions", async () => {

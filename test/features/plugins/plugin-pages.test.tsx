@@ -56,9 +56,10 @@ describe("plugin management pages", () => {
     await vi.waitFor(() => expect(host.querySelector('[data-kind="error"]')).not.toBeNull(), {
       timeout: 4000,
     });
-    expect(host.querySelector('[data-kind="error"]')?.textContent).toBe(
+    expect(host.querySelector('[data-kind="error"]')?.textContent).toContain(
       "Plugin information is unavailable.",
     );
+    expect(host.querySelector('[data-kind="error"] button')?.textContent).toBe("Try again");
   });
 
   it("renders identifiers but never interprets menu HTML", async () => {
@@ -88,10 +89,6 @@ describe("plugin management pages", () => {
       if (url.pathname.endsWith("/plugins")) return { plugins: [] };
       return { "config-version": 8 };
     });
-    vi.stubGlobal(
-      "confirm",
-      vi.fn(() => false),
-    );
     await vi.waitFor(() => expect(host.textContent).toContain("store-plugin"));
     expect(host.querySelector('[data-slot="workspace-header"] h1')?.textContent).toBe(
       "Plugin store",
@@ -102,6 +99,15 @@ describe("plugin management pages", () => {
       (item) => item.textContent === "Install",
     );
     await act(async () => button?.click());
+    await vi.waitFor(() => expect(document.body.querySelector('[role="dialog"]')).not.toBeNull());
+    const dialog = document.body.querySelector('[role="dialog"]');
+    expect(dialog?.textContent).toContain("official");
+    expect(dialog?.textContent).toContain("1.0");
+    expect(dialog?.textContent).toContain("connected backend");
+    const cancel = [...(dialog?.querySelectorAll("button") ?? [])].find(
+      (item) => item.textContent === "Cancel",
+    );
+    await act(async () => cancel?.click());
     expect(calls.some((path) => path.endsWith("/install"))).toBe(false);
   });
 });

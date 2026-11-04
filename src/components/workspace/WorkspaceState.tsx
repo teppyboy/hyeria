@@ -36,7 +36,7 @@ export function WorkspaceState({
       data-kind={kind}
       role={role}
       aria-live={kind === "error" ? "assertive" : "polite"}
-      className={cn("rounded-lg border border-border p-6", className)}
+      className={cn("rounded-md border border-border p-6", className)}
     >
       <h2 className="text-base font-medium">
         {title ?? translate(language, defaultTitleKeys[kind])}

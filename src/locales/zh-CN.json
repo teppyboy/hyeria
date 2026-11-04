@@ -43,7 +43,7 @@
   "plugins.executableWarning": "安装插件可能会在后端安装可执行代码；请仅确认可信来源。",
   "plugins.updateUnavailable": "有可用更新（没有经过验证的更新操作）",
   "plugins.install": "安装",
-  "plugins.installWarning": "插件可能会在后端安装可执行代码。",
+  "plugins.installWarning": "此操作会在后端安装可执行代码。仅在信任此插件来源时安装。",
   "plugins.sourceErrors": "部分插件来源报告了错误。",
   "plugins.installError": "插件安装失败。",
   "plugins.restartStatus": "安装需要重启后端。",
@@ -220,7 +220,6 @@
   "config.field.plugins.pluginEnabledDescription": "启用此现有插件。",
   "config.field.plugins.pluginPriority": "插件优先级",
   "config.field.plugins.pluginPriorityDescription": "此现有插件的整数优先级。",
-
   "providers.groups": "提供商分组",
   "providers.description": "已配置的提供商分组和密钥数量。不会显示密钥值或端点。",
   "providers.loading": "正在加载提供商分组…",
@@ -339,5 +338,17 @@
   "logs.errorFilesDescription": "使用安全文件名下载服务器生成的请求错误日志。",
   "logs.errorFilesError": "无法加载请求错误文件列表。",
   "logs.errorFilesEmpty": "没有可用的请求错误文件。",
-  "logs.download": "下载"
+  "logs.download": "下载",
+  "plugins.installSource": "来源",
+  "plugins.sourceUnknown": "来源未知",
+  "plugins.installVersion": "版本",
+  "plugins.installTarget": "目标：",
+  "plugins.installBackend": "当前连接的后端。",
+  "plugins.installRestart": "更改生效前，后端可能需要重启。",
+  "plugins.installConfirm": "安装插件",
+  "system.forgetSessionTitle": "忘记已记住的会话？",
+  "system.forgetSessionDescription": "这只会从此浏览器中移除已保存的管理密钥，不会断开当前会话或联系服务器；下次连接时需要重新输入密钥。",
+  "plugins.storeRetry": "无法从插件来源加载目录。重试以再次请求目录。",
+  "providers.retryDescription": "重试从当前连接的服务器加载提供商组。",
+  "system.retryDescription": "重试从当前连接的服务器加载此系统信息。"
 }

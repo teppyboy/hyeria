@@ -119,7 +119,17 @@ export function AuthFilesPage() {
           {t("authFiles.files")}
         </h2>
         {files.isPending && <WorkspaceState kind="loading" title={t("authFiles.loading")} />}
-        {files.isError && <WorkspaceState kind="error" title={t("authFiles.loadError")} />}
+        {files.isError && (
+          <WorkspaceState
+            kind="error"
+            title={t("authFiles.loadError")}
+            action={
+              <Button variant="outline" onClick={() => void files.refetch()}>
+                {t("feedback.retry")}
+              </Button>
+            }
+          />
+        )}
         {files.isSuccess && files.data.length === 0 && (
           <WorkspaceState kind="empty" title={t("authFiles.empty")} />
         )}

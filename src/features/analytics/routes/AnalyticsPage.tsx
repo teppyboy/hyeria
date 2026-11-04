@@ -39,7 +39,7 @@ export function AnalyticsPage() {
     return (
       <section className="mx-auto grid max-w-5xl gap-6">
         {header()}
-        <WorkspaceState kind="error" title={t("analytics.error")} />
+        <WorkspaceState kind="error" title={t("analytics.error")} action={refreshAction} />
       </section>
     );
   const view = toAnalyticsViewModel(buckets.data);
@@ -55,11 +55,21 @@ export function AnalyticsPage() {
           </CardHeader>
           <CardContent>
             <p>
-              {t("analytics.observed")} {new Date(view.observedAt).toLocaleString()}
+              {t("analytics.observed")} {new Intl.DateTimeFormat(language).format(view.observedAt)}{" "}
+              {new Intl.DateTimeFormat(language, { timeStyle: "medium" }).format(view.observedAt)}
             </p>
-            <pre className="max-h-[60vh] overflow-auto whitespace-pre-wrap break-all text-xs">
-              {view.serialized}
-            </pre>
+            <dl className="mt-4 divide-y border-y">
+              {view.rows.map((row) => (
+                <div
+                  key={row.label}
+                  className="grid gap-1 py-3 sm:grid-cols-[minmax(0,1fr)_2fr] sm:gap-4"
+                >
+                  <dt className="break-all text-sm font-medium">{row.label}</dt>
+                  <dd className="break-all font-mono text-sm text-muted-foreground">{row.value}</dd>
+                </div>
+              ))}
+            </dl>
+            <p className="mt-4 text-sm text-muted-foreground">{view.coverageNote}</p>
           </CardContent>
         </Card>
       )}

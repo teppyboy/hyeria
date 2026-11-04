@@ -82,7 +82,7 @@ export function LoginPage() {
   if (isDemo)
     return (
       <main className="grid min-h-screen place-items-center bg-background p-4">
-        <section className="w-full max-w-md space-y-5 rounded-xl border bg-card p-6 shadow-sm">
+        <section className="w-full max-w-md space-y-5 rounded-lg border bg-card p-6 shadow-none">
           <h1 className="text-2xl font-semibold">{t("demo.loginTitle")}</h1>
           <p className="text-sm text-muted-foreground">{t("demo.loginDescription")}</p>
           <Button
@@ -103,7 +103,7 @@ export function LoginPage() {
     );
   return (
     <main className="grid min-h-screen place-items-center bg-background p-4">
-      <section className="w-full max-w-md space-y-5 rounded-xl border bg-card p-6 shadow-sm">
+      <section className="w-full max-w-md space-y-5 rounded-lg border bg-card p-6 shadow-none">
         <div>
           <h1 className="text-2xl font-semibold">{t("login.title")}</h1>
           <p className="mt-1 text-sm text-muted-foreground">{t("app.tagline")}</p>
